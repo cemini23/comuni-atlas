@@ -5,7 +5,7 @@ import { onPopState, readQuery, writeQuery } from "./router.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const THEME_KEY = "comuni-atlas-theme";
-const SHARE_ORIGIN = "https://youratto.com/atlas";
+const SHARE_ORIGIN = "https://youratto.com/atlas/";
 const DEFAULT_TITLE = "Atto Historical Atlas (1796–2026)";
 const ITALY = { minLng: 6.55, maxLng: 18.85, minLat: 35.45, maxLat: 47.12, w: 1000, h: 1180 };
 const WIDE = { w: 1600, h: 1000 };
@@ -404,7 +404,7 @@ function inspectorCta(result) {
   const href = `https://youratto.com?utm_source=atlas&utm_medium=inspector&utm_campaign=${encodeURIComponent(comuneSlug(modern))}`;
   return `<aside class="atto-cta">
     <p><strong>Tracking records from ${esc(place)}?</strong></p>
-    <p>Build your offline family tree, track Stato Civile &amp; Archivio di Stato requests, and organize your citizenship packet locally on your Mac with <strong>Atto</strong>.</p>
+    <p>Atto for Mac &amp; Windows builds archive Find links, spots name and date mismatches across acts, and keeps your civil-record packet organized offline on your computer.</p>
     <p><a class="pill" href="${esc(href)}">See How Atto Works →</a></p>
   </aside>`;
 }
@@ -420,6 +420,13 @@ async function copyShare(button) {
   } catch {
     button.textContent = url;
   }
+}
+
+function anscStatusLabel(status) {
+  if (status === "anpr-population") return "Active Municipality (ANPR / Stato Civile)";
+  if (status === "successor-comune") return "Merged / Suppressed Comune (Request via Successor Municipality)";
+  if (status === "suppressed") return "Historical Suppressed Comune";
+  return status || "";
 }
 
 function officeSection(result) {
@@ -438,8 +445,8 @@ function officeSection(result) {
     ${line("Municipio", office.address)}
     ${website}
     ${office.note ? `<p>${esc(office.note)}</p>` : ""}
-    <p><strong>ANSC.</strong> ${esc(office.anscStatus)}. ${esc(office.anscNote)}</p>
-    <p class="atto-cta">Sending a request to ${esc(modern)}? Generate a compliant bilingual Stato Civile request letter &amp; track PEC/postal responses in <a href="${esc(href)}"><strong>Atto for Mac</strong> →</a></p>
+    <p><strong>ANSC.</strong> ${esc(anscStatusLabel(office.anscStatus))}. ${esc(office.anscNote)}</p>
+    <p class="atto-cta">Sending a request to ${esc(modern)}? Atto for Mac &amp; Windows builds archive Find links, spots name and date mismatches across acts, and keeps your civil-record packet organized offline on your computer. <a href="${esc(href)}"><strong>Open Atto</strong> →</a></p>
   </section>`;
 }
 
@@ -545,10 +552,9 @@ function renderCard(result) {
   card.innerHTML = [
     `<h2>${esc(place)}</h2>`,
     line("Modern name", result.modernName),
-    line("Match", result.matchType || ""),
     result.rangeNote ? line("Chronicle year", year) : line("Date", `1 July ${year}`),
     result.note ? `<p>${esc(result.note)}</p>` : "",
-    result.ambiguous ? `<p class="warn">Another town scores almost the same. Choose one from the list.</p>` : "",
+    result.ambiguous ? `<p class="warn">Multiple Italian municipalities share a similar name. Select a municipality below:</p>` : "",
     alternates ? `<ul>${alternates}</ul>` : "",
     line("ISTAT", result.istat || ""),
     line("Catasto", result.catasto || ""),

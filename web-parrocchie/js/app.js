@@ -2,7 +2,7 @@ import { createAtlas, fold } from "./engine.mjs";
 import { filterParishes } from "./suite.mjs";
 
 const THEME_KEY = "comuni-atlas-theme";
-const SHARE_ORIGIN = "https://youratto.com/parrocchie";
+const SHARE_ORIGIN = "https://youratto.com/parrocchie/";
 const ITALY = { minLng: 6.55, maxLng: 18.85, minLat: 35.45, maxLat: 47.12, w: 1000, h: 1180 };
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -132,8 +132,8 @@ function churchCard(row, year) {
     row.chiesaMadre ? "Chiesa madre" : "",
     row.kind === "diocesan-seat" ? "Diocesan seat" : "",
   ].filter(Boolean).join(" · ");
-  const unknown = row.inceptionYear == null
-    ? "<p>Inception year is unknown. This row is not excluded.</p>"
+  const inception = row.inceptionYear != null
+    ? `<p><strong>Inception.</strong> ${esc(row.inceptionYear)}</p>`
     : "";
   const place = row.comune || row.searchPlace || "";
   const href = `../web/?year=${encodeURIComponent(year)}&place=${encodeURIComponent(place)}`;
@@ -145,7 +145,7 @@ function churchCard(row, year) {
     <p><strong>Atto di Battesimo.</strong> Ask the parish or the diocesan archive.</p>
     <p><strong>Matrimonio Canonico.</strong> Ask the parish or the diocesan archive.</p>
     <p><strong>Diocesan archive.</strong> ${esc(row.archive || "")}</p>
-    ${unknown}
+    ${inception}
     <p><a href="${esc(row.bewebUrl)}" rel="noopener noreferrer">Search this place on BeWeB →</a></p>
     <p><a href="${esc(href)}">View in Historical Atlas (${esc(year)})</a></p>
   </article>`;
@@ -186,7 +186,7 @@ function render() {
   }
   status.textContent = query
     ? `${resolved ? "1 town route. " : ""}${found.dioceses.length} diocese rows and ${found.churches.length} church rows for ${year}.`
-    : "Type a comune or a diocese.";
+    : "Search any Italian comune or diocese to locate pre-unification parish and diocesan archives.";
   if (resolved?.coordinates) drawPin(resolved.coordinates);
   else if (found.dioceses[0]) drawPin({ lat: found.dioceses[0].lat, lng: found.dioceses[0].lng });
   else drawPin(null);
@@ -253,7 +253,7 @@ async function main() {
     }
   });
   if (comuneInput.value) render();
-  else status.textContent = `${db.dioceses.length} diocese seats are ready.`;
+  else status.textContent = "Search any Italian comune or diocese to locate pre-unification parish and diocesan archives.";
 }
 
 main().catch((error) => {

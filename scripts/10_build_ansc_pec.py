@@ -17,8 +17,9 @@ ANSC_NOTE = (
     "Stato, even when the comune sends new acts to ANSC."
 )
 ROLLOUT = (
-    "This atlas has no per-comune ANSC onboarding date. ANPR covers the living "
-    "population. Historical Stato Civile books stay on paper."
+    "Active on ANPR. While modern acts are digitized through ANSC, historical "
+    "Stato Civile registers (1809–1990s) are maintained in physical volumes at "
+    "the Comune and the provincial Archivio di Stato."
 )
 
 

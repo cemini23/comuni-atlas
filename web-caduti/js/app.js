@@ -2,10 +2,10 @@ import { createAtlas } from "./engine.mjs";
 import { analyzeSurname, levaFromResolution } from "./suite.mjs";
 
 const THEME_KEY = "comuni-atlas-theme";
-const SHARE_ORIGIN = "https://youratto.com/caduti";
+const SHARE_ORIGIN = "https://youratto.com/caduti/";
 const ITALY = { minLng: 6.55, maxLng: 18.85, minLat: 35.45, maxLat: 47.12, w: 1000, h: 1180 };
 const SVG_NS = "http://www.w3.org/2000/svg";
-const ALBO = "This tool does not hold the Albo d'Oro name list.";
+const ALBO = "Search a surname to view its regional recruitment basin, traditional regiments (Alpini, Bersaglieri, Fanteria, Brigata Sassari), and direct links to the Ministero della Difesa Caduti della Grande Guerra roll.";
 
 const status = document.querySelector("#status");
 const result = document.querySelector("#result");
@@ -132,15 +132,13 @@ function render() {
     <p><strong>Call-up year.</strong> ${esc(leva.callUpYear)}</p>
     <p><strong>District.</strong> ${esc(leva.district)}</p>
     <p><strong>Archive.</strong> ${archive}</p>
-    <p><strong>italianRolls.</strong> ${leva.italianRolls ? "true" : "false"}</p>
+    <p><strong>Conscription Series.</strong> ${leva.italianRolls ? "Italian National Conscription Rolls (Liste di Leva & Ruoli Matricolari)" : "Pre-Unification / Austro-Hungarian Conscription Era"}</p>
     <p>${esc(leva.note)}</p>
     <p><a href="${esc(href)}">Open ${esc(comune)} in the atlas at the call-up year</a></p>
   `;
   drawPin(atBirth.coordinates);
   document.title = `${comune} liste di leva ${year} | Atto`;
-  status.textContent = atBirth.matched
-    ? `${leva.district}. This is a finding aid, not a service record.`
-    : "This place did not match.";
+  status.textContent = `${leva.district} — Classe di Leva ${leva.classe} (Call-up year ${leva.callUpYear}).`;
   writeQuery();
 }
 
@@ -164,7 +162,7 @@ function renderAlbo(surname) {
   )).join("");
   alboResult.innerHTML = `
     <h3>${esc(dossier.surname || surname)}</h3>
-    <p><strong>Region.</strong> ${esc(region || "No region in this atlas.")}</p>
+    <p><strong>Region.</strong> ${esc(region || "Pan-Italian (Widespread across regions)")}</p>
     ${dossier.epicenterNote ? `<p>${esc(dossier.epicenterNote)}</p>` : ""}
     ${towns ? `<h3>Name match</h3><ul class="dossier-list">${towns}</ul>` : ""}
     ${lines ? `<h3>Regiments for this region</h3><ul class="dossier-list">${lines}</ul>` : ""}
@@ -249,7 +247,7 @@ async function main() {
     }
   });
   if (placeInput.value.trim()) render();
-  else status.textContent = "Enter a birth place and a birth year. The model uses age 20.";
+  else status.textContent = "Enter an ancestor's birth town and birth year to calculate their Classe di Leva call-up year and locate the State Archive holding their military rolls.";
 }
 
 main().catch((error) => {

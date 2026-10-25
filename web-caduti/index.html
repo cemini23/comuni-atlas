@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Caduti &amp; Liste di Leva | Atto</title>
-  <meta name="description" content="A finding aid for liste di leva and a regiment geography guide. This tool does not hold the Albo d'Oro name list.">
+  <meta name="description" content="Calculate Italian military conscription call-up years (Classe di Leva), locate historical Distretti Militari, and find the State Archive holding Liste di Leva and Fogli Matricolari.">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -27,17 +27,17 @@
         <a class="pill" href="../web-ansc/">🏛️ ANSC &amp; PEC Tracker</a>
         <a class="pill" href="../web-caduti/" aria-current="page">🎖️ Caduti &amp; Liste di Leva</a>
       </nav>
-      <a class="pill" href="https://youratto.com?utm_source=caduti&amp;utm_medium=header">Organize Your Packet in Atto for Mac →</a>
+      <a class="pill" href="https://youratto.com?utm_source=caduti&amp;utm_medium=header">Organize Your Packet in Atto for Mac &amp; Windows →</a>
     </div>
     <div class="title-block">
       <h1 class="atlas-title">Caduti &amp; Liste di Leva</h1>
-      <p class="badge">Find the call-up district and the Archivio di Stato for a birth year.</p>
+      <p class="badge">Italian Military Conscription (Liste di Leva), Distretti Militari &amp; WWI Recruitment Basin Guide</p>
     </div>
     <div class="top-actions">
       <button type="button" id="theme-toggle" aria-pressed="false">Dark mode</button>
     </div>
   </header>
-  <p id="status" class="banner" role="status">Enter a birth place and a birth year.</p>
+  <p id="status" class="banner" role="status">Enter an ancestor's birth town and birth year to calculate their Classe di Leva call-up year and locate the State Archive holding their military rolls.</p>
   <div class="shell">
     <aside class="panel search-panel">
       <form id="leva-form">
@@ -60,9 +60,13 @@
           <input id="albo-name" name="surname" autocomplete="off" placeholder="Esposito">
         </div>
         <button type="submit">Check surname basin &amp; Albo links</button>
-        <p id="albo-note">This tool does not hold the Albo d'Oro name list.</p>
+        <p id="albo-note">Search a surname to view its regional recruitment basin, traditional regiments (Alpini, Bersaglieri, Fanteria, Brigata Sassari), and direct links to the Ministero della Difesa Caduti della Grande Guerra roll.</p>
         <div id="albo-result"></div>
       </form>
+      <nav class="guide-links" aria-label="Atto guides">
+        <a class="pill" href="https://youratto.com/guides/italy-records/">Italy Records Guide</a>
+        <a class="pill" href="https://youratto.com/demo/">Watch 2.5-min Demo</a>
+      </nav>
     </aside>
     <main class="map-wrap">
       <svg id="map" viewBox="0 0 1000 1180" role="img" aria-label="Italy for the call-up district">

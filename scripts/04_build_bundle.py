@@ -708,7 +708,7 @@ def build_routes():
                 "id": "garibaldi-mille",
                 "title": "Spedizione dei Mille, 1860",
                 "titleEn": "Garibaldi's Thousand, 1860",
-                "summary": "From Quarto dei Mille to Teano. The stops follow the dates. Naples is 7 September. Teano is 26 October.",
+                "summary": "Garibaldi's Thousand left Quarto dei Mille on 5 May 1860, landed at Marsala on 11 May, and entered Naples on 7 September. The campaign closed with the meeting at Teano on 26 October 1860.",
                 "match": ["Quarto", "Marsala", "Palermo", "Napoli"],
                 "stops": [
                     {"year": 1860, "place": "Quarto dei Mille", "label": "Departure, 5 May 1860"},
@@ -726,7 +726,7 @@ def build_routes():
                 "id": "dante-exile",
                 "title": "L'esilio di Dante",
                 "titleEn": "Dante Alighieri's exile",
-                "summary": "From the sentence in Firenze to the last years in Ravenna. These years are before 1796. The map shows 1796 jurisdiction.",
+                "summary": "Dante received his sentence of exile in Firenze on 27 January 1302 and died in Ravenna in 1321. The stops predate 1796, so each pin uses the 1796 jurisdiction of that place.",
                 "match": ["Firenze", "San Godenzo", "Forlì", "Verona", "Lucca", "Ravenna"],
                 "stops": [
                     {"year": 1302, "place": "Firenze", "label": "Sentence of exile, 27 January 1302"},
@@ -741,7 +741,7 @@ def build_routes():
                 "id": "sicily-to-ny",
                 "title": "Dalla Sicilia a New York",
                 "titleEn": "Sicily to New York, 1880–1904",
-                "summary": "A sample southern journey from Castrogiovanni through Palermo and Napoli to Ellis Island.",
+                "summary": "A southern emigration route from Castrogiovanni through the ports of Palermo and Napoli to Ellis Island, 1880–1904.",
                 "match": ["Castrogiovanni", "Palermo", "Napoli", "New York"],
                 "stops": [
                     {"year": 1880, "place": "Castrogiovanni", "label": "Birth in Castrogiovanni, 1880"},
@@ -754,7 +754,7 @@ def build_routes():
                 "id": "veneto-to-buenos-aires",
                 "title": "Dal Veneto a Buenos Aires",
                 "titleEn": "Veneto to Buenos Aires, 1858–1888",
-                "summary": "A sample northern journey from Austrian Udine to the Hotel de Inmigrantes. The 1866 stop is 1 July, before the October plebiscite.",
+                "summary": "A northern emigration route from Udine in Austrian Lombardo-Veneto through Genova to the Hotel de Inmigrantes in Buenos Aires, 1858–1888. On 1 July 1866 Udine was still Lombardo-Veneto. The plebiscite followed on 21 October 1866.",
                 "match": ["Udine", "Udine", "Genova", "Buenos Aires"],
                 "stops": [
                     {"year": 1858, "place": "Udine", "label": "Birth in Austrian Lombardo-Veneto, 1858"},
@@ -767,7 +767,7 @@ def build_routes():
                 "id": "lercara-new-york",
                 "title": "Rotta di emigrazione, Lercara Friddi",
                 "titleEn": "Lercara Friddi to New York",
-                "summary": "A sample chain from a Sicilian town through Palermo to New York.",
+                "summary": "An emigration route from Lercara Friddi through the port of Palermo to Ellis Island in New York, 1878–1902.",
                 "match": ["Lercara Friddi", "Palermo", "New York"],
                 "stops": [
                     {"year": 1878, "place": "Lercara Friddi", "label": "Birth town"},
@@ -991,7 +991,7 @@ def main() -> int:
         "polities": POLITIES,
         "records": RECORDS,
         "provinceRules": rules,
-        "mapNote": "The mesh is the modern provincial boundary. Color shows the sovereign regime of that ground in the selected year. It is not a historical polygon.",
+        "mapNote": "Provinces are color-coded by the sovereign regime ruling that territory on 1 July of the selected year.",
     }
     (BUILT / "comuni-index.json").write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (BUILT / "polities.json").write_text(json.dumps(polities, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

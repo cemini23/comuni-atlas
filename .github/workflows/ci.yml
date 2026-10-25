@@ -141,7 +141,7 @@ jobs:
           grep -q 'MATCH_LIMIT = 40' dist/ansc/js/app.js
           grep -q 'Do not risk a rejected Comune request' dist/ansc/index.html
           grep -q 'Estratto per riassunto' dist/ansc/index.html
-          grep -q 'This tool does not hold the Albo' dist/caduti/index.html
+          grep -q 'Liste di Leva' dist/caduti/index.html
           grep -q 'export function analyzeSurname' dist/cognomi/js/suite.mjs
           grep -q 'export function catastoGuide' lib/suite.mjs
           echo "bundle ok"

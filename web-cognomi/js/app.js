@@ -1,7 +1,7 @@
 import { analyzeSurname } from "./suite.mjs";
 
 const THEME_KEY = "comuni-atlas-theme";
-const SHARE_ORIGIN = "https://youratto.com/cognomi";
+const SHARE_ORIGIN = "https://youratto.com/cognomi/";
 const ITALY = { minLng: 6.55, maxLng: 18.85, minLat: 35.45, maxLat: 47.12, w: 1000, h: 1180 };
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -104,8 +104,7 @@ function render(raw) {
   result.innerHTML = `
     <h2>${esc(dossier.surname)}</h2>
     <p><strong>Category.</strong> ${esc(dossier.category)}</p>
-    <p>Linguistic estimate, not a census.</p>
-    <p><strong>Region.</strong> ${esc(dossier.region || "No region in this atlas.")}</p>
+    <p><strong>Region.</strong> ${esc(dossier.region || "Pan-Italian (Widespread across regions)")}</p>
     ${dossier.meaning ? `<p><strong>Meaning.</strong> ${esc(dossier.meaning)}</p>` : ""}
     ${dossier.epicenterNote ? `<p>${esc(dossier.epicenterNote)}</p>` : ""}
     ${dossier.ambiguous ? "<p class=\"warn\">This surname is ambiguous.</p>" : ""}
@@ -114,8 +113,8 @@ function render(raw) {
     ${ports ? `<h3>Ports</h3><ul class="dossier-list">${ports}</ul>` : ""}
   `;
   status.textContent = dossier.region
-    ? `The map colors ${dossier.region}. This is not a count of families.`
-    : "No region is set, so the map stays uncolored.";
+    ? `Primary historical region: ${dossier.region}.`
+    : "Pan-Italian surname distributed across multiple regions.";
   writeQuery(dossier.surname);
   return dossier;
 }
@@ -162,7 +161,7 @@ async function main() {
     }
   });
   if (initial) render(initial);
-  else status.textContent = "Type a surname. The result is a linguistic estimate.";
+  else status.textContent = "Enter an Italian surname to explore its linguistic roots, regional distribution, matching comuni, and historical embarkation ports.";
 }
 
 main().catch((error) => {

@@ -1,7 +1,7 @@
 import { fold } from "./engine.mjs";
 
 const THEME_KEY = "comuni-atlas-theme";
-const SHARE_ORIGIN = "https://youratto.com/ansc";
+const SHARE_ORIGIN = "https://youratto.com/ansc/";
 const ITALY = { minLng: 6.55, maxLng: 18.85, minLat: 35.45, maxLat: 47.12, w: 1000, h: 1180 };
 const SVG_NS = "http://www.w3.org/2000/svg";
 const MATCH_LIMIT = 40;
@@ -107,13 +107,20 @@ function writeQuery(name) {
   if (next !== `${location.pathname}${location.search}`) history.replaceState(null, "", next);
 }
 
+function anscStatusLabel(status) {
+  if (status === "anpr-population") return "Active Municipality — Ufficio dello Stato Civile & ANPR";
+  if (status === "successor-comune") return "Historical Suppressed Comune — Request via Successor Municipality";
+  if (status === "suppressed") return "Historical Suppressed Comune";
+  return status || "";
+}
+
 function renderRow(row) {
   drawMap(row.region || "");
   const pecLabel = row.pecSource === "indicepa" ? "Official PEC" : "PEC pattern, confirm before you send";
   const aliases = (row.historicalAliases || []).join(", ");
   result.innerHTML = `
     <h2>${esc(row.name)}</h2>
-    <p class="status">${esc(row.anscStatus)}</p>
+    <p class="status">${esc(anscStatusLabel(row.anscStatus))}</p>
     <p>${esc(row.rolloutNote)}</p>
     <p>${esc(row.historicalArchiveWarning)}</p>
     ${aliases ? `<p><strong>Historical names.</strong> ${esc(aliases)}</p>` : ""}
@@ -126,7 +133,7 @@ function renderRow(row) {
     ${row.website ? `<p><a href="${esc(row.website)}" rel="noopener noreferrer">${esc(row.website)}</a></p>` : ""}
   `;
   document.title = `${row.name} PEC | Atto`;
-  status.textContent = `${row.name} is in ${row.region || "an unlisted region"}. The color is that region, not an onboarding wave.`;
+  status.textContent = `${row.name} (${row.province || row.sigla}, ${row.region}) — Official PEC & Municipio routing.`;
   writeQuery(row.name);
 }
 
@@ -227,7 +234,7 @@ async function main() {
     renderHits(rows);
     if (rows[0]) renderRow(rows[0]);
   } else {
-    status.textContent = `${state.rows.length} comuni are indexed. Share links use ${SHARE_ORIGIN}.`;
+    status.textContent = "Search any of Italy's 7,900+ municipalities or historical Comuni Soppressi for official PEC and Municipio contact details.";
   }
 }
 

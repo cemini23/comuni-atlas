@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cognomi Heatmap | Atto</title>
-  <meta name="description" content="A linguistic estimate of an Italian surname. This is not a census and it does not draw a fake hotspot.">
+  <meta name="description" content="Explore Italian surname origins, etymology, regional roots, toponymic comune matches, historic foundling hospital names, and diaspora ports of embarkation.">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -27,17 +27,17 @@
         <a class="pill" href="../web-ansc/">🏛️ ANSC &amp; PEC Tracker</a>
         <a class="pill" href="../web-caduti/">🎖️ Caduti &amp; Liste di Leva</a>
       </nav>
-      <a class="pill" href="https://youratto.com?utm_source=cognomi&amp;utm_medium=header">Organize Your Packet in Atto for Mac →</a>
+      <a class="pill" href="https://youratto.com?utm_source=cognomi&amp;utm_medium=header">Organize Your Packet in Atto for Mac &amp; Windows →</a>
     </div>
     <div class="title-block">
       <h1 class="atlas-title">Cognomi Heatmap</h1>
-      <p class="badge">See where an Italian surname points, then open those towns in the atlas.</p>
+      <p class="badge">Italian Surname Etymology, Regional Roots, Toponymic Comuni &amp; Foundling Hospital Guide</p>
     </div>
     <div class="top-actions">
       <button type="button" id="theme-toggle" aria-pressed="false">Dark mode</button>
     </div>
   </header>
-  <p id="status" class="banner" role="status">Type a surname.</p>
+  <p id="status" class="banner" role="status">Enter an Italian surname to explore its linguistic roots, regional distribution, matching comuni, and historical embarkation ports.</p>
   <div class="shell">
     <aside class="panel search-panel">
       <form id="search-form">
@@ -48,7 +48,11 @@
         <button type="submit">Show the dossier</button>
         <button type="button" id="share-map">Share My Surname Map</button>
       </form>
-      <p class="mesh-note">This is a linguistic estimate, not a census. Color marks a named region. A surname with no region stays uncolored. Ports are heuristic, not passenger records.</p>
+      <p class="mesh-note">Highlights the primary historical region associated with the surname, matching toponymic comuni, and main ports of embarkation.</p>
+      <nav class="guide-links" aria-label="Atto guides">
+        <a class="pill" href="https://youratto.com/guides/italy-records/">Italy Records Guide</a>
+        <a class="pill" href="https://youratto.com/demo/">Watch 2.5-min Demo</a>
+      </nav>
     </aside>
     <main class="map-wrap">
       <svg id="map" viewBox="0 0 1000 1180" role="img" aria-label="Italy colored by surname region when one is known">

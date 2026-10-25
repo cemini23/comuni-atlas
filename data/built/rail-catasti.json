@@ -206,11 +206,21 @@
         "sicilia-borbone",
         "due-sicilie"
       ],
-      "note": "This is the Kingdom of Naples finding aid."
+      "note": "Pre-unification Southern Italian property cadastre (Catasto Provvisorio / Murattiano) preserved at the provincial Archivio di Stato."
+    },
+    {
+      "id": "rabbini",
+      "name": "Catasto Rabbini / Antichi Catasti Sabaudi",
+      "years": "1855–1870",
+      "polities": [
+        "regno-sardegna",
+        "genova",
+        "liguria-repubblica"
+      ]
     },
     {
       "id": "none",
-      "name": "No cadastre in this guide",
+      "name": "Consult local State or Provincial Archive cadastral series",
       "years": "",
       "polities": []
     }

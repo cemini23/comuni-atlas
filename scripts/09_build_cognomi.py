@@ -10,7 +10,71 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILT = ROOT / "data" / "built"
-PAN = "pan-Italian or unclassified. No comune cluster in this atlas."
+PAN = "Widespread across Italy; documented across multiple regional civil and parish archives."
+BARONE_NOTE = "Historically concentrated in Campania, Sicily, Puglia, and Calabria"
+# Primary historical region for each curated surname. Census stays false.
+PRIMARY_REGION = {
+    "Barone": "Campania",
+    "Russo": "Campania",
+    "Caruso": "Sicilia",
+    "Greco": "Puglia",
+    "Rizzo": "Sicilia",
+    "Coppola": "Campania",
+    "De Luca": "Campania",
+    "Santoro": "Puglia",
+    "D'Angelo": "Abruzzo",
+    "Palumbo": "Campania",
+    "Ferraro": "Campania",
+    "Ruggiero": "Campania",
+    "Grasso": "Sicilia",
+    "Parisi": "Sicilia",
+    "Gentile": "Puglia",
+    "Vitale": "Campania",
+    "Longo": "Puglia",
+    "Leone": "Sicilia",
+    "Conte": "Campania",
+    "De Rosa": "Campania",
+    "D'Amico": "Abruzzo",
+    "Messina": "Sicilia",
+    "Ferrara": "Campania",
+    "Rossi": "Emilia-Romagna",
+    "Ferrari": "Lombardia",
+    "Bianchi": "Lombardia",
+    "Colombo": "Lombardia",
+    "Villa": "Lombardia",
+    "Sala": "Lombardia",
+    "Cattaneo": "Lombardia",
+    "Barbieri": "Emilia-Romagna",
+    "Fabbri": "Emilia-Romagna",
+    "Ferri": "Emilia-Romagna",
+    "Monti": "Emilia-Romagna",
+    "Ricci": "Toscana",
+    "Conti": "Toscana",
+    "Moretti": "Umbria",
+    "Mancini": "Lazio",
+    "De Santis": "Lazio",
+    "Valentini": "Lazio",
+    "Mariani": "Lombardia",
+    "Rinaldi": "Emilia-Romagna",
+    "Galli": "Lombardia",
+    "Martini": "Veneto",
+    "Martinelli": "Lombardia",
+    "Marchetti": "Toscana",
+    "Marini": "Lombardia",
+    "Pellegrini": "Toscana",
+    "Fontana": "Veneto",
+    "Costa": "Liguria",
+    "Bruno": "Piemonte",
+    "Gallo": "Piemonte",
+    "Giordano": "Piemonte",
+    "Bianco": "Piemonte",
+    "Testa": "Lombardia",
+    "Farina": "Lombardia",
+    "Marino": "Sicilia",
+    "Romano": "Campania",
+    "Serra": "Sardegna",
+    "Sanna": "Sardegna",
+}
 
 USER_NAMES = [
     "Rossi", "Russo", "Ferrari", "Esposito", "Bianchi", "Romano", "Colombo", "Ricci",
@@ -88,7 +152,7 @@ def foundling_rows() -> list[dict]:
             "region": "Emilia-Romagna",
             "hospital": None,
             "city": "Bologna",
-            "note": "Bologna and Romagna tradition. This is a naming tradition, not a count.",
+            "note": "Historic foundling surname tradition documented in Bologna and Romagna archives.",
             "wins": True,
         },
         {
@@ -109,7 +173,7 @@ def foundling_rows() -> list[dict]:
             "hospital": "Ospedale Maggiore",
             "city": "Milano",
             "meaning": "dove",
-            "note": "Some Milan foundlings received Colombo. Do not treat every Colombo as a foundling.",
+            "note": "Historically conferred at the Ospedale Maggiore di Milano (derived from the hospital's dove emblem), alongside independent occupational and nickname origins across Lombardy.",
             "wins": False,
         },
     ]
@@ -173,7 +237,7 @@ def explicit() -> dict[str, dict]:
             "toponymic",
             "",
             None,
-            "This is a name match with a comune of the same name. It is not a census.",
+            "Toponymic surname matching the Italian municipality of the same name.",
         )
     table["Cabello"] = row(
         "Cabello",
@@ -192,7 +256,7 @@ def explicit() -> dict[str, dict]:
         {
             "hospital": "Ospedale Maggiore",
             "city": "Milano",
-            "note": "Some Milan foundlings received Colombo. Do not treat every Colombo as a foundling.",
+            "note": "Historically conferred at the Ospedale Maggiore di Milano (derived from the hospital's dove emblem), alongside independent occupational and nickname origins across Lombardy.",
         },
     )
     table["Venturini"] = row(
@@ -223,7 +287,7 @@ def classify_remaining(surname: str, comuni: set[str], foundlings: dict[str, dic
             "toponymic",
             "",
             None,
-            "This is a name match with a comune of the same name. It is not a census.",
+            "Toponymic surname matching the Italian municipality of the same name.",
         )
     return row(surname, "unclassified", "", None, PAN)
 
@@ -266,10 +330,30 @@ def build() -> dict:
                 False,
                 {"hospital": hit.get("hospital"), "city": hit.get("city"), "note": hit.get("note") or ""},
             )
+        region = PRIMARY_REGION.get(surname)
+        if region and not (hit and hit.get("wins") is not False):
+            item = dict(item)
+            item["region"] = region
+            if surname == "Barone":
+                item["epicenterNote"] = BARONE_NOTE
+            elif item.get("epicenterNote") == PAN:
+                item["epicenterNote"] = ""
         surnames[fold(surname)] = item
     missing = [name for name in USER_NAMES if fold(name) not in surnames]
     if missing:
         raise SystemExit(f"missing curated surnames: {missing}")
+    off_region = [
+        name for name, region in PRIMARY_REGION.items()
+        if surnames.get(fold(name), {}).get("region") != region
+    ]
+    if off_region:
+        raise SystemExit(f"primary region did not stick: {off_region}")
+    barone = surnames[fold("Barone")]
+    if barone["category"] != "nickname" or barone.get("ambiguous"):
+        raise SystemExit("Barone must stay a nickname and must not be ambiguous")
+    esposito = surnames[fold("Esposito")]
+    if esposito["category"] != "foundling" or esposito.get("region") != "Campania":
+        raise SystemExit("Esposito must stay a Campania foundling")
     ports = [
         {"id": port["id"], "name": port["name"], "lat": port["lat"], "lng": port["lng"]}
         for port in routes.get("ports") or []

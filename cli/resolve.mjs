@@ -105,11 +105,20 @@ function regionOf(result) {
 }
 
 function anscRow(anscDb, result) {
+  const comuni = anscDb?.comuni || [];
+  if (result?.istat) {
+    const byIstat = comuni.find((row) => row.istat === result.istat);
+    if (byIstat) return byIstat;
+  }
+  if (result?.catasto) {
+    const byCatasto = comuni.find((row) => row.catasto === result.catasto);
+    if (byCatasto) return byCatasto;
+  }
   const wanted = [result?.modernName, result?.historicalName, result?.query?.place]
     .filter(Boolean)
     .map((name) => fold(name));
   if (!wanted.length) return null;
-  for (const row of anscDb?.comuni || []) {
+  for (const row of comuni) {
     const keys = [row.name, ...(row.historicalAliases || [])].map((name) => fold(name));
     if (wanted.some((name) => keys.includes(name))) return row;
   }

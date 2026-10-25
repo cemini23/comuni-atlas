@@ -13,7 +13,7 @@ BUILT = ROOT / "data" / "built"
 def build() -> dict:
     payload = {
         "source": "finding-aid",
-        "alboNote": "This tool does not hold the Albo d'Oro name list.",
+        "alboNote": "Military conscription rolls (Liste di Leva) record every male draftee's exact birth comune and parents' names (paternità e maternità) around age 20.",
         "ageModel": "call-up year = birth year + 20",
         "regiments": [
             {

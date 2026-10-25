@@ -303,6 +303,13 @@ label, .mesh-note, .legend, .results {
   line-height: 1.4;
 }
 
+.guide-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.9rem;
+}
+
 .map-wrap {
   position: relative;
   min-height: 0;

@@ -71,16 +71,113 @@ cat > "$ROOT/dist/index.html" <<'HTML'
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Atto Open Genealogy Suite</title>
+  <link rel="stylesheet" href="atlas/css/style.css">
+  <style>
+    .hub {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+      gap: 0.75rem;
+      padding: 0.75rem 1.1rem 1.5rem;
+    }
+    .hub h2 { margin: 0 0 0.35rem; font-size: 1.15rem; }
+    .hub p { margin: 0.35rem 0; }
+    .hub ul { margin: 0.45rem 0 0; padding-left: 1.15rem; }
+    .hub li { margin: 0.2rem 0; }
+  </style>
 </head>
 <body>
-  <h1>Atto Open Genealogy Suite</h1>
-  <ul>
-    <li><a href="atlas/">Historical Atlas</a></li>
-    <li><a href="parrocchie/">Parrocchie and Dioceses</a></li>
-    <li><a href="cognomi/">Cognomi Heatmap</a></li>
-    <li><a href="ansc/">ANSC and PEC Tracker</a></li>
-    <li><a href="caduti/">Caduti and Liste di Leva</a></li>
-  </ul>
+  <header class="top">
+    <div class="suite-bar">
+      <a class="brand" href="https://youratto.com">
+        <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect x="5" y="6" width="16" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" transform="rotate(-10 13 16)"/>
+          <rect x="11" y="8" width="16" height="20" rx="2" fill="var(--parchment)" stroke="currentColor" stroke-width="1.6"/>
+          <rect x="20.2" y="11" width="1.8" height="4" fill="#009246"/>
+          <rect x="22" y="11" width="1.8" height="4" fill="#fff"/>
+          <rect x="23.8" y="11" width="1.8" height="4" fill="#CE2B37"/>
+        </svg>
+        <span>Atto</span>
+      </a>
+      <nav class="suite-pills" aria-label="Atto genealogy suite">
+        <a class="pill" href="atlas/">Historical Atlas</a>
+        <a class="pill" href="parrocchie/">Parrocchie</a>
+        <a class="pill" href="cognomi/">Cognomi</a>
+        <a class="pill" href="ansc/">ANSC</a>
+        <a class="pill" href="caduti/">Caduti</a>
+      </nav>
+      <a class="pill" href="https://youratto.com">Organize Your Packet in Atto for Mac &amp; Windows →</a>
+    </div>
+    <div class="title-block">
+      <h1 class="atlas-title">Atto Open Genealogy Suite</h1>
+      <p class="badge">Look up a town, a diocese, a surname, a PEC address, or a call-up district.</p>
+    </div>
+    <div class="top-actions">
+      <button type="button" id="theme-toggle" aria-pressed="false">Dark mode</button>
+    </div>
+  </header>
+  <p class="banner" role="status">Five local tools. Each card opens one tool and a worked example.</p>
+  <main class="hub">
+    <article class="panel card">
+      <h2>Historical Atlas</h2>
+      <p>Look up an Italian town from 1796 to 2026.</p>
+      <p><a class="pill" href="atlas/">Open the atlas</a></p>
+      <ul>
+        <li><a href="atlas/?year=1884&amp;place=Castrogiovanni">Castrogiovanni in 1884</a></li>
+        <li><a href="atlas/?year=1880&amp;place=Colledimacine">Colledimacine in 1880</a></li>
+        <li><a href="atlas/?year=1933&amp;place=Sellia">Sellia in 1933</a></li>
+      </ul>
+    </article>
+    <article class="panel card">
+      <h2>Parrocchie and Dioceses</h2>
+      <p>Find the diocese and the diocesan archive for a town.</p>
+      <p><a class="pill" href="parrocchie/">Open parishes</a></p>
+      <ul>
+        <li><a href="parrocchie/?year=1842&amp;comune=Lercara%20Friddi">Lercara Friddi in 1842</a></li>
+      </ul>
+    </article>
+    <article class="panel card">
+      <h2>Cognomi Heatmap</h2>
+      <p>See where an Italian surname points.</p>
+      <p><a class="pill" href="cognomi/">Open surnames</a></p>
+      <ul>
+        <li><a href="cognomi/?surname=Esposito">Esposito</a></li>
+      </ul>
+    </article>
+    <article class="panel card">
+      <h2>ANSC and PEC</h2>
+      <p>Find the PEC address and the municipio.</p>
+      <p><a class="pill" href="ansc/">Open the directory</a></p>
+      <ul>
+        <li><a href="ansc/?comune=Castrogiovanni">Castrogiovanni</a></li>
+      </ul>
+    </article>
+    <article class="panel card">
+      <h2>Caduti and Liste di Leva</h2>
+      <p>Find the call-up district for a birth year.</p>
+      <p><a class="pill" href="caduti/">Open the finding aid</a></p>
+      <ul>
+        <li><a href="caduti/?year=1878&amp;place=Isernia">Isernia, birth year 1878</a></li>
+      </ul>
+    </article>
+  </main>
+  <script>
+    (function () {
+      var key = "comuni-atlas-theme";
+      var button = document.getElementById("theme-toggle");
+      function apply(theme) {
+        if (theme === "dark") document.documentElement.dataset.theme = "dark";
+        else delete document.documentElement.dataset.theme;
+        button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+        button.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+      }
+      apply(localStorage.getItem(key) === "dark" ? "dark" : "light");
+      button.addEventListener("click", function () {
+        var next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        localStorage.setItem(key, next);
+        apply(next);
+      });
+    })();
+  </script>
 </body>
 </html>
 HTML
