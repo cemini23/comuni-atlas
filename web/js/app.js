@@ -443,12 +443,20 @@ function officeSection(result) {
   </section>`;
 }
 
+const CATASTO_FALLBACK = new Set([
+  "regno-italia",
+  "repubblica",
+  "regno-sardegna",
+  "francia",
+  "napoleonico-italia",
+]);
+
 function catastoSection(result) {
   if (!result?.matched) return "";
   const region = result.modernProvince?.region || result.historicalProvince?.region || "";
   const sovereignId = result.sovereign?.id || "";
   let options = {};
-  if (sovereignId === "regno-italia" && state.atlas) {
+  if (CATASTO_FALLBACK.has(sovereignId) && state.atlas) {
     const earlier = state.atlas.resolvePlace(result.query?.place || result.modernName || "", 1850);
     options = {
       fallbackId: earlier?.sovereign?.id || "",
@@ -736,16 +744,21 @@ function setYear(year, options = {}) {
     if (options.writeUrl !== false) writeQuery({ year: safe, place: "" });
     return state.atlas.banner(safe);
   }
-  window.clearTimeout(resolveTimer);
-  resolveTimer = window.setTimeout(() => {
+  const resolveNow = () => {
     const result = atlas.resolvePlace(state.placeRaw, safe);
     state.stops = [result];
     state.index = 0;
     renderCard(result);
     syncMap(false);
     if (options.writeUrl !== false) writeQuery({ year: safe, place: state.placeRaw });
-  }, 40);
-  return null;
+    return payload();
+  };
+  window.clearTimeout(resolveTimer);
+  if (options.debounce === true) {
+    resolveTimer = window.setTimeout(resolveNow, 40);
+    return null;
+  }
+  return resolveNow();
 }
 
 function stopPlayback() {
@@ -858,7 +871,7 @@ function bindEvents() {
     }, 140);
   });
   slider.addEventListener("input", () => {
-    setYear(slider.value, { writeUrl: true });
+    setYear(slider.value, { writeUrl: true, debounce: true });
   });
   document.querySelector("#year-prev").addEventListener("click", () => setYear(state.year - 1));
   document.querySelector("#year-next").addEventListener("click", () => setYear(state.year + 1));

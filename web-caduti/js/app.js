@@ -1,5 +1,5 @@
 import { createAtlas } from "./engine.mjs";
-import { levaFromResolution } from "./suite.mjs";
+import { analyzeSurname, levaFromResolution } from "./suite.mjs";
 
 const THEME_KEY = "comuni-atlas-theme";
 const SHARE_ORIGIN = "https://youratto.com/caduti";
@@ -18,8 +18,10 @@ const pinLayer = document.querySelector("#pin");
 const themeToggle = document.querySelector("#theme-toggle");
 const bootError = document.querySelector("#boot-error");
 const alboNote = document.querySelector("#albo-note");
+const alboResult = document.querySelector("#albo-result");
+const alboName = document.querySelector("#albo-name");
 
-const state = { atlas: null, archives: null, geo: null };
+const state = { atlas: null, archives: null, geo: null, cognomi: null, index: null, guide: null };
 
 function mercator(lat) {
   const rad = (lat * Math.PI) / 180;
@@ -142,6 +144,35 @@ function render() {
   writeQuery();
 }
 
+function recruited(guide, region) {
+  return (guide?.regiments || []).filter((item) => {
+    const regions = item.regions || [];
+    if (!regions.length) return true;
+    return Boolean(region) && regions.includes(region);
+  });
+}
+
+function renderAlbo(surname) {
+  alboNote.textContent = ALBO;
+  const dossier = analyzeSurname(surname, state.cognomi, state.index?.places || []);
+  const region = dossier.region || "";
+  const towns = (dossier.topComuni || []).map((item) => (
+    `<li><button type="button" data-place="${esc(item.name)}">${esc(item.name)}</button></li>`
+  )).join("");
+  const lines = recruited(state.guide, region).map((item) => (
+    `<li>${esc(item.name)}. ${esc(item.note || "")}</li>`
+  )).join("");
+  alboResult.innerHTML = `
+    <h3>${esc(dossier.surname || surname)}</h3>
+    <p><strong>Region.</strong> ${esc(region || "No region in this atlas.")}</p>
+    ${dossier.epicenterNote ? `<p>${esc(dossier.epicenterNote)}</p>` : ""}
+    ${towns ? `<h3>Name match</h3><ul class="dossier-list">${towns}</ul>` : ""}
+    ${lines ? `<h3>Regiments for this region</h3><ul class="dossier-list">${lines}</ul>` : ""}
+    <p><a href="https://www.cadutigrandeguerra.it/" rel="noopener noreferrer">Search ${esc(dossier.surname || surname)} on Caduti della Grande Guerra</a></p>
+    <p><a href="https://antenati.cultura.gov.it/" rel="noopener noreferrer">Search ${esc(dossier.surname || surname)} on Portale Antenati</a></p>
+  `;
+}
+
 function renderRegiments(guide) {
   const items = (guide.regiments || []).map((item) => (
     `<article><h3>${esc(item.name)}</h3><p>${esc(item.note)}</p></article>`
@@ -163,7 +194,7 @@ async function main() {
     localStorage.setItem(THEME_KEY, next);
     applyTheme(next);
   });
-  const [index, polities, archives, routes, contacts, dioceses, geo, guide] = await Promise.all([
+  const [index, polities, archives, routes, contacts, dioceses, geo, guide, cognomi] = await Promise.all([
     loadJson("comuni-index.json"),
     loadJson("polities.json"),
     loadJson("archives.json"),
@@ -172,10 +203,14 @@ async function main() {
     loadJson("dioceses.json"),
     loadJson("provinces.geojson"),
     loadJson("caduti-leva-db.json"),
+    loadJson("cognomi-db.json"),
   ]);
   state.atlas = createAtlas({ index, polities, archives, routes, contacts, dioceses });
   state.archives = archives;
   state.geo = geo;
+  state.index = index;
+  state.cognomi = cognomi;
+  state.guide = guide;
   drawBase();
   renderRegiments(guide);
   const params = new URLSearchParams(location.search);
@@ -188,6 +223,18 @@ async function main() {
   document.querySelector("#albo-form").addEventListener("submit", (event) => {
     event.preventDefault();
     alboNote.textContent = ALBO;
+    const surname = alboName.value.trim();
+    if (!surname) {
+      alboResult.innerHTML = "";
+      return;
+    }
+    renderAlbo(surname);
+  });
+  alboResult.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-place]");
+    if (!button) return;
+    placeInput.value = button.dataset.place || "";
+    render();
   });
   document.querySelector("#albo-name").addEventListener("input", () => {
     alboNote.textContent = ALBO;

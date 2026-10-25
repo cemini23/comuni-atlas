@@ -31,13 +31,13 @@
     </div>
     <div class="title-block">
       <h1 class="atlas-title">Caduti &amp; Liste di Leva</h1>
-      <p class="badge">This tool does not hold the Albo d'Oro name list.</p>
+      <p class="badge">Find the call-up district and the Archivio di Stato for a birth year.</p>
     </div>
     <div class="top-actions">
       <button type="button" id="theme-toggle" aria-pressed="false">Dark mode</button>
     </div>
   </header>
-  <p id="status" class="banner" role="status">Load this page from the repository.</p>
+  <p id="status" class="banner" role="status">Enter a birth place and a birth year.</p>
   <div class="shell">
     <aside class="panel search-panel">
       <form id="leva-form">
@@ -54,11 +54,14 @@
         <button type="button" id="copy-link">Copy Shareable Link</button>
       </form>
       <form id="albo-form">
+        <h2>Surname basin</h2>
         <div class="field">
           <label for="albo-name">Surname</label>
-          <input id="albo-name" name="surname" autocomplete="off">
+          <input id="albo-name" name="surname" autocomplete="off" placeholder="Esposito">
         </div>
+        <button type="submit">Check surname basin &amp; Albo links</button>
         <p id="albo-note">This tool does not hold the Albo d'Oro name list.</p>
+        <div id="albo-result"></div>
       </form>
     </aside>
     <main class="map-wrap">

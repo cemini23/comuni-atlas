@@ -79,7 +79,6 @@ function drawMap(region) {
 function search(query) {
   const key = fold(query);
   if (!key) return [];
-  const exact = state.index.get(key) || null;
   const found = [];
   const seen = new Set();
   function push(row) {
@@ -87,11 +86,16 @@ function search(query) {
     seen.add(row);
     found.push(row);
   }
-  push(exact);
-  for (const [name, row] of state.index) {
-    if (found.length >= MATCH_LIMIT) break;
-    if (name.startsWith(key)) push(row);
+  function scan(test) {
+    for (const [name, rows] of state.index) {
+      if (found.length >= MATCH_LIMIT) break;
+      if (!test(name)) continue;
+      for (const row of rows) push(row);
+    }
   }
+  scan((name) => name === key);
+  scan((name) => name.startsWith(key));
+  scan((name) => name.includes(key));
   return found;
 }
 
@@ -117,6 +121,8 @@ function renderRow(row) {
     <p><button type="button" id="copy-pec" data-pec="${esc(row.pec)}">Copy PEC</button></p>
     <p><strong>Address.</strong> ${esc(row.address)}</p>
     <p><button type="button" id="copy-address" data-address="${esc(row.address)}">Copy address</button></p>
+    <p><button type="button" id="copy-share" data-share="${esc(`${SHARE_ORIGIN}?comune=${encodeURIComponent(row.name)}`)}">Copy Shareable Link</button></p>
+    <p><a href="../web/?year=1885&amp;place=${encodeURIComponent(row.name)}">Inspect in Historical Atlas →</a></p>
     ${row.website ? `<p><a href="${esc(row.website)}" rel="noopener noreferrer">${esc(row.website)}</a></p>` : ""}
   `;
   document.title = `${row.name} PEC | Atto`;
@@ -172,7 +178,13 @@ async function main() {
     const names = [row.name, ...(row.historicalAliases || [])];
     for (const name of names) {
       const key = fold(name);
-      if (key && !state.index.has(key)) state.index.set(key, row);
+      if (!key) continue;
+      const list = state.index.get(key);
+      if (list) {
+        if (!list.includes(row)) list.push(row);
+      } else {
+        state.index.set(key, [row]);
+      }
     }
   }
   drawMap("");
@@ -200,7 +212,12 @@ async function main() {
       return;
     }
     const address = event.target.closest("#copy-address");
-    if (address) await copyText(address, address.dataset.address || "");
+    if (address) {
+      await copyText(address, address.dataset.address || "");
+      return;
+    }
+    const share = event.target.closest("#copy-share");
+    if (share) await copyText(share, share.dataset.share || "");
   });
   const params = new URLSearchParams(location.search);
   const initial = params.get("comune") || params.get("q") || "";

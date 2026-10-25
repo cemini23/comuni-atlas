@@ -92,8 +92,28 @@ function writeJson(payload) {
   process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
 }
 
+const CATASTO_FALLBACK = new Set([
+  "regno-italia",
+  "repubblica",
+  "regno-sardegna",
+  "francia",
+  "napoleonico-italia",
+]);
+
 function regionOf(result) {
   return result?.modernProvince?.region || result?.historicalProvince?.region || "";
+}
+
+function anscRow(anscDb, result) {
+  const wanted = [result?.modernName, result?.historicalName, result?.query?.place]
+    .filter(Boolean)
+    .map((name) => fold(name));
+  if (!wanted.length) return null;
+  for (const row of anscDb?.comuni || []) {
+    const keys = [row.name, ...(row.historicalAliases || [])].map((name) => fold(name));
+    if (wanted.some((name) => keys.includes(name))) return row;
+  }
+  return null;
 }
 
 function churchesFor(result, parrocchieDb) {
@@ -115,7 +135,7 @@ function enrich(result, birthYear, atlas, archives, parrocchieDb) {
   const sovereignId = result.sovereign?.id || "";
   const region = regionOf(result);
   let options = {};
-  if (sovereignId === "regno-italia") {
+  if (CATASTO_FALLBACK.has(sovereignId)) {
     const earlier = atlas.resolvePlace(result.query?.place || result.modernName || "", 1850);
     options = {
       fallbackId: earlier.sovereign?.id || "",
@@ -149,6 +169,9 @@ if (args.error || (args.tool !== undefined && !TOOLS.has(args.tool))) {
   console.error(usage());
   process.exit(1);
 }
+if (args.tool === "cognomi" && args.cognome === undefined && args.place) {
+  args.cognome = args.place;
+}
 if (args.cognome !== undefined) {
   if (String(args.cognome).trim() === "") {
     console.error("Surname is empty.");
@@ -156,7 +179,9 @@ if (args.cognome !== undefined) {
   }
   const index = readJson("comuni-index.json");
   const cognomi = readJson("cognomi-db.json");
-  writeJson(analyzeSurname(args.cognome, cognomi, index.places || []));
+  const dossier = analyzeSurname(args.cognome, cognomi, index.places || []);
+  if (args.tool) dossier.tool = args.tool;
+  writeJson(dossier);
   process.exit(0);
 }
 if (!args.place) {
@@ -201,6 +226,14 @@ if (resolved.length === 1) {
     routeId: resolved.find((item) => item.routeId)?.routeId || null,
     stops: resolved,
   };
+}
+
+if (args.tool && payload && typeof payload === "object") {
+  payload = { ...payload, tool: args.tool };
+  if (args.tool === "ansc") {
+    const subject = Array.isArray(payload.stops) ? payload.stops[0] : payload;
+    payload.ansc_directory_row = anscRow(anscDb, subject || {});
+  }
 }
 
 writeJson(payload);

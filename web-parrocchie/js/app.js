@@ -1,4 +1,4 @@
-import { fold } from "./engine.mjs";
+import { createAtlas, fold } from "./engine.mjs";
 import { filterParishes } from "./suite.mjs";
 
 const THEME_KEY = "comuni-atlas-theme";
@@ -16,7 +16,7 @@ const seatLayer = document.querySelector("#seats");
 const themeToggle = document.querySelector("#theme-toggle");
 const bootError = document.querySelector("#boot-error");
 
-const state = { db: null, geo: null };
+const state = { db: null, geo: null, atlas: null };
 
 function mercator(lat) {
   const rad = (lat * Math.PI) / 180;
@@ -76,10 +76,10 @@ function drawBase() {
   }
 }
 
-function drawSeat(diocese) {
+function drawPin(coordinates) {
   seatLayer.replaceChildren();
-  if (!diocese || diocese.lat == null || diocese.lng == null) return;
-  const [x, y] = project(diocese.lng, diocese.lat);
+  if (!coordinates || coordinates.lat == null || coordinates.lng == null) return;
+  const [x, y] = project(coordinates.lng, coordinates.lat);
   const dot = document.createElementNS(SVG_NS, "circle");
   dot.setAttribute("cx", x.toFixed(1));
   dot.setAttribute("cy", y.toFixed(1));
@@ -151,17 +151,47 @@ function churchCard(row, year) {
   </article>`;
 }
 
+function routingCard(resolved, year) {
+  const parish = resolved.parish_routing || {};
+  const place = resolved.modernName || resolved.historicalName || "";
+  const civil = Boolean(resolved.records?.civilRegistration);
+  const href = `../web/?year=${encodeURIComponent(year)}&place=${encodeURIComponent(place)}`;
+  const beweb = parish.bewebUrl
+    ? `<p><a href="${esc(parish.bewebUrl)}" rel="noopener noreferrer">Search this place on BeWeB →</a></p>`
+    : "";
+  return `<article class="is-seat">
+    <h2>${esc(resolved.historicalName || place)}</h2>
+    <p class="status">Parish and diocesan routing</p>
+    <p><strong>Historical name.</strong> ${esc(resolved.historicalName || "")}</p>
+    <p><strong>Modern name.</strong> ${esc(resolved.modernName || "")}</p>
+    <p><strong>Diocese.</strong> ${esc(parish.diocese || "")}</p>
+    <p><strong>Diocesan archive.</strong> ${esc(parish.archive || "")}</p>
+    <p><strong>Cathedral.</strong> ${esc(parish.cathedral || "")}</p>
+    ${beweb}
+    <p><strong>Civil registration in ${esc(year)}.</strong> ${civil ? "Yes. The civil register is in force." : "No. Parish registers hold the vital records."}</p>
+    <p><a href="${esc(href)}">View in Historical Atlas (${esc(year)})</a></p>
+  </article>`;
+}
+
 function render() {
   const year = yearValue();
   const query = comuneInput.value.trim();
   const found = matches(query, year);
   const placeLabel = query || "Italy";
   document.title = `${placeLabel} parishes in ${year} | Atto`;
+  let resolved = null;
+  if (query && state.atlas) {
+    const hit = state.atlas.resolvePlace(query, year);
+    if (hit.matched && (hit.kind === "comune" || hit.kind === "landmark")) resolved = hit;
+  }
   status.textContent = query
-    ? `${found.dioceses.length} diocese rows and ${found.churches.length} church rows for ${year}.`
+    ? `${resolved ? "1 town route. " : ""}${found.dioceses.length} diocese rows and ${found.churches.length} church rows for ${year}.`
     : "Type a comune or a diocese.";
-  drawSeat(found.dioceses[0]);
+  if (resolved?.coordinates) drawPin(resolved.coordinates);
+  else if (found.dioceses[0]) drawPin({ lat: found.dioceses[0].lat, lng: found.dioceses[0].lng });
+  else drawPin(null);
   const blocks = [
+    ...(resolved ? [routingCard(resolved, year)] : []),
     ...found.dioceses.map((row) => churchCard({
       name: row.cathedral || row.name,
       comune: row.seatComune,
@@ -192,12 +222,19 @@ async function main() {
     localStorage.setItem(THEME_KEY, next);
     applyTheme(next);
   });
-  const [db, geo] = await Promise.all([
+  const [db, geo, index, polities, archives, routes, contacts, dioceses] = await Promise.all([
     loadJson("parrocchie-db.json"),
     loadJson("provinces.geojson"),
+    loadJson("comuni-index.json"),
+    loadJson("polities.json"),
+    loadJson("archives.json"),
+    loadJson("routes.json"),
+    loadJson("contacts.json"),
+    loadJson("dioceses.json"),
   ]);
   state.db = db;
   state.geo = geo;
+  state.atlas = createAtlas({ index, polities, archives, routes, contacts, dioceses });
   drawBase();
   const params = new URLSearchParams(location.search);
   comuneInput.value = params.get("comune") || params.get("diocese") || "";

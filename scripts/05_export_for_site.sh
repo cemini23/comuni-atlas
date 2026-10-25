@@ -9,6 +9,7 @@ BUNDLE='window.ATLAS_BASE_PATH = window.ATLAS_BASE_PATH || "./";'
 package_app() {
   local src="$1"
   local dest="$2"
+  shift 2
   rm -rf "$dest"
   mkdir -p "$dest/js" "$dest/css" "$dest/data/built"
   cp "$src/index.html" "$dest/index.html"
@@ -16,7 +17,10 @@ package_app() {
   cp "$src/js/"*.js "$src/js/"*.mjs "$dest/js/"
   cp "$ROOT/lib/engine.mjs" "$dest/js/engine.mjs"
   cp "$ROOT/lib/suite.mjs" "$dest/js/suite.mjs"
-  cp "$ROOT/data/built/"*.json "$ROOT/data/built/"*.geojson "$dest/data/built/"
+  local name
+  for name in "$@"; do
+    cp "$ROOT/data/built/$name" "$dest/data/built/$name"
+  done
   python3 - "$dest" "$MARKER" "$BUNDLE" <<'PY'
 import pathlib, sys
 dest, marker, bundle = sys.argv[1:]
@@ -46,11 +50,19 @@ for path in list((root / "js").glob("*.js")) + list((root / "js").glob("*.mjs"))
 PY
 }
 
-package_app "$ROOT/web" "$ROOT/dist/atlas"
-package_app "$ROOT/web-parrocchie" "$ROOT/dist/parrocchie"
-package_app "$ROOT/web-cognomi" "$ROOT/dist/cognomi"
-package_app "$ROOT/web-ansc" "$ROOT/dist/ansc"
-package_app "$ROOT/web-caduti" "$ROOT/dist/caduti"
+package_app "$ROOT/web" "$ROOT/dist/atlas" \
+  comuni-index.json polities.json archives.json routes.json contacts.json dioceses.json \
+  provinces.geojson parrocchie-db.json cognomi-db.json ansc-pec-db.json caduti-leva-db.json rail-catasti.json
+package_app "$ROOT/web-parrocchie" "$ROOT/dist/parrocchie" \
+  comuni-index.json polities.json archives.json routes.json contacts.json dioceses.json \
+  parrocchie-db.json provinces.geojson
+package_app "$ROOT/web-cognomi" "$ROOT/dist/cognomi" \
+  cognomi-db.json comuni-index.json provinces.geojson
+package_app "$ROOT/web-ansc" "$ROOT/dist/ansc" \
+  ansc-pec-db.json provinces.geojson
+package_app "$ROOT/web-caduti" "$ROOT/dist/caduti" \
+  comuni-index.json polities.json archives.json routes.json contacts.json dioceses.json \
+  provinces.geojson caduti-leva-db.json cognomi-db.json
 
 cat > "$ROOT/dist/index.html" <<'HTML'
 <!DOCTYPE html>
