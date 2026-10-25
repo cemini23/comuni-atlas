@@ -115,6 +115,31 @@ button, input {
 
 .pill:hover, .presets button:hover { border-color: var(--gold); }
 
+.chronicles-bar { flex: 1 1 100%; }
+
+.chronicles-label {
+  margin: 0.1rem 0 0.2rem;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+#ports-toggle {
+  margin-top: 0.7rem;
+  border: 1px solid var(--rule);
+  background: transparent;
+  border-radius: 999px;
+  padding: 0.32rem 0.72rem;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  color: inherit;
+  cursor: pointer;
+}
+
+#ports-toggle[aria-pressed="true"] { border-color: var(--gold); }
+
 .atto-cta {
   margin-top: 1rem;
   padding: 0.75rem 0.85rem;
@@ -278,6 +303,8 @@ label, .mesh-note, .legend, .results {
 .arc.is-active { stroke-width: 3.4; }
 
 .pin-dot { fill: var(--wax); stroke: var(--parchment); stroke-width: 1.5; }
+.port-dot { fill: var(--gold); stroke: var(--ink); stroke-width: 1.4; cursor: pointer; }
+.port-label { font-size: 10px; }
 .pin-label {
   font-family: var(--sans);
   font-size: 11px;
@@ -354,6 +381,22 @@ label, .mesh-note, .legend, .results {
 .card .warn {
   border-left: 3px solid var(--gold);
   padding-left: 0.6rem;
+}
+
+.office-box, .parish-box {
+  margin-top: 0.85rem;
+  padding: 0.7rem 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+}
+
+.office-box h3, .parish-box h3 { margin-top: 0; }
+
+.parish-badge {
+  margin: 0 0 0.45rem;
+  padding: 0.45rem 0.6rem;
+  border-left: 3px solid var(--wax);
+  font-weight: 650;
 }
 .timeline { padding-left: 1.1rem; }
 .timeline li { margin: 0.35rem 0; }

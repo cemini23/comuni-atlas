@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import csv
 import datetime as dt
+import importlib.util
 import json
 import shutil
 from pathlib import Path
@@ -705,21 +706,67 @@ def build_routes():
         "routes": [
             {
                 "id": "garibaldi-mille",
-                "title": "I Mille, 1860",
+                "title": "Spedizione dei Mille, 1860",
                 "titleEn": "Garibaldi's Thousand, 1860",
-                "summary": "From Quarto dei Mille to Marsala, Palermo, and Napoli.",
+                "summary": "From Quarto dei Mille to Teano. The stops follow the dates. Naples is 7 September. Teano is 26 October.",
                 "match": ["Quarto", "Marsala", "Palermo", "Napoli"],
                 "stops": [
                     {"year": 1860, "place": "Quarto dei Mille", "label": "Departure, 5 May 1860"},
+                    {"year": 1860, "place": "Talamone", "label": "Stop for arms, 7 May 1860"},
                     {"year": 1860, "place": "Marsala", "label": "Landing, 11 May 1860"},
+                    {"year": 1860, "place": "Calatafimi", "label": "Battle of Calatafimi, 15 May 1860"},
                     {"year": 1860, "place": "Palermo", "label": "Palermo, 27 May 1860"},
+                    {"year": 1860, "place": "Milazzo", "label": "Battle of Milazzo, 20 July 1860"},
+                    {"year": 1860, "place": "Reggio di Calabria", "label": "Crossing to the mainland, 21 August 1860"},
                     {"year": 1860, "place": "Napoli", "label": "Entry into Naples, 7 September 1860"},
+                    {"year": 1860, "place": "Teano", "label": "Meeting at Teano, 26 October 1860"},
+                ],
+            },
+            {
+                "id": "dante-exile",
+                "title": "L'esilio di Dante",
+                "titleEn": "Dante Alighieri's exile",
+                "summary": "From the sentence in Firenze to the last years in Ravenna. These years are before 1796. The map shows 1796 jurisdiction.",
+                "match": ["Firenze", "San Godenzo", "Forlì", "Verona", "Lucca", "Ravenna"],
+                "stops": [
+                    {"year": 1302, "place": "Firenze", "label": "Sentence of exile, 27 January 1302"},
+                    {"year": 1302, "place": "San Godenzo", "label": "White Guelph meeting, 8 June 1302"},
+                    {"year": 1303, "place": "Forlì", "label": "Guest of Scarpetta Ordelaffi, 1303"},
+                    {"year": 1303, "place": "Verona", "label": "First stay with the Scaligeri, 1303"},
+                    {"year": 1308, "place": "Lucca", "label": "Stay in Lucca, about 1308"},
+                    {"year": 1318, "place": "Ravenna", "label": "Last years in Ravenna. Dante dies here in 1321"},
+                ],
+            },
+            {
+                "id": "sicily-to-ny",
+                "title": "Dalla Sicilia a New York",
+                "titleEn": "Sicily to New York, 1880–1904",
+                "summary": "A sample southern journey from Castrogiovanni through Palermo and Napoli to Ellis Island.",
+                "match": ["Castrogiovanni", "Palermo", "Napoli", "New York"],
+                "stops": [
+                    {"year": 1880, "place": "Castrogiovanni", "label": "Birth in Castrogiovanni, 1880"},
+                    {"year": 1904, "place": "Palermo", "label": "Rail to the port of Palermo, 1904"},
+                    {"year": 1904, "place": "Napoli", "label": "Steamship from Napoli, 1904"},
+                    {"year": 1904, "place": "New York", "label": "Arrival at Ellis Island, 1904"},
+                ],
+            },
+            {
+                "id": "veneto-to-buenos-aires",
+                "title": "Dal Veneto a Buenos Aires",
+                "titleEn": "Veneto to Buenos Aires, 1858–1888",
+                "summary": "A sample northern journey from Austrian Udine to the Hotel de Inmigrantes. The 1866 stop is 1 July, before the October plebiscite.",
+                "match": ["Udine", "Udine", "Genova", "Buenos Aires"],
+                "stops": [
+                    {"year": 1858, "place": "Udine", "label": "Birth in Austrian Lombardo-Veneto, 1858"},
+                    {"year": 1866, "place": "Udine", "label": "1 July 1866 is still Lombardo-Veneto. The plebiscite is 21 October 1866"},
+                    {"year": 1888, "place": "Genova", "label": "Rail to the port of Genova, 1888"},
+                    {"year": 1888, "place": "Buenos Aires", "label": "Hotel de Inmigrantes, 1888"},
                 ],
             },
             {
                 "id": "lercara-new-york",
                 "title": "Rotta di emigrazione, Lercara Friddi",
-                "titleEn": "A Great Arrival route from Lercara Friddi",
+                "titleEn": "Lercara Friddi to New York",
                 "summary": "A sample chain from a Sicilian town through Palermo to New York.",
                 "match": ["Lercara Friddi", "Palermo", "New York"],
                 "stops": [
@@ -728,8 +775,132 @@ def build_routes():
                     {"year": 1902, "place": "New York", "label": "Ellis Island"},
                 ],
             },
-        ]
+        ],
+        "ports": [
+            {
+                "id": "genova",
+                "name": "Porto di Genova",
+                "years": "1861–1924",
+                "peak": "1880–1914",
+                "catchment": "Piedmont, Lombardy, Veneto, Emilia, and Tuscany.",
+                "routes": "Early routes to Buenos Aires, Montevideo, and New York.",
+                "archives": "CISEI — Centro Internazionale Studi Emigrazione Italiana, Genova. Arrival lists also sit at Ellis Island and Castle Garden.",
+                "lat": 44.4058,
+                "lng": 8.9302,
+            },
+            {
+                "id": "napoli",
+                "name": "Porto di Napoli",
+                "years": "1861–1924",
+                "peak": "1900–1914",
+                "catchment": "Campania, Calabria, Basilicata, Abruzzo, Molise, and Puglia.",
+                "routes": "The main departure port for New York and Ellis Island.",
+                "archives": "Passenger manifests at Ellis Island and Castle Garden. The port lists also sit with the Naples harbor records and CISEI.",
+                "lat": 40.836,
+                "lng": 14.263,
+            },
+            {
+                "id": "palermo",
+                "name": "Porto di Palermo",
+                "years": "1861–1924",
+                "peak": "1890–1914",
+                "catchment": "Western and central Sicily.",
+                "routes": "Routes to New York and New Orleans.",
+                "archives": "Ellis Island and Castle Garden arrival lists. CISEI holds the wider emigration studies.",
+                "lat": 38.128,
+                "lng": 13.366,
+            },
+            {
+                "id": "messina",
+                "name": "Porto di Messina",
+                "years": "1861–1924",
+                "peak": "1890–1914",
+                "catchment": "Eastern Sicily and Reggio Calabria.",
+                "routes": "Steamship calls toward Naples, New York, and New Orleans.",
+                "archives": "Ellis Island arrival lists and CISEI.",
+                "lat": 38.193,
+                "lng": 15.56,
+            },
+            {
+                "id": "trieste",
+                "name": "Porto di Trieste",
+                "years": "1861–1924",
+                "peak": "1880–1914",
+                "catchment": "Friuli, Trentino, the Julian March, and Dalmatia.",
+                "routes": "Austro-Hungarian Lloyd sailings from the Habsburg port.",
+                "archives": "Lloyd and port lists, plus Ellis Island for transatlantic arrivals. CISEI covers the Italian side of the study.",
+                "lat": 45.65,
+                "lng": 13.759,
+            },
+            {
+                "id": "livorno",
+                "name": "Porto di Livorno",
+                "years": "1861–1924",
+                "peak": "1880–1910",
+                "catchment": "Tuscany and central Italy.",
+                "routes": "A smaller embarkation port beside Genova for American and South American sailings.",
+                "archives": "Ellis Island arrival lists and CISEI.",
+                "lat": 43.553,
+                "lng": 10.307,
+            },
+            {
+                "id": "modane",
+                "name": "Modane alpine rail crossing",
+                "years": "1861–1924",
+                "peak": "1890–1914",
+                "catchment": "Piedmont and the western Alps.",
+                "routes": "Overland seasonal migration and the rail path toward Le Havre and Cherbourg.",
+                "archives": "French port lists at Le Havre and Cherbourg, then Ellis Island for the ocean crossing. CISEI for the Italian departure study.",
+                "lat": 45.201,
+                "lng": 6.658,
+            },
+            {
+                "id": "chiasso",
+                "name": "Chiasso alpine rail crossing",
+                "years": "1861–1924",
+                "peak": "1890–1914",
+                "catchment": "Lombardy, Veneto, and the Swiss border.",
+                "routes": "Overland migration through Switzerland toward the French Atlantic ports.",
+                "archives": "French port lists at Le Havre and Cherbourg, then Ellis Island. CISEI for the Italian departure study.",
+                "lat": 45.837,
+                "lng": 9.031,
+            },
+        ],
     }
+
+
+def script_module(name):
+    path = ROOT / "scripts" / name
+    spec = importlib.util.spec_from_file_location(name.replace(".py", ""), path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_contacts():
+    raw = RAW / "ipa_contacts.json"
+    if raw.exists():
+        return json.loads(raw.read_text(encoding="utf-8"))
+    built = BUILT / "contacts.json"
+    if built.exists():
+        return json.loads(built.read_text(encoding="utf-8"))
+    return {"source": "pattern-only", "retrieved": "", "count": 0, "byCatasto": {}}
+
+
+def load_dioceses():
+    module = script_module("07_fetch_dioceses.py")
+    bundle = module.province_bundle()
+    extra = {}
+    raw = RAW / "dioceses_wikidata.json"
+    if raw.exists():
+        extra = json.loads(raw.read_text(encoding="utf-8")).get("byIstat") or {}
+    elif (BUILT / "dioceses.json").exists():
+        extra = json.loads((BUILT / "dioceses.json").read_text(encoding="utf-8")).get("byIstat") or {}
+    for row in extra.values():
+        if isinstance(row, dict):
+            row.pop("bewebUrl", None)
+    bundle["byIstat"] = extra
+    return bundle
 
 
 def span_at(spans, iso):
@@ -793,6 +964,8 @@ def main() -> int:
             "matteocontrini/comuni-json",
             "ANPR archivio storico dei comuni",
             "openpolis/geojson-italy",
+            "IndicePA amministrazioni and PEC, when data/raw/ipa_contacts.json is present",
+            "diocese of each provincial capital, plus a Wikidata overlay when cached",
             "curated regime model in scripts/04_build_bundle.py",
         ],
         "yearMin": 1796,
@@ -813,8 +986,10 @@ def main() -> int:
     (BUILT / "polities.json").write_text(json.dumps(polities, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (BUILT / "archives.json").write_text(json.dumps(build_archives(scraped), ensure_ascii=False, indent=2), encoding="utf-8")
     (BUILT / "routes.json").write_text(json.dumps(build_routes(), ensure_ascii=False, indent=2), encoding="utf-8")
+    (BUILT / "contacts.json").write_text(json.dumps(load_contacts(), ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    (BUILT / "dioceses.json").write_text(json.dumps(load_dioceses(), ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     shutil.copyfile(RAW / "provinces.geojson", BUILT / "provinces.geojson")
-    for name in ("comuni-index.json", "polities.json", "archives.json", "routes.json", "provinces.geojson"):
+    for name in ("comuni-index.json", "polities.json", "archives.json", "routes.json", "contacts.json", "dioceses.json", "provinces.geojson"):
         path = BUILT / name
         print(f"{name} {path.stat().st_size} bytes")
     smoke(places, rules)

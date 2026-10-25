@@ -1,4 +1,4 @@
-import { createAtlas, parseYearList } from "./engine.mjs";
+import { createAtlas, fold, parseYearList } from "./engine.mjs";
 import { installAtlasApi } from "./atlas-api.js";
 import { onPopState, readQuery, writeQuery } from "./router.js";
 
@@ -18,6 +18,7 @@ const svg = document.querySelector("#map");
 const provinceLayer = document.querySelector("#provinces");
 const arcLayer = document.querySelector("#arcs");
 const pinLayer = document.querySelector("#pins");
+const portLayer = document.querySelector("#ports");
 const yearStamp = document.querySelector("#year-stamp");
 const hoverTip = document.querySelector("#hover-tip");
 const mapWrap = document.querySelector(".map-wrap");
@@ -36,6 +37,8 @@ const state = {
   year: 1861,
   yearRaw: "1861",
   placeRaw: "",
+  routeId: "",
+  portsOn: true,
   stops: [],
   index: 0,
   frame: "italy",
@@ -207,19 +210,21 @@ function buildProvinces() {
   }
 }
 
-function paintYear(year) {
+function paintYear(year, label = year) {
   const atlas = state.atlas;
+  const model = atlas.clampYear(year);
   for (const path of provinceLayer.children) {
-    const info = atlas.provinceAt(path.dataset.code, year);
+    const info = atlas.provinceAt(path.dataset.code, model);
     path.setAttribute("fill", info?.color || "#d9d0c0");
     path.dataset.polity = info?.polity?.nameEn || "";
   }
-  yearStamp.textContent = String(year);
-  readout.textContent = String(year);
-  slider.value = String(year);
-  const report = atlas.banner(year);
+  yearStamp.textContent = String(label);
+  readout.textContent = String(model);
+  slider.value = String(model);
+  const report = atlas.banner(model);
   const names = report.polities.slice(0, 4).map((item) => item.nameEn).join(", ");
-  banner.textContent = `${report.epoch?.name || "Atlas"} · 1 July ${year}. ${names}.`;
+  const stamp = String(label) === String(model) ? `1 July ${model}` : `Chronicle ${label}. Map 1 July ${model}`;
+  banner.textContent = `${report.epoch?.name || "Atlas"} · ${stamp}. ${names}.`;
   legend.replaceChildren();
   for (const item of report.polities) {
     const row = document.createElement("div");
@@ -291,6 +296,42 @@ function drawOverlay() {
     label.textContent = point.stop.label || point.stop.historicalName || point.stop.query?.place || "";
     pinLayer.append(dot, label);
   }
+  drawPorts();
+}
+
+function drawPorts() {
+  if (!portLayer) return;
+  portLayer.replaceChildren();
+  if (!state.portsOn || !state.atlas) return;
+  (state.atlas.ports || []).forEach((port, index) => {
+    const [x, y] = project(port.lng, port.lat);
+    const dot = document.createElementNS(SVG_NS, "circle");
+    dot.setAttribute("class", "port-dot");
+    dot.setAttribute("cx", x.toFixed(1));
+    dot.setAttribute("cy", y.toFixed(1));
+    dot.setAttribute("r", "7");
+    dot.dataset.port = String(index);
+    const label = document.createElementNS(SVG_NS, "text");
+    label.setAttribute("class", "pin-label port-label");
+    label.setAttribute("x", (x + 9).toFixed(1));
+    label.setAttribute("y", (y + 4).toFixed(1));
+    label.textContent = port.name;
+    portLayer.append(dot, label);
+  });
+}
+
+function renderPort(port) {
+  card.hidden = false;
+  document.title = `${port.name} — Emigration port | Atto Historical Atlas`;
+  card.innerHTML = [
+    `<h2>${esc(port.name)}</h2>`,
+    `<p class="warn">Historic emigration hub, ${esc(port.years)}.</p>`,
+    line("Peak years", port.peak),
+    line("Catchment", port.catchment),
+    line("Routes", port.routes),
+    line("Passenger lists", port.archives),
+    shareButton(),
+  ].join("");
 }
 
 function line(label, value) {
@@ -298,8 +339,9 @@ function line(label, value) {
   return `<p><strong>${esc(label)}.</strong> ${esc(value)}</p>`;
 }
 
-function shareUrl(year, place) {
+function shareUrl(year, place, route = "") {
   const params = new URLSearchParams();
+  if (route) params.set("route", route);
   if (year !== undefined && year !== null && String(year) !== "") params.set("year", String(year));
   if (place) params.set("place", place);
   const qs = params.toString();
@@ -343,13 +385,54 @@ function inspectorCta(result) {
 }
 
 async function copyShare(button) {
-  const url = shareUrl(state.yearRaw || state.year, state.placeRaw);
+  const stop = state.stops[state.index];
+  const url = state.routeId
+    ? shareUrl(stop?.query?.year || state.year, stop?.query?.place || state.placeRaw, state.routeId)
+    : shareUrl(state.yearRaw || state.year, state.placeRaw);
   try {
     await navigator.clipboard.writeText(url);
     button.textContent = "Copied";
   } catch {
     button.textContent = url;
   }
+}
+
+function officeSection(result) {
+  const office = result.stato_civile_office;
+  if (!office) return "";
+  const modern = result.modernName || office.comune || "this town";
+  const href = `https://youratto.com?utm_source=atlas&utm_medium=pec&utm_campaign=${encodeURIComponent(comuneSlug(modern))}`;
+  const pecLabel = office.pecSource === "indicepa" ? "Official PEC" : "PEC pattern, confirm before you send";
+  const website = office.website
+    ? `<p><strong>Website.</strong> <a href="${esc(office.website)}" rel="noopener noreferrer">${esc(office.website)}</a></p>`
+    : "";
+  return `<section class="office-box">
+    <h3>Ufficio dello Stato Civile (Request Certificates)</h3>
+    <p><strong>${esc(pecLabel)}.</strong> ${esc(office.pec)}</p>
+    <p><button type="button" id="copy-pec" data-pec="${esc(office.pec)}">Copy PEC</button></p>
+    ${line("Municipio", office.address)}
+    ${website}
+    ${office.note ? `<p>${esc(office.note)}</p>` : ""}
+    <p><strong>ANSC.</strong> ${esc(office.anscStatus)}. ${esc(office.anscNote)}</p>
+    <p class="atto-cta">Sending a request to ${esc(modern)}? Generate a compliant bilingual Stato Civile request letter &amp; track PEC/postal responses in <a href="${esc(href)}"><strong>Atto for Mac</strong> →</a></p>
+  </section>`;
+}
+
+function parishSection(result) {
+  const parish = result.parish_routing;
+  if (!parish?.required) return "";
+  const church = parish.church ? line("Historic church", parish.church) : "";
+  return `<section class="parish-box">
+    <p class="parish-badge">⚠️ Pre-Civil Registration Era — Parish &amp; Diocesan Records Required</p>
+    ${line("Diocese", parish.diocese)}
+    ${line("Diocesan archive", parish.archive)}
+    ${line("Cathedral", parish.cathedral)}
+    ${church}
+    <p><strong>Request.</strong> ${esc((parish.recordTypes || []).join(", "))}</p>
+    <p>${esc(parish.note || "")}</p>
+    ${parish.provinceNote ? `<p>${esc(parish.provinceNote)}</p>` : ""}
+    <p><a href="${esc(parish.bewebUrl)}" rel="noopener noreferrer">Search this diocese on BeWeB →</a></p>
+  </section>`;
 }
 
 function renderCard(result) {
@@ -377,6 +460,7 @@ function renderCard(result) {
       line("Year", `1 July ${year}`),
       `<p class="warn">${esc(result.note || "This comune did not exist on this date.")}</p>`,
       result.successor ? line("Later comune", `${result.successor.name} · ISTAT ${result.successor.istat || "—"}`) : "",
+      officeSection(result),
       shareButton(),
       inspectorCta(result),
     ].join("");
@@ -403,8 +487,8 @@ function renderCard(result) {
   card.innerHTML = [
     `<h2>${esc(place)}</h2>`,
     line("Modern name", result.modernName),
-    line("Date", `1 July ${year}`),
     line("Match", result.matchType || ""),
+    result.rangeNote ? line("Chronicle year", year) : line("Date", `1 July ${year}`),
     result.note ? `<p>${esc(result.note)}</p>` : "",
     result.ambiguous ? `<p class="warn">Another town scores almost the same. Choose one from the list.</p>` : "",
     alternates ? `<ul>${alternates}</ul>` : "",
@@ -415,11 +499,14 @@ function renderCard(result) {
     line("Historical province", result.historicalProvince ? `${result.historicalProvince.name} (${result.historicalProvince.code}) · ${result.historicalProvince.region}` : ""),
     line("Modern province", result.modernProvince ? `${result.modernProvince.name} (${result.modernProvince.code}) · ${result.modernProvince.region}` : ""),
     result.provinceShift?.warning ? `<p class="warn">${esc(result.provinceShift.warning)}</p>` : "",
+    result.label ? line("Stop", result.label) : "",
+    result.rangeNote ? `<p class="warn">${esc(result.rangeNote)}</p>` : "",
+    parishSection(result),
     line("Register", result.records ? `${result.records.nameEn}${result.records.civilRegistration ? " · civil register" : " · not a civil register"}` : ""),
     result.records?.note ? `<p>${esc(result.records.note)}</p>` : "",
     archiveHtml,
     also ? `<h3>Also see</h3><ul>${also}</ul>` : "",
-    result.comuneOffice ? line("Comune office", result.comuneOffice.name) : "",
+    officeSection(result),
     notes ? `<h3>Research notes</h3><ul>${notes}</ul>` : "",
     line("Coordinates", coords),
     timeline ? `<h3>Changes</h3><ol class="timeline">${timeline}</ol>` : "",
@@ -484,11 +571,45 @@ function syncMap(fly) {
     buildProvinces();
     applyView(fullView());
   }
-  paintYear(state.year);
+  const currentStop = state.stops[state.index] || null;
+  paintYear(state.year, currentStop?.query?.year ?? state.year);
   drawOverlay();
-  markProvinces(state.stops[state.index] || null);
+  markProvinces(currentStop);
   renderRoute();
   if (fly) flyTo(boxAround(projectedStops()));
+}
+
+function writeView() {
+  const stop = state.stops[state.index];
+  if (state.routeId && stop) {
+    writeQuery({ route: state.routeId, year: stop.query?.year || state.year, place: stop.query?.place || "" });
+    return;
+  }
+  writeQuery({ year: state.yearRaw || state.year, place: state.placeRaw, route: "" });
+}
+
+function materialize(specs) {
+  return specs.map((stop) => {
+    const result = state.atlas.resolvePlace(stop.place, stop.year);
+    if (stop.label && stop.label !== stop.place) result.label = stop.label;
+    if (stop.routeId) result.routeId = stop.routeId;
+    if (stop.routeTitle) result.routeTitle = stop.routeTitle;
+    return result;
+  });
+}
+
+function focusStop(year, place) {
+  if (!place || String(place).includes(",")) return 0;
+  const wantedPlace = fold(place);
+  const wantedYear = year ? String(year).split(/[,;|\s]+/)[0] : "";
+  const index = state.stops.findIndex((stop) => {
+    const names = [stop.query?.place, stop.historicalName, stop.modernName, stop.label];
+    const samePlace = names.some((name) => name && fold(name) === wantedPlace);
+    if (!samePlace) return false;
+    if (!wantedYear) return true;
+    return String(stop.query?.year) === wantedYear;
+  });
+  return index >= 0 ? index : 0;
 }
 
 function show(placeRaw, yearRaw, options = {}) {
@@ -497,30 +618,46 @@ function show(placeRaw, yearRaw, options = {}) {
   const specs = atlas.stopsFromQuery(yearRaw || state.year, placeRaw);
   if (!specs.length) {
     state.placeRaw = "";
+    state.routeId = "";
     state.stops = [];
     state.index = 0;
     searchInput.value = "";
     renderCard(null);
     syncMap(false);
-    if (options.writeUrl) writeQuery({ year: state.year, place: "" });
+    if (options.writeUrl) writeQuery({ year: state.year, place: "", route: "" });
     return null;
   }
   state.placeRaw = placeRaw;
+  state.routeId = specs.find((stop) => stop.routeId)?.routeId || "";
   state.yearRaw = specs.map((stop) => stop.year).join(",");
-  state.stops = specs.map((stop) => {
-    const result = atlas.resolvePlace(stop.place, stop.year);
-    if (stop.label && stop.label !== stop.place) result.label = stop.label;
-    if (stop.routeId) result.routeId = stop.routeId;
-    if (stop.routeTitle) result.routeTitle = stop.routeTitle;
-    return result;
-  });
+  state.stops = materialize(specs);
   state.index = 0;
-  state.year = state.stops[0]?.query?.year || atlas.clampYear(yearRaw);
+  const first = state.stops[0];
+  state.year = first?.query?.modelYear || first?.query?.year || atlas.clampYear(yearRaw);
   searchInput.value = placeRaw;
   searchResults.replaceChildren();
-  renderCard(state.stops[0]);
+  renderCard(first);
   syncMap(Boolean(options.fly));
-  if (options.writeUrl !== false) writeQuery({ year: state.yearRaw, place: state.placeRaw });
+  if (options.writeUrl !== false) writeView();
+  return payload();
+}
+
+function showRoute(routeId, options = {}) {
+  const specs = state.atlas.stopsFromRoute(routeId);
+  if (!specs.length) return show(options.place || "", options.year || String(state.year), options);
+  stopPlayback();
+  state.routeId = specs[0].routeId;
+  state.placeRaw = specs.map((stop) => stop.place).join(",");
+  state.yearRaw = specs.map((stop) => stop.year).join(",");
+  state.stops = materialize(specs);
+  state.index = focusStop(options.year, options.place);
+  const current = state.stops[state.index];
+  state.year = current?.query?.modelYear || current?.query?.year || state.year;
+  searchInput.value = current?.historicalName || current?.query?.place || "";
+  searchResults.replaceChildren();
+  renderCard(current);
+  syncMap(options.fly !== false);
+  if (options.writeUrl !== false) writeView();
   return payload();
 }
 
@@ -528,12 +665,13 @@ function selectStop(index) {
   if (!state.stops.length) return;
   state.index = Math.max(0, Math.min(state.stops.length - 1, index));
   const stop = state.stops[state.index];
-  state.year = stop?.query?.year || state.year;
-  paintYear(state.year);
+  state.year = stop?.query?.modelYear || stop?.query?.year || state.year;
+  paintYear(state.year, stop?.query?.year || state.year);
   drawOverlay();
   markProvinces(stop);
   renderCard(stop);
   renderRoute();
+  writeView();
 }
 
 function setYear(year, options = {}) {
@@ -593,7 +731,11 @@ function installController() {
       return controller.locate(opts);
     },
     plotTrajectory(opts = {}) {
+      if (opts.route || opts.person) return controller.playRoute(opts.route || opts.person);
       return show(placeList(opts), yearList(opts) || String(state.year), { fly: true, writeUrl: true });
+    },
+    playRoute(slug) {
+      return showRoute(slug, { fly: true, writeUrl: true });
     },
     setYear(year) {
       setYear(year, { writeUrl: true });
@@ -719,9 +861,36 @@ function bindEvents() {
       show(placeButton.dataset.place, String(state.year), { fly: true, writeUrl: true });
       return;
     }
+    const pecButton = event.target.closest("#copy-pec");
+    if (pecButton) {
+      try {
+        await navigator.clipboard.writeText(pecButton.dataset.pec || "");
+        pecButton.textContent = "Copied";
+      } catch {
+        pecButton.textContent = pecButton.dataset.pec || "Copy failed";
+      }
+      return;
+    }
     if (event.target.closest("#copy-view")) {
       await copyShare(event.target.closest("#copy-view"));
     }
+  });
+  portLayer?.addEventListener("click", (event) => {
+    const dot = event.target.closest?.("[data-port]");
+    if (!dot) return;
+    const port = state.atlas.ports[Number(dot.dataset.port)];
+    if (port) renderPort(port);
+  });
+  document.querySelector("#ports-toggle")?.addEventListener("click", (event) => {
+    state.portsOn = !state.portsOn;
+    event.currentTarget.setAttribute("aria-pressed", state.portsOn ? "true" : "false");
+    event.currentTarget.textContent = state.portsOn ? "Hide emigration ports" : "Show emigration ports";
+    drawPorts();
+  });
+  document.querySelector("#chronicles")?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-route]");
+    if (!button) return;
+    showRoute(button.dataset.route, { fly: true, writeUrl: true });
   });
   document.querySelector("#route-share").addEventListener("click", async (event) => {
     await copyShare(event.currentTarget);
@@ -765,6 +934,7 @@ function bindEvents() {
       searchInput.blur();
       if (!card.hidden) {
         state.placeRaw = "";
+        state.routeId = "";
         state.stops = [];
         state.index = 0;
         renderCard(null);
@@ -789,18 +959,39 @@ function bindEvents() {
       setYear(state.year - step);
     }
   });
-  onPopState((query) => {
-    const years = parseYearList(query.year);
-    state.year = years[0] || 1861;
-    if (query.place) show(query.place, query.year || String(state.year), { fly: true, writeUrl: false });
-    else {
-      state.placeRaw = "";
-      state.stops = [];
-      renderCard(null);
-      paintYear(state.year);
-      syncMap(false);
-    }
-  });
+  onPopState((query) => openQuery(query, false));
+}
+
+function renderChronicles() {
+  const nav = document.querySelector("#chronicles");
+  if (!nav) return;
+  nav.replaceChildren();
+  for (const route of state.atlas.routes) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.route = route.id;
+    button.textContent = route.titleEn || route.title;
+    nav.append(button);
+  }
+}
+
+function openQuery(query, fly) {
+  const years = parseYearList(query.year);
+  state.year = years[0] || state.year || 1861;
+  if (query.route) {
+    showRoute(query.route, { fly, writeUrl: false, year: query.year, place: query.place });
+    return;
+  }
+  if (query.place) {
+    show(query.place, query.year || String(state.year), { fly, writeUrl: false });
+    return;
+  }
+  state.placeRaw = "";
+  state.routeId = "";
+  state.stops = [];
+  renderCard(null);
+  paintYear(state.year);
+  syncMap(false);
 }
 
 function builtUrl(name) {
@@ -822,19 +1013,22 @@ async function loadJson(name) {
 async function main() {
   bootTheme();
   banner.textContent = "Loading the atlas…";
-  const [index, polities, archives, routes, geo] = await Promise.all([
+  const [index, polities, archives, routes, contacts, dioceses, geo] = await Promise.all([
     loadJson("comuni-index.json"),
     loadJson("polities.json"),
     loadJson("archives.json"),
     loadJson("routes.json"),
+    loadJson("contacts.json"),
+    loadJson("dioceses.json"),
     loadJson("provinces.geojson"),
   ]);
-  state.atlas = createAtlas({ index, polities, archives, routes });
+  state.atlas = createAtlas({ index, polities, archives, routes, contacts, dioceses });
   state.geo = geo;
   slider.min = String(state.atlas.yearMin);
   slider.max = String(state.atlas.yearMax);
   bindEvents();
   installController();
+  renderChronicles();
   const query = readQuery();
   const years = parseYearList(query.year);
   state.year = years[0] || 1861;
@@ -843,7 +1037,8 @@ async function main() {
   buildProvinces();
   applyView(fullView());
   paintYear(state.year);
-  if (query.place) show(query.place, query.year || String(state.year), { fly: true, writeUrl: false });
+  drawPorts();
+  if (query.route || query.place) openQuery(query, true);
 }
 
 main().catch((error) => {

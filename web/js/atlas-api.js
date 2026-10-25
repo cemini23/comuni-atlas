@@ -17,6 +17,9 @@ export function installAtlasApi(controller) {
     plotTrajectory(opts = {}) {
       return controller.plotTrajectory(opts);
     },
+    playRoute(slug) {
+      return controller.playRoute(slug);
+    },
     getState() {
       return controller.getState();
     },

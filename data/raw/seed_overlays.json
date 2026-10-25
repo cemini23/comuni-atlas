@@ -37,6 +37,15 @@
       "lat": 44.3876,
       "lng": 8.9988,
       "note": "Quarter of Genova. Garibaldi embarked here on 5 May 1860. The municipal comune named Quarto is a different town, in the province of Napoli."
+    },
+    {
+      "id": "talamone",
+      "name": "Talamone",
+      "aliases": ["Talamone", "Porto di Talamone"],
+      "lat": 42.5536,
+      "lng": 11.1336,
+      "note": "Harbor of Orbetello. The Thousand stopped here on 7 May 1860 to take arms.",
+      "anchor": "Orbetello"
     }
   ],
   "gazetteer": [
@@ -51,10 +60,10 @@
     {
       "id": "buenos-aires",
       "name": "Buenos Aires",
-      "aliases": ["Buenos Aires"],
-      "lat": -34.6037,
-      "lng": -58.3816,
-      "note": "Migration endpoint outside Italian jurisdiction."
+      "aliases": ["Buenos Aires", "Hotel de Inmigrantes"],
+      "lat": -34.6355,
+      "lng": -58.362,
+      "note": "Migration endpoint. The pin is the Hotel de Inmigrantes. This place is outside Italian jurisdiction."
     }
   ]
 }

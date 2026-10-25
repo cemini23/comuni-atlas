@@ -13,7 +13,10 @@ These links open the hosted atlas:
 - [Castrogiovanni in 1884](https://youratto.com/atlas?year=1884&place=Castrogiovanni) is modern Enna, in the Province of Caltanissetta.
 - [Udine in 1852](https://youratto.com/atlas?year=1852&place=Udine) is in the Regno Lombardo-Veneto.
 - [Trento in 1910](https://youratto.com/atlas?year=1910&place=Trento) is in Tirolo under Austrian rule.
-- [Garibaldi in 1860](https://youratto.com/atlas?year=1860,1860,1860,1860&place=Quarto,Marsala,Palermo,Napoli) runs from Quarto dei Mille to Napoli.
+- [Garibaldi's Thousand in 1860](https://youratto.com/atlas?route=garibaldi-mille) runs from Quarto dei Mille through Marsala, Palermo, and Napoli to Teano.
+- [Dante's exile](https://youratto.com/atlas?route=dante-exile) runs from Firenze to Ravenna. Those years are before 1796. The map shows 1796.
+- [Sicily to New York](https://youratto.com/atlas?route=sicily-to-ny) runs from Castrogiovanni through Palermo and Napoli to Ellis Island.
+- [Veneto to Buenos Aires](https://youratto.com/atlas?route=veneto-to-buenos-aires) runs from Udine through Genova to the Hotel de Inmigrantes.
 - [A sample migration](https://youratto.com/atlas?year=1878,1902,1902&place=Lercara%20Friddi,Palermo,New%20York) runs from Lercara Friddi through Palermo to New York.
 
 ## Run the map on this machine
@@ -45,7 +48,11 @@ One town uses this form:
 
 `https://youratto.com/atlas?year=1884&place=Castrogiovanni`
 
-A route uses commas in both parameters. This route follows Garibaldi in 1860:
+A chronicle uses `route`. The same page also accepts `person` as an alias:
+
+`https://youratto.com/atlas?route=garibaldi-mille`
+
+A comma list still opens that chronicle when the places are Quarto, Marsala, Palermo, and Napoli:
 
 `https://youratto.com/atlas?year=1860,1860,1860,1860&place=Quarto,Marsala,Palermo,Napoli`
 
@@ -64,8 +71,9 @@ The page sets `window.atlasAPI` after the data loads:
 - `resolvePlace(place, year)` returns a result and does not move the map.
 - `locate({ place, year })` and `inspect({ place, year })` move the map and open the card.
 - `setYear(year)` moves the year control.
-- `plotTrajectory({ place, year })` draws a route. `place` and `year` can be comma-separated lists.
-- `getState()` returns the year, the place, and the view box.
+- `plotTrajectory({ place, year })` draws a route. `place` and `year` can be comma-separated lists. `route` or `person` plays a chronicle.
+- `playRoute(slug)` plays a chronicle such as `garibaldi-mille`.
+- `getState()` returns the year, the place, the route, and the view box.
 
 The current result is also in the JSON block `#atlas-inspect-json`.
 
@@ -75,9 +83,11 @@ Compiled files already sit in `data/built`. Rebuild them with the Python scripts
 
 1. Run `python3 scripts/01_fetch_istat.py` to download the open data.
 2. Run `python3 scripts/02_fetch_geojson.py` to simplify the province mesh.
-3. Run `python3 scripts/04_build_bundle.py` to compile the atlas.
-4. Run `bash scripts/05_export_for_site.sh` to write `dist/atlas/`.
-5. Optional. Put `FIRECRAWL_API_KEY` in `.env`. Then run `python3 scripts/03_firecrawl_antenati.py`.
+3. Run `python3 scripts/06_fetch_ipa_pec.py` to download municipal PEC rows.
+4. Run `python3 scripts/07_fetch_dioceses.py` to refresh the diocese cache. The province table works with no network.
+5. Run `python3 scripts/04_build_bundle.py` to compile the atlas.
+6. Run `bash scripts/05_export_for_site.sh` to write `dist/atlas/`.
+7. Optional. Put `FIRECRAWL_API_KEY` in `.env`. Then run `python3 scripts/03_firecrawl_antenati.py`.
 
 The atlas runs with no API key. `data/built/archives.json` already lists the State Archives. Store a Firecrawl key only in `.env`. That file is gitignored.
 
@@ -95,7 +105,9 @@ ANPR often dates an old city from a later decree. A living comune whose first AN
 
 The regime rules use the historical province code. Benevento city is the local exception. Other enclaves are not modeled one by one. Frazioni are not a national gazetteer.
 
-Veneto, Friuli, and Mantua stay on parish registers through 31 August 1871. Stato Civile Italiano there starts on 1 September 1871.
+Veneto, Friuli, and Mantua stay on parish registers through 31 August 1871. Stato Civile Italiano there starts on 1 September 1871. Before civil registration, the card names the diocese and the diocesan archive.
+
+A PEC from IndicePA is labeled official. A missing row uses the pattern `protocollo@pec.comune.{slug}.{sigla}.it`. Confirm that pattern before you send a request. ANSC does not replace the paper registers from about 1809 to the 1990s.
 
 Sicily was not under the Napoleonic civil system in this model. The island of Sardinia was not under it either.
 

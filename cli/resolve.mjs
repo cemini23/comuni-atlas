@@ -51,6 +51,8 @@ const atlas = createAtlas({
   polities: readJson("polities.json"),
   archives: readJson("archives.json"),
   routes: readJson("routes.json"),
+  contacts: readJson("contacts.json"),
+  dioceses: readJson("dioceses.json"),
 });
 
 const stops = atlas.stopsFromQuery(args.year, args.place);

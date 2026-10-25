@@ -19,19 +19,39 @@ jobs:
           set -euo pipefail
           node cli/resolve.mjs --year 1884 --place "Castrogiovanni" > /tmp/castro.json
           node cli/resolve.mjs --year 1852 --place Udine > /tmp/udine.json
+          node cli/resolve.mjs --year 1845 --place Udine > /tmp/udine1845.json
           node cli/resolve.mjs --year 1910 --place Trento > /tmp/trento.json
+          node cli/resolve.mjs --year 1860 --place "Quarto,Marsala,Palermo,Napoli" > /tmp/garibaldi.json
           python3 - <<'PY'
           import json
           castro = json.load(open("/tmp/castro.json"))
           udine = json.load(open("/tmp/udine.json"))
+          udine1845 = json.load(open("/tmp/udine1845.json"))
           trento = json.load(open("/tmp/trento.json"))
+          garibaldi = json.load(open("/tmp/garibaldi.json"))
           assert castro["modernName"] == "Enna", castro["modernName"]
           assert castro["istat"] == "086009"
           assert castro["historicalProvince"]["name"] == "Caltanissetta"
+          office = castro["stato_civile_office"]
+          assert "Enna" in office["name"]
+          assert "@" in office["pec"]
+          assert office["address"]
+          assert office["anscStatus"]
+          assert office["pecSource"] == "indicepa"
+          assert castro["parish_routing"]["required"] is False
           assert udine["sovereign"]["id"] == "lombardo-veneto"
           assert udine["records"]["id"] == "parish"
+          assert udine1845["sovereign"]["id"] == "lombardo-veneto"
+          assert udine1845["records"]["id"] == "parish"
+          assert udine1845["parish_routing"]["required"] is True
+          assert "Udine" in udine1845["parish_routing"]["diocese"]
+          assert any("Battesimo" in item for item in udine1845["parish_routing"]["recordTypes"])
           assert trento["historicalProvince"]["name"] == "Tirolo"
           assert "under Austrian rule" in trento["provinceShift"]["warning"]
+          assert garibaldi["mode"] == "trajectory"
+          assert garibaldi["routeId"] == "garibaldi-mille"
+          assert len(garibaldi["stops"]) == 9
+          assert all(stop["matched"] for stop in garibaldi["stops"])
           print("resolver ok")
           PY
 
@@ -51,4 +71,8 @@ jobs:
           fi
           grep -q 'https://youratto.com/atlas' dist/atlas/index.html
           grep -q 'Copy Shareable Link' dist/atlas/index.html
+          grep -q 'Copy PEC' dist/atlas/js/app.js
+          grep -q 'Pre-Civil Registration Era' dist/atlas/js/app.js
+          grep -q 'id="ports"' dist/atlas/index.html
+          grep -q 'id="chronicles"' dist/atlas/index.html
           echo "bundle ok"

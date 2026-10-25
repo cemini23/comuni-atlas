@@ -5,11 +5,13 @@ export function readQuery(search = window.location.search) {
   return {
     year: params.get("year") || "",
     place: params.get("place") || "",
+    route: params.get("route") || params.get("person") || "",
   };
 }
 
 export function writeQuery(query) {
   const params = new URLSearchParams();
+  if (query.route) params.set("route", query.route);
   if (query.year !== undefined && query.year !== null && String(query.year) !== "") {
     params.set("year", String(query.year));
   }
@@ -19,7 +21,11 @@ export function writeQuery(query) {
   const current = `${window.location.pathname}${window.location.search}`;
   if (next === current) return;
   window.history.replaceState(
-    { year: query.year ? String(query.year) : "", place: query.place || "" },
+    {
+      year: query.year ? String(query.year) : "",
+      place: query.place || "",
+      route: query.route || "",
+    },
     "",
     next,
   );
