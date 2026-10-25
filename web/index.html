@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atto Historical Atlas (1796–2026)</title>
+  <meta name="description" content="Look up an Italian town from 1796 to 2026. See the sovereign regime, the historical province, the modern comune, Stato Civile, and the Archivio di Stato. Built for Comuni Soppressi and Italian genealogy.">
+  <link rel="canonical" href="https://youratto.com/atlas">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Atto">
+  <meta property="og:title" content="Atto Historical Atlas (1796–2026)">
+  <meta property="og:description" content="Historical Italian comuni, Comuni Soppressi, Stato Civile, and Archivio di Stato lookups from 1796 to 2026.">
+  <meta property="og:url" content="https://youratto.com/atlas">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Atto Historical Atlas (1796–2026)">
+  <meta name="twitter:description" content="Historical Italian comuni, Comuni Soppressi, Stato Civile, and Archivio di Stato lookups from 1796 to 2026.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "Atto Historical Atlas",
+        "url": "https://youratto.com/atlas",
+        "applicationCategory": "ReferenceApplication",
+        "operatingSystem": "Web",
+        "description": "Look up an Italian town from 1796 to 2026. The atlas names the sovereign regime, the historical province, the modern comune, Stato Civile, and the Archivio di Stato.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "provider": { "@type": "Organization", "name": "Atto", "url": "https://youratto.com" },
+        "keywords": "Italian genealogy, Comuni Soppressi, Stato Civile, Archivio di Stato, jure sanguinis"
+      },
+      {
+        "@type": "Dataset",
+        "name": "Italian comuni, suppressed towns, and State Archives, 1796–2026",
+        "description": "Historical jurisdictions for Comuni Soppressi, Stato Civile, and Archivio di Stato research.",
+        "url": "https://youratto.com/atlas",
+        "temporalCoverage": "1796/2026",
+        "spatialCoverage": "Italy",
+        "keywords": ["Comuni Soppressi", "Stato Civile", "Archivio di Stato", "Italian genealogy"],
+        "creator": { "@type": "Organization", "name": "Atto", "url": "https://youratto.com" }
+      }
+    ]
+  }
+  </script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%23f3ead7' width='32' height='32'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%238c2f2f' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="https://youratto.com">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="5" y="6" width="16" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" transform="rotate(-10 13 16)"/>
+        <rect x="11" y="8" width="16" height="20" rx="2" fill="var(--parchment)" stroke="currentColor" stroke-width="1.6"/>
+        <rect x="20.2" y="11" width="1.8" height="4" fill="#009246"/>
+        <rect x="22" y="11" width="1.8" height="4" fill="#fff"/>
+        <rect x="23.8" y="11" width="1.8" height="4" fill="#CE2B37"/>
+      </svg>
+      <span>Atto</span>
+    </a>
+    <div class="title-block">
+      <h1 class="atlas-title">Atto Historical Atlas (1796–2026)</h1>
+      <p class="badge">Open-Source Historical Atlas by Atto — Local-First Italian Civil Records &amp; Genealogy Vault</p>
+    </div>
+    <div class="top-actions">
+      <a class="pill" href="https://youratto.com">Organize Your Records in Atto for Mac →</a>
+      <button type="button" id="theme-toggle" aria-pressed="false">Dark mode</button>
+    </div>
+    <nav class="presets" aria-label="Atlas presets">
+      <button type="button" data-preset="1815">1815 Restoration</button>
+      <button type="button" data-preset="1861">1861 Unification</button>
+      <button type="button" data-preset="1920">1920 WWI Annexations</button>
+      <button type="button" data-preset="migration">Sample Ancestor Migration Route</button>
+    </nav>
+  </header>
+  <p id="regime-banner" class="banner" role="status">Load the atlas from the repository root.</p>
+  <div class="shell">
+    <aside class="panel search-panel">
+      <form id="search-form">
+        <label for="search-input">Town and year</label>
+        <input id="search-input" name="place" autocomplete="off" placeholder="Castrogiovanni, Udine, Trento" enterkeyhint="search">
+      </form>
+      <ul id="search-results" class="results"></ul>
+      <div id="legend" class="legend"></div>
+      <p class="mesh-note">The mesh is today's provinces. Color is the sovereign regime on 1 July of the selected year. It is not a historical border survey.</p>
+      <p class="mesh-note">Press / to search. Arrow keys change the year by 1. Shift plus an arrow changes the year by 10. Space plays the years. Esc closes the card.</p>
+    </aside>
+    <main class="map-wrap">
+      <div id="year-stamp" class="year-stamp">1861</div>
+      <svg id="map" viewBox="0 0 1000 1180" role="img" aria-label="Map of Italian provinces colored by historical regime">
+        <rect id="sea" x="-400" y="-400" width="2400" height="2400"></rect>
+        <g id="provinces"></g>
+        <g id="arcs"></g>
+        <g id="pins"></g>
+      </svg>
+      <div id="hover-tip" class="hover-tip" hidden></div>
+      <div id="route-bar" class="route-bar" hidden>
+        <p id="route-title"></p>
+        <div class="route-buttons">
+          <button type="button" id="route-prev">Previous stop</button>
+          <button type="button" id="route-play">Play route</button>
+          <button type="button" id="route-next">Next stop</button>
+          <button type="button" id="route-share">Copy Shareable Link</button>
+        </div>
+        <ol id="route-stops"></ol>
+      </div>
+    </main>
+    <aside id="card" class="panel card" hidden></aside>
+  </div>
+  <footer class="scrubber">
+    <button type="button" id="year-prev" aria-label="Previous year">−1</button>
+    <label class="slider-label" for="year-slider">Year <output id="year-readout">1861</output></label>
+    <input id="year-slider" type="range" min="1796" max="2026" value="1861" step="1">
+    <button type="button" id="play-years">Play years</button>
+    <button type="button" id="year-next" aria-label="Next year">+1</button>
+  </footer>
+  <p id="boot-error" class="boot-error" hidden></p>
+  <noscript>This atlas needs JavaScript. Open this folder with its data/built directory, or serve the repository root and open /web/.</noscript>
+  <script>window.ATLAS_BASE_PATH = window.ATLAS_BASE_PATH || "";</script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

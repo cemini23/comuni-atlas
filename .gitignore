@@ -1,0 +1,12 @@
+_reference_jiangshan/
+.env
+.DS_Store
+__pycache__/
+*.pyc
+node_modules/
+dist/
+
+# Downloaded dumps. Small seeds stay. Compiled files in data/built stay.
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/seed_overlays.json

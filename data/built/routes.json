@@ -1,0 +1,66 @@
+{
+  "routes": [
+    {
+      "id": "garibaldi-mille",
+      "title": "I Mille, 1860",
+      "titleEn": "Garibaldi's Thousand, 1860",
+      "summary": "From Quarto dei Mille to Marsala, Palermo, and Napoli.",
+      "match": [
+        "Quarto",
+        "Marsala",
+        "Palermo",
+        "Napoli"
+      ],
+      "stops": [
+        {
+          "year": 1860,
+          "place": "Quarto dei Mille",
+          "label": "Departure, 5 May 1860"
+        },
+        {
+          "year": 1860,
+          "place": "Marsala",
+          "label": "Landing, 11 May 1860"
+        },
+        {
+          "year": 1860,
+          "place": "Palermo",
+          "label": "Palermo, 27 May 1860"
+        },
+        {
+          "year": 1860,
+          "place": "Napoli",
+          "label": "Entry into Naples, 7 September 1860"
+        }
+      ]
+    },
+    {
+      "id": "lercara-new-york",
+      "title": "Rotta di emigrazione, Lercara Friddi",
+      "titleEn": "A Great Arrival route from Lercara Friddi",
+      "summary": "A sample chain from a Sicilian town through Palermo to New York.",
+      "match": [
+        "Lercara Friddi",
+        "Palermo",
+        "New York"
+      ],
+      "stops": [
+        {
+          "year": 1878,
+          "place": "Lercara Friddi",
+          "label": "Birth town"
+        },
+        {
+          "year": 1902,
+          "place": "Palermo",
+          "label": "Port of Palermo"
+        },
+        {
+          "year": 1902,
+          "place": "New York",
+          "label": "Ellis Island"
+        }
+      ]
+    }
+  ]
+}

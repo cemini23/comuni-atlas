@@ -1,0 +1,112 @@
+# Italia Storica Atlas
+
+[Live Interactive Atlas on youratto.com/atlas](https://youratto.com/atlas?year=1884&place=Castrogiovanni)
+
+Italia Storica Atlas is a historical atlas of Italian towns from 1796 to 2026. It names the sovereign regime, the historical province, the modern comune, and the State Archive for civil records. The date inside a year is 1 July.
+
+The mesh is the modern provincial mesh. Color shows the regime on that ground for the selected year. The lines are modern borders.
+
+## Open the live map
+
+These links open the hosted atlas:
+
+- [Castrogiovanni in 1884](https://youratto.com/atlas?year=1884&place=Castrogiovanni) is modern Enna, in the Province of Caltanissetta.
+- [Udine in 1852](https://youratto.com/atlas?year=1852&place=Udine) is in the Regno Lombardo-Veneto.
+- [Trento in 1910](https://youratto.com/atlas?year=1910&place=Trento) is in Tirolo under Austrian rule.
+- [Garibaldi in 1860](https://youratto.com/atlas?year=1860,1860,1860,1860&place=Quarto,Marsala,Palermo,Napoli) runs from Quarto dei Mille to Napoli.
+- [A sample migration](https://youratto.com/atlas?year=1878,1902,1902&place=Lercara%20Friddi,Palermo,New%20York) runs from Lercara Friddi through Palermo to New York.
+
+## Run the map on this machine
+
+Serve this repository from its root. Then open the `web` page.
+
+1. Run `python3 -m http.server 8765` in this repository.
+2. Open `http://127.0.0.1:8765/web/?year=1884&place=Castrogiovanni`.
+
+The page has no build step and loads no remote map library. Asset URLs are relative. An empty `window.ATLAS_BASE_PATH` reads `data/built/` from the repository root. The site bundle sets that value to `./` so the same page works at `/atlas`.
+
+## Resolve a town
+
+Run this command from the repository root:
+
+`node cli/resolve.mjs --year 1884 --place "Castrogiovanni"`
+
+The command prints JSON only. Exit code 0 means a match. Exit code 2 means no match. Exit code 1 means the command is incomplete.
+
+Use these checks:
+
+- Castrogiovanni in 1884 is modern Enna, in the Province of Caltanissetta.
+- Udine in 1852 is in the Regno Lombardo-Veneto. Civil registration there starts on 1 September 1871.
+- Trento in 1910 is in Tirolo under Austrian rule.
+
+## Share a view
+
+One town uses this form:
+
+`https://youratto.com/atlas?year=1884&place=Castrogiovanni`
+
+A route uses commas in both parameters. This route follows Garibaldi in 1860:
+
+`https://youratto.com/atlas?year=1860,1860,1860,1860&place=Quarto,Marsala,Palermo,Napoli`
+
+In that route, `Quarto` is the landmark Quarto dei Mille in Genova. The comune named Quarto, in the province of Napoli, is a different place.
+
+Press `/` to search. The arrow keys change the year by 1. Shift plus an arrow changes the year by 10. Space plays the years. Esc closes the card.
+
+## Use it from an agent
+
+Read `skills/comuni-atlas/SKILL.md`.
+
+Run the CLI. Do not guess a coordinate, a province, or an archive.
+
+The page sets `window.atlasAPI` after the data loads:
+
+- `resolvePlace(place, year)` returns a result and does not move the map.
+- `locate({ place, year })` and `inspect({ place, year })` move the map and open the card.
+- `setYear(year)` moves the year control.
+- `plotTrajectory({ place, year })` draws a route. `place` and `year` can be comma-separated lists.
+- `getState()` returns the year, the place, and the view box.
+
+The current result is also in the JSON block `#atlas-inspect-json`.
+
+## Build the data files
+
+Compiled files already sit in `data/built`. Rebuild them with the Python scripts. The scripts use the Python standard library only.
+
+1. Run `python3 scripts/01_fetch_istat.py` to download the open data.
+2. Run `python3 scripts/02_fetch_geojson.py` to simplify the province mesh.
+3. Run `python3 scripts/04_build_bundle.py` to compile the atlas.
+4. Run `bash scripts/05_export_for_site.sh` to write `dist/atlas/`.
+5. Optional. Put `FIRECRAWL_API_KEY` in `.env`. Then run `python3 scripts/03_firecrawl_antenati.py`.
+
+The atlas runs with no API key. `data/built/archives.json` already lists the State Archives. Store a Firecrawl key only in `.env`. That file is gitignored.
+
+## Host the map
+
+1. Run `bash scripts/05_export_for_site.sh`.
+2. Copy `dist/atlas/` into the site as `public/atlas/` or as a root `atlas/` folder.
+3. Open `/atlas/?year=1884&place=Castrogiovanni`.
+
+`youratto.com` serves this bundle from `apps/site/atlas/`. The public URL is [https://youratto.com/atlas](https://youratto.com/atlas).
+
+## Limits
+
+ANPR often dates an old city from a later decree. A living comune whose first ANPR date is on or before 31 December 1922 is extended to 1796. Torino, Roma, Genova, and Gaeta are in that set. A suppressed town keeps the stricter annexation windows. Elena in 1890 does not exist yet. A living town created in that same window, such as Riccione in 1922, is also extended. Read that early span as a province hint.
+
+The regime rules use the historical province code. Benevento city is the local exception. Other enclaves are not modeled one by one. Frazioni are not a national gazetteer.
+
+Veneto, Friuli, and Mantua stay on parish registers through 31 August 1871. Stato Civile Italiano there starts on 1 September 1871.
+
+Sicily was not under the Napoleonic civil system in this model. The island of Sardinia was not under it either.
+
+Trento, Bolzano, Trieste, Gorizia, Istria, and Zara carry a jure sanguinis research flag for the years before Italian annexation. That flag is a research note. It is not legal advice.
+
+Antenati links use a stable URL pattern. This copy did not request every archive page.
+
+## Built by Atto
+
+[Atto](https://youratto.com) is the local-first macOS vault and DIY toolkit for Italian civil records and family history. This atlas is the public lookup that feeds that work.
+
+The atlas answers one question for a town and a year: the sovereign regime, the historical province, the modern comune, and the State Archive. Atto keeps the family tree, the Stato Civile requests, and the citizenship packet on your Mac.
+
+Use the same resolver from `cli/resolve.mjs` and `lib/engine.mjs`. The live map is [https://youratto.com/atlas](https://youratto.com/atlas).

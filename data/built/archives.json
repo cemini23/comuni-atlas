@@ -1,0 +1,1066 @@
+{
+  "source": "Curated offline list of Archivi di Stato and sezioni. Antenati URLs use the stable /archivio/archivio-di-stato-di-{slug}/ pattern.",
+  "firecrawl": "not run",
+  "archives": [
+    {
+      "id": "agrigento",
+      "slug": "agrigento",
+      "name": "Archivio di Stato di Agrigento",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-agrigento/",
+      "provinces": [
+        "084"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "alessandria",
+      "slug": "alessandria",
+      "name": "Archivio di Stato di Alessandria",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-alessandria/",
+      "provinces": [
+        "006"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "ancona",
+      "slug": "ancona",
+      "name": "Archivio di Stato di Ancona",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-ancona/",
+      "provinces": [
+        "042"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "aosta",
+      "slug": "aosta",
+      "name": "Archivio di Stato di Aosta",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-aosta/",
+      "provinces": [
+        "007"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "arezzo",
+      "slug": "arezzo",
+      "name": "Archivio di Stato di Arezzo",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-arezzo/",
+      "provinces": [
+        "051"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "ascoli-piceno",
+      "slug": "ascoli-piceno",
+      "name": "Archivio di Stato di Ascoli Piceno",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-ascoli-piceno/",
+      "provinces": [
+        "044"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "asti",
+      "slug": "asti",
+      "name": "Archivio di Stato di Asti",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-asti/",
+      "provinces": [
+        "005"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "avellino",
+      "slug": "avellino",
+      "name": "Archivio di Stato di Avellino",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-avellino/",
+      "provinces": [
+        "064"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "bari",
+      "slug": "bari",
+      "name": "Archivio di Stato di Bari",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-bari/",
+      "provinces": [
+        "072",
+        "110"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "belluno",
+      "slug": "belluno",
+      "name": "Archivio di Stato di Belluno",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-belluno/",
+      "provinces": [
+        "025"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "benevento",
+      "slug": "benevento",
+      "name": "Archivio di Stato di Benevento",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-benevento/",
+      "provinces": [
+        "062"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "bergamo",
+      "slug": "bergamo",
+      "name": "Archivio di Stato di Bergamo",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-bergamo/",
+      "provinces": [
+        "016"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "biella",
+      "slug": "biella",
+      "name": "Archivio di Stato di Biella",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-biella/",
+      "provinces": [
+        "096"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "bologna",
+      "slug": "bologna",
+      "name": "Archivio di Stato di Bologna",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-bologna/",
+      "provinces": [
+        "037"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "bolzano",
+      "slug": "bolzano",
+      "name": "Archivio di Stato di Bolzano",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-bolzano/",
+      "provinces": [
+        "021"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "brescia",
+      "slug": "brescia",
+      "name": "Archivio di Stato di Brescia",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-brescia/",
+      "provinces": [
+        "017"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "brindisi",
+      "slug": "brindisi",
+      "name": "Archivio di Stato di Brindisi",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-brindisi/",
+      "provinces": [
+        "074"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "cagliari",
+      "slug": "cagliari",
+      "name": "Archivio di Stato di Cagliari",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-cagliari/",
+      "provinces": [
+        "092",
+        "106",
+        "107",
+        "111"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "caltanissetta",
+      "slug": "caltanissetta",
+      "name": "Archivio di Stato di Caltanissetta",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-caltanissetta/",
+      "provinces": [
+        "085"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "campobasso",
+      "slug": "campobasso",
+      "name": "Archivio di Stato di Campobasso",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-campobasso/",
+      "provinces": [
+        "070"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "caserta",
+      "slug": "caserta",
+      "name": "Archivio di Stato di Caserta",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-caserta/",
+      "provinces": [
+        "061"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "catania",
+      "slug": "catania",
+      "name": "Archivio di Stato di Catania",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-catania/",
+      "provinces": [
+        "087"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "catanzaro",
+      "slug": "catanzaro",
+      "name": "Archivio di Stato di Catanzaro",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-catanzaro/",
+      "provinces": [
+        "079"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "chieti",
+      "slug": "chieti",
+      "name": "Archivio di Stato di Chieti",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-chieti/",
+      "provinces": [
+        "069"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "como",
+      "slug": "como",
+      "name": "Archivio di Stato di Como",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-como/",
+      "provinces": [
+        "013"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "cosenza",
+      "slug": "cosenza",
+      "name": "Archivio di Stato di Cosenza",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-cosenza/",
+      "provinces": [
+        "078"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "cremona",
+      "slug": "cremona",
+      "name": "Archivio di Stato di Cremona",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-cremona/",
+      "provinces": [
+        "019"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "crotone",
+      "slug": "crotone",
+      "name": "Archivio di Stato di Crotone",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-crotone/",
+      "provinces": [
+        "101"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "cuneo",
+      "slug": "cuneo",
+      "name": "Archivio di Stato di Cuneo",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-cuneo/",
+      "provinces": [
+        "004"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "enna",
+      "slug": "enna",
+      "name": "Archivio di Stato di Enna",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-enna/",
+      "provinces": [
+        "086"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "fermo",
+      "slug": "fermo",
+      "name": "Archivio di Stato di Fermo",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-fermo/",
+      "provinces": [
+        "109"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "ferrara",
+      "slug": "ferrara",
+      "name": "Archivio di Stato di Ferrara",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-ferrara/",
+      "provinces": [
+        "038"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "firenze",
+      "slug": "firenze",
+      "name": "Archivio di Stato di Firenze",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-firenze/",
+      "provinces": [
+        "048"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "foggia",
+      "slug": "foggia",
+      "name": "Archivio di Stato di Foggia",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-foggia/",
+      "provinces": [
+        "071"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "forli",
+      "slug": "forli",
+      "name": "Archivio di Stato di Forlì",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-forli/",
+      "provinces": [
+        "040"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "frosinone",
+      "slug": "frosinone",
+      "name": "Archivio di Stato di Frosinone",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-frosinone/",
+      "provinces": [
+        "060"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "genova",
+      "slug": "genova",
+      "name": "Archivio di Stato di Genova",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-genova/",
+      "provinces": [
+        "010"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "gorizia",
+      "slug": "gorizia",
+      "name": "Archivio di Stato di Gorizia",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-gorizia/",
+      "provinces": [
+        "031"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "grosseto",
+      "slug": "grosseto",
+      "name": "Archivio di Stato di Grosseto",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-grosseto/",
+      "provinces": [
+        "053"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "imperia",
+      "slug": "imperia",
+      "name": "Archivio di Stato di Imperia",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-imperia/",
+      "provinces": [
+        "008"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "isernia",
+      "slug": "isernia",
+      "name": "Archivio di Stato di Isernia",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-isernia/",
+      "provinces": [
+        "094"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "laquila",
+      "slug": "laquila",
+      "name": "Archivio di Stato di L'Aquila",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-laquila/",
+      "provinces": [
+        "066"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "la-spezia",
+      "slug": "la-spezia",
+      "name": "Archivio di Stato di La Spezia",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-la-spezia/",
+      "provinces": [
+        "011"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "latina",
+      "slug": "latina",
+      "name": "Archivio di Stato di Latina",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-latina/",
+      "provinces": [
+        "059"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "lecce",
+      "slug": "lecce",
+      "name": "Archivio di Stato di Lecce",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-lecce/",
+      "provinces": [
+        "075"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "lecco",
+      "slug": "lecco",
+      "name": "Archivio di Stato di Lecco",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-lecco/",
+      "provinces": [
+        "097"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "livorno",
+      "slug": "livorno",
+      "name": "Archivio di Stato di Livorno",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-livorno/",
+      "provinces": [
+        "049"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "lodi",
+      "slug": "lodi",
+      "name": "Archivio di Stato di Lodi",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-lodi/",
+      "provinces": [
+        "098"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "lucca",
+      "slug": "lucca",
+      "name": "Archivio di Stato di Lucca",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-lucca/",
+      "provinces": [
+        "046"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "macerata",
+      "slug": "macerata",
+      "name": "Archivio di Stato di Macerata",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-macerata/",
+      "provinces": [
+        "043"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "mantova",
+      "slug": "mantova",
+      "name": "Archivio di Stato di Mantova",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-mantova/",
+      "provinces": [
+        "020"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "massa",
+      "slug": "massa",
+      "name": "Archivio di Stato di Massa",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-massa/",
+      "provinces": [
+        "045"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "matera",
+      "slug": "matera",
+      "name": "Archivio di Stato di Matera",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-matera/",
+      "provinces": [
+        "077"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "messina",
+      "slug": "messina",
+      "name": "Archivio di Stato di Messina",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-messina/",
+      "provinces": [
+        "083"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "milano",
+      "slug": "milano",
+      "name": "Archivio di Stato di Milano",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-milano/",
+      "provinces": [
+        "015"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "modena",
+      "slug": "modena",
+      "name": "Archivio di Stato di Modena",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-modena/",
+      "provinces": [
+        "036"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "monza",
+      "slug": "monza",
+      "name": "Archivio di Stato di Monza",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-monza/",
+      "provinces": [
+        "108"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "napoli",
+      "slug": "napoli",
+      "name": "Archivio di Stato di Napoli",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-napoli/",
+      "provinces": [
+        "063"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "novara",
+      "slug": "novara",
+      "name": "Archivio di Stato di Novara",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-novara/",
+      "provinces": [
+        "003"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "nuoro",
+      "slug": "nuoro",
+      "name": "Archivio di Stato di Nuoro",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-nuoro/",
+      "provinces": [
+        "091",
+        "105"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "oristano",
+      "slug": "oristano",
+      "name": "Archivio di Stato di Oristano",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-oristano/",
+      "provinces": [
+        "095"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "padova",
+      "slug": "padova",
+      "name": "Archivio di Stato di Padova",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-padova/",
+      "provinces": [
+        "028"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "palermo",
+      "slug": "palermo",
+      "name": "Archivio di Stato di Palermo",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-palermo/",
+      "provinces": [
+        "082"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "parma",
+      "slug": "parma",
+      "name": "Archivio di Stato di Parma",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-parma/",
+      "provinces": [
+        "034"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "pavia",
+      "slug": "pavia",
+      "name": "Archivio di Stato di Pavia",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-pavia/",
+      "provinces": [
+        "018"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "perugia",
+      "slug": "perugia",
+      "name": "Archivio di Stato di Perugia",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-perugia/",
+      "provinces": [
+        "054"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "pesaro",
+      "slug": "pesaro",
+      "name": "Archivio di Stato di Pesaro",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-pesaro/",
+      "provinces": [
+        "041"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "pescara",
+      "slug": "pescara",
+      "name": "Archivio di Stato di Pescara",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-pescara/",
+      "provinces": [
+        "068"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "piacenza",
+      "slug": "piacenza",
+      "name": "Archivio di Stato di Piacenza",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-piacenza/",
+      "provinces": [
+        "033"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "pisa",
+      "slug": "pisa",
+      "name": "Archivio di Stato di Pisa",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-pisa/",
+      "provinces": [
+        "050"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "pistoia",
+      "slug": "pistoia",
+      "name": "Archivio di Stato di Pistoia",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-pistoia/",
+      "provinces": [
+        "047"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "pordenone",
+      "slug": "pordenone",
+      "name": "Archivio di Stato di Pordenone",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-pordenone/",
+      "provinces": [
+        "093"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "potenza",
+      "slug": "potenza",
+      "name": "Archivio di Stato di Potenza",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-potenza/",
+      "provinces": [
+        "076"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "prato",
+      "slug": "prato",
+      "name": "Archivio di Stato di Prato",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-prato/",
+      "provinces": [
+        "100"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "ragusa",
+      "slug": "ragusa",
+      "name": "Archivio di Stato di Ragusa",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-ragusa/",
+      "provinces": [
+        "088"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "ravenna",
+      "slug": "ravenna",
+      "name": "Archivio di Stato di Ravenna",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-ravenna/",
+      "provinces": [
+        "039"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "reggio-calabria",
+      "slug": "reggio-calabria",
+      "name": "Archivio di Stato di Reggio Calabria",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-reggio-calabria/",
+      "provinces": [
+        "080"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "reggio-emilia",
+      "slug": "reggio-emilia",
+      "name": "Archivio di Stato di Reggio Emilia",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-reggio-emilia/",
+      "provinces": [
+        "035"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "rieti",
+      "slug": "rieti",
+      "name": "Archivio di Stato di Rieti",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-rieti/",
+      "provinces": [
+        "057"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "rimini",
+      "slug": "rimini",
+      "name": "Archivio di Stato di Rimini",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-rimini/",
+      "provinces": [
+        "099"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "roma",
+      "slug": "roma",
+      "name": "Archivio di Stato di Roma",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-roma/",
+      "provinces": [
+        "058"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "rovigo",
+      "slug": "rovigo",
+      "name": "Archivio di Stato di Rovigo",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-rovigo/",
+      "provinces": [
+        "029"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "salerno",
+      "slug": "salerno",
+      "name": "Archivio di Stato di Salerno",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-salerno/",
+      "provinces": [
+        "065"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "sassari",
+      "slug": "sassari",
+      "name": "Archivio di Stato di Sassari",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-sassari/",
+      "provinces": [
+        "090",
+        "104"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "savona",
+      "slug": "savona",
+      "name": "Archivio di Stato di Savona",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-savona/",
+      "provinces": [
+        "009"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "siena",
+      "slug": "siena",
+      "name": "Archivio di Stato di Siena",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-siena/",
+      "provinces": [
+        "052"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "siracusa",
+      "slug": "siracusa",
+      "name": "Archivio di Stato di Siracusa",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-siracusa/",
+      "provinces": [
+        "089"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "sondrio",
+      "slug": "sondrio",
+      "name": "Archivio di Stato di Sondrio",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-sondrio/",
+      "provinces": [
+        "014"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "taranto",
+      "slug": "taranto",
+      "name": "Archivio di Stato di Taranto",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-taranto/",
+      "provinces": [
+        "073"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "teramo",
+      "slug": "teramo",
+      "name": "Archivio di Stato di Teramo",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-teramo/",
+      "provinces": [
+        "067"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "terni",
+      "slug": "terni",
+      "name": "Archivio di Stato di Terni",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-terni/",
+      "provinces": [
+        "055"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "torino",
+      "slug": "torino",
+      "name": "Archivio di Stato di Torino",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-torino/",
+      "provinces": [
+        "001"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "trapani",
+      "slug": "trapani",
+      "name": "Archivio di Stato di Trapani",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-trapani/",
+      "provinces": [
+        "081"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "trento",
+      "slug": "trento",
+      "name": "Archivio di Stato di Trento",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-trento/",
+      "provinces": [
+        "022"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "treviso",
+      "slug": "treviso",
+      "name": "Archivio di Stato di Treviso",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-treviso/",
+      "provinces": [
+        "026"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "trieste",
+      "slug": "trieste",
+      "name": "Archivio di Stato di Trieste",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-trieste/",
+      "provinces": [
+        "032",
+        "701",
+        "702",
+        "703",
+        "801"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "udine",
+      "slug": "udine",
+      "name": "Archivio di Stato di Udine",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-udine/",
+      "provinces": [
+        "030"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "varese",
+      "slug": "varese",
+      "name": "Archivio di Stato di Varese",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-varese/",
+      "provinces": [
+        "012"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "venezia",
+      "slug": "venezia",
+      "name": "Archivio di Stato di Venezia",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-venezia/",
+      "provinces": [
+        "027"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "verbania",
+      "slug": "verbania",
+      "name": "Archivio di Stato di Verbania",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-verbania/",
+      "provinces": [
+        "103"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "vercelli",
+      "slug": "vercelli",
+      "name": "Archivio di Stato di Vercelli",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-vercelli/",
+      "provinces": [
+        "002"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "verona",
+      "slug": "verona",
+      "name": "Archivio di Stato di Verona",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-verona/",
+      "provinces": [
+        "023"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "vibo-valentia",
+      "slug": "vibo-valentia",
+      "name": "Archivio di Stato di Vibo Valentia",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-vibo-valentia/",
+      "provinces": [
+        "102"
+      ],
+      "kind": "sezione"
+    },
+    {
+      "id": "vicenza",
+      "slug": "vicenza",
+      "name": "Archivio di Stato di Vicenza",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-vicenza/",
+      "provinces": [
+        "024"
+      ],
+      "kind": "archivio"
+    },
+    {
+      "id": "viterbo",
+      "slug": "viterbo",
+      "name": "Archivio di Stato di Viterbo",
+      "antenatiUrl": "https://antenati.cultura.gov.it/archivio/archivio-di-stato-di-viterbo/",
+      "provinces": [
+        "056"
+      ],
+      "kind": "archivio"
+    }
+  ]
+}

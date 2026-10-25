@@ -1,0 +1,60 @@
+{
+  "successors": {
+    "D393": "D843",
+    "F888": "M208",
+    "H742": "M208",
+    "I334": "M208"
+  },
+  "successorNotes": {
+    "D393": "The comune of Elena (the Borgo of Gaeta) was created in 1897 and reunited with Gaeta in 1927.",
+    "F888": "Nicastro was suppressed in 1968 and became part of Lamezia Terme, with Sambiase and Sant'Eufemia Lamezia.",
+    "H742": "Sambiase was suppressed in 1968 and became part of Lamezia Terme.",
+    "I334": "Sant'Eufemia Lamezia was suppressed in 1968 and became part of Lamezia Terme."
+  },
+  "englishNames": {
+    "Roma": ["Rome"],
+    "Napoli": ["Naples"],
+    "Milano": ["Milan"],
+    "Torino": ["Turin"],
+    "Genova": ["Genoa"],
+    "Firenze": ["Florence"],
+    "Venezia": ["Venice"],
+    "Padova": ["Padua"],
+    "Mantova": ["Mantua"],
+    "Siracusa": ["Syracuse"],
+    "Livorno": ["Leghorn"],
+    "Trento": ["Trent"],
+    "Bolzano/Bozen": ["Bolzano", "Bozen"],
+    "Valle d'Aosta/Vallée d'Aoste": ["Aosta", "Aoste"],
+    "Reggio di Calabria": ["Reggio Calabria"],
+    "Reggio nell'Emilia": ["Reggio Emilia"]
+  },
+  "landmarks": [
+    {
+      "id": "quarto-dei-mille",
+      "name": "Quarto dei Mille",
+      "aliases": ["Quarto dei Mille", "Quarto (Genova)"],
+      "lat": 44.3876,
+      "lng": 8.9988,
+      "note": "Quarter of Genova. Garibaldi embarked here on 5 May 1860. The municipal comune named Quarto is a different town, in the province of Napoli."
+    }
+  ],
+  "gazetteer": [
+    {
+      "id": "new-york",
+      "name": "New York",
+      "aliases": ["New York", "New York City", "Ellis Island"],
+      "lat": 40.6995,
+      "lng": -74.0396,
+      "note": "Migration endpoint. Ellis Island is the pin. This place is outside Italian jurisdiction."
+    },
+    {
+      "id": "buenos-aires",
+      "name": "Buenos Aires",
+      "aliases": ["Buenos Aires"],
+      "lat": -34.6037,
+      "lng": -58.3816,
+      "note": "Migration endpoint outside Italian jurisdiction."
+    }
+  ]
+}
