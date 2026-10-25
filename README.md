@@ -42,6 +42,29 @@ Use these checks:
 - Udine in 1852 is in the Regno Lombardo-Veneto. Civil registration there starts on 1 September 1871.
 - Trento in 1910 is in Tirolo under Austrian rule.
 
+The same command also prints a cadastre guide, a leva finding aid, and the diocese for one matched town.
+
+`node cli/resolve.mjs --cognome Barone`
+
+`node cli/resolve.mjs --leva --year 1878 --place Isernia`
+
+`--surname` is the same flag as `--cognome`. A surname result is a linguistic estimate. `census` is false. It is not a count of families.
+
+## Open the genealogy suite
+
+Four more pages sit next to the atlas. Each page is static HTML. None of them uses a build step.
+
+- Parrocchie and dioceses: `web-parrocchie/`
+- Cognomi heatmap: `web-cognomi/`
+- ANSC and PEC tracker: `web-ansc/`
+- Caduti and liste di leva: `web-caduti/`
+
+Serve the repository root. Then open `/web-parrocchie/`, `/web-cognomi/`, `/web-ansc/`, or `/web-caduti/`.
+
+A PEC from IndicePA is labeled official. A missing row uses the pattern `protocollo@pec.comune.{slug}.{sigla}.it`. Confirm that pattern before you send it. This atlas has no per-comune ANSC onboarding date. ANPR covers the living population. Historical Stato Civile books stay on paper.
+
+The leva block is a finding aid. Call-up year is the birth year plus 20. It is not a service record. Rail lines are schematic corridors, not surveyed track. The cadastre badge is a guide. It is not a tile layer and it does not draw parcels.
+
 ## Share a view
 
 One town uses this form:
@@ -85,8 +108,8 @@ Compiled files already sit in `data/built`. Rebuild them with the Python scripts
 2. Run `python3 scripts/02_fetch_geojson.py` to simplify the province mesh.
 3. Run `python3 scripts/06_fetch_ipa_pec.py` to download municipal PEC rows.
 4. Run `python3 scripts/07_fetch_dioceses.py` to refresh the diocese cache. The province table works with no network.
-5. Run `python3 scripts/04_build_bundle.py` to compile the atlas.
-6. Run `bash scripts/05_export_for_site.sh` to write `dist/atlas/`.
+5. Run `python3 scripts/04_build_bundle.py` to compile the atlas and the suite files.
+6. Run `bash scripts/05_export_for_site.sh` to write `dist/atlas/`, `dist/parrocchie/`, `dist/cognomi/`, `dist/ansc/`, `dist/caduti/`, and `dist/index.html`.
 7. Optional. Put `FIRECRAWL_API_KEY` in `.env`. Then run `python3 scripts/03_firecrawl_antenati.py`.
 
 The atlas runs with no API key. `data/built/archives.json` already lists the State Archives. Store a Firecrawl key only in `.env`. That file is gitignored.

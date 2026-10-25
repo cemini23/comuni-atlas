@@ -22,6 +22,11 @@ jobs:
           node cli/resolve.mjs --year 1845 --place Udine > /tmp/udine1845.json
           node cli/resolve.mjs --year 1910 --place Trento > /tmp/trento.json
           node cli/resolve.mjs --year 1860 --place "Quarto,Marsala,Palermo,Napoli" > /tmp/garibaldi.json
+          node cli/resolve.mjs --year 1842 --place Udine > /tmp/udine1842.json
+          node cli/resolve.mjs --year 1850 --place Bologna > /tmp/bologna.json
+          node cli/resolve.mjs --cognome Barone > /tmp/barone.json
+          node cli/resolve.mjs --cognome Esposito > /tmp/esposito.json
+          node cli/resolve.mjs --leva --year 1878 --place Isernia > /tmp/isernia.json
           python3 - <<'PY'
           import json
           castro = json.load(open("/tmp/castro.json"))
@@ -29,6 +34,11 @@ jobs:
           udine1845 = json.load(open("/tmp/udine1845.json"))
           trento = json.load(open("/tmp/trento.json"))
           garibaldi = json.load(open("/tmp/garibaldi.json"))
+          udine1842 = json.load(open("/tmp/udine1842.json"))
+          bologna = json.load(open("/tmp/bologna.json"))
+          barone = json.load(open("/tmp/barone.json"))
+          esposito = json.load(open("/tmp/esposito.json"))
+          isernia = json.load(open("/tmp/isernia.json"))
           assert castro["modernName"] == "Enna", castro["modernName"]
           assert castro["istat"] == "086009"
           assert castro["historicalProvince"]["name"] == "Caltanissetta"
@@ -48,10 +58,42 @@ jobs:
           assert any("Battesimo" in item for item in udine1845["parish_routing"]["recordTypes"])
           assert trento["historicalProvince"]["name"] == "Tirolo"
           assert "under Austrian rule" in trento["provinceShift"]["warning"]
+          assert trento["catasto_guide"]["id"] == "none"
           assert garibaldi["mode"] == "trajectory"
           assert garibaldi["routeId"] == "garibaldi-mille"
           assert len(garibaldi["stops"]) == 9
           assert all(stop["matched"] for stop in garibaldi["stops"])
+          assert udine1842["sovereign"]["id"] == "lombardo-veneto"
+          assert udine1842["records"]["id"] == "parish"
+          assert udine1842["parish_routing"]["required"] is True
+          assert "Udine" in udine1842["parish_routing"]["diocese"]
+          assert "@" in udine1842["stato_civile_office"]["pec"]
+          assert udine1842["leva"]["classe"] == 1842
+          assert udine1842["leva"]["callUpYear"] == 1862
+          assert udine1842["leva"]["italianRolls"] is False
+          assert "Udine" in udine1842["leva"]["district"]
+          assert udine1842["catasto_guide"]["id"] == "austriaco"
+          assert "Udine" in udine1842["parrocchie"]["diocese"]
+          assert "beniarchivistici/?l=it_IT#" in udine1842["parrocchie"]["bewebUrl"]
+          assert "beniarchivistici/ricerca" not in udine1842["parrocchie"]["bewebUrl"]
+          assert bologna["sovereign"]["id"] == "papal"
+          assert bologna["parish_routing"]["required"] is True
+          assert bologna["catasto_guide"]["id"] == "gregoriano"
+          assert barone["mode"] == "surname"
+          assert barone["surname"] == "Barone"
+          assert barone["census"] is False
+          assert barone["category"] == "nickname"
+          assert barone.get("ambiguous") is not True
+          esposito_text = json.dumps(esposito.get("foundling") or {})
+          assert esposito["category"] == "foundling"
+          assert "Annunziata" in esposito_text or "Napoli" in esposito_text
+          assert esposito["census"] is False
+          leva = isernia["leva"]
+          assert leva["classe"] == 1878
+          assert leva["callUpYear"] == 1898
+          assert "Campobasso" in leva["district"]
+          assert leva["italianRolls"] is True
+          assert "Campobasso" in leva["archive"]["name"]
           print("resolver ok")
           PY
 
@@ -65,8 +107,22 @@ jobs:
           node --check dist/atlas/js/engine.mjs
           node --check dist/atlas/js/router.js
           node --check dist/atlas/js/atlas-api.js
-          if grep -nE 'fetch\("/|src="/|href="/' dist/atlas/index.html dist/atlas/js/*.js; then
+          node --check dist/atlas/js/suite.mjs
+          node --check dist/parrocchie/js/app.js
+          node --check dist/parrocchie/js/suite.mjs
+          node --check dist/cognomi/js/app.js
+          node --check dist/cognomi/js/suite.mjs
+          node --check dist/ansc/js/app.js
+          node --check dist/ansc/js/suite.mjs
+          node --check dist/caduti/js/app.js
+          node --check dist/caduti/js/suite.mjs
+          node --check dist/caduti/js/engine.mjs
+          if grep -nE 'fetch\("/|src="/|href="/' dist/atlas/index.html dist/atlas/js/*.js dist/parrocchie/index.html dist/parrocchie/js/*.js dist/cognomi/index.html dist/cognomi/js/*.js dist/ansc/index.html dist/ansc/js/*.js dist/caduti/index.html dist/caduti/js/*.js dist/index.html; then
             echo "absolute root path found"
+            exit 1
+          fi
+          if grep -R -n '../../lib/' dist/atlas/js dist/parrocchie/js dist/cognomi/js dist/ansc/js dist/caduti/js; then
+            echo "shim left in dist"
             exit 1
           fi
           grep -q 'https://youratto.com/atlas' dist/atlas/index.html
@@ -75,4 +131,17 @@ jobs:
           grep -q 'Pre-Civil Registration Era' dist/atlas/js/app.js
           grep -q 'id="ports"' dist/atlas/index.html
           grep -q 'id="chronicles"' dist/atlas/index.html
+          grep -q 'Organize Your Packet in Atto for Mac' dist/atlas/index.html
+          grep -q 'Organize Your Packet in Atto for Mac' dist/parrocchie/index.html
+          grep -q 'id="rail-toggle"' dist/atlas/index.html
+          grep -q 'id="rail"' dist/atlas/index.html
+          grep -q 'Open-Source Historical Atlas by Atto' dist/atlas/index.html
+          grep -q 'Requesting a Baptismal Certificate' dist/parrocchie/index.html
+          grep -q 'Share My Surname Map' dist/cognomi/index.html
+          grep -q 'MATCH_LIMIT = 40' dist/ansc/js/app.js
+          grep -q 'Do not risk a rejected Comune request' dist/ansc/index.html
+          grep -q 'Estratto per riassunto' dist/ansc/index.html
+          grep -q 'This tool does not hold the Albo' dist/caduti/index.html
+          grep -q 'export function analyzeSurname' dist/cognomi/js/suite.mjs
+          grep -q 'export function catastoGuide' lib/suite.mjs
           echo "bundle ok"

@@ -1,32 +1,81 @@
 #!/usr/bin/env bash
-# Package web/ + data/built/ into dist/atlas/ for public/atlas/ or atlas/.
+# Package the five static apps into dist/ for public hosting.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-DEST="$ROOT/dist/atlas"
 MARKER='window.ATLAS_BASE_PATH = window.ATLAS_BASE_PATH || "";'
 BUNDLE='window.ATLAS_BASE_PATH = window.ATLAS_BASE_PATH || "./";'
 
-rm -rf "$DEST"
-mkdir -p "$DEST/js" "$DEST/css" "$DEST/data/built"
-
-cp "$ROOT/web/index.html" "$DEST/index.html"
-cp "$ROOT/web/css/style.css" "$DEST/css/style.css"
-cp "$ROOT/web/js/app.js" "$ROOT/web/js/router.js" "$ROOT/web/js/atlas-api.js" "$DEST/js/"
-cp "$ROOT/lib/engine.mjs" "$DEST/js/engine.mjs"
-cp "$ROOT/data/built/"*.json "$ROOT/data/built/"*.geojson "$DEST/data/built/"
-
-python3 - "$DEST/index.html" "$MARKER" "$BUNDLE" <<'PY'
+package_app() {
+  local src="$1"
+  local dest="$2"
+  rm -rf "$dest"
+  mkdir -p "$dest/js" "$dest/css" "$dest/data/built"
+  cp "$src/index.html" "$dest/index.html"
+  cp "$src/css/style.css" "$dest/css/style.css"
+  cp "$src/js/"*.js "$src/js/"*.mjs "$dest/js/"
+  cp "$ROOT/lib/engine.mjs" "$dest/js/engine.mjs"
+  cp "$ROOT/lib/suite.mjs" "$dest/js/suite.mjs"
+  cp "$ROOT/data/built/"*.json "$ROOT/data/built/"*.geojson "$dest/data/built/"
+  python3 - "$dest" "$MARKER" "$BUNDLE" <<'PY'
 import pathlib, sys
-path, marker, bundle = sys.argv[1:]
-file = pathlib.Path(path)
-text = file.read_text(encoding="utf-8")
+dest, marker, bundle = sys.argv[1:]
+root = pathlib.Path(dest)
+replacements = [
+    ("../web-parrocchie/", "../parrocchie/"),
+    ("../web-cognomi/", "../cognomi/"),
+    ("../web-ansc/", "../ansc/"),
+    ("../web-caduti/", "../caduti/"),
+    ("../web/", "../atlas/"),
+]
+index = root / "index.html"
+text = index.read_text(encoding="utf-8")
 if marker not in text:
-    raise SystemExit("index.html is missing the ATLAS_BASE_PATH marker")
-file.write_text(text.replace(marker, bundle, 1), encoding="utf-8")
+    raise SystemExit(f"{index} is missing the ATLAS_BASE_PATH marker")
+text = text.replace(marker, bundle, 1)
+for old, new in replacements:
+    text = text.replace(old, new)
+index.write_text(text, encoding="utf-8")
+for path in list((root / "js").glob("*.js")) + list((root / "js").glob("*.mjs")):
+    body = path.read_text(encoding="utf-8")
+    updated = body
+    for old, new in replacements:
+        updated = updated.replace(old, new)
+    if updated != body:
+        path.write_text(updated, encoding="utf-8")
 PY
+}
 
+package_app "$ROOT/web" "$ROOT/dist/atlas"
+package_app "$ROOT/web-parrocchie" "$ROOT/dist/parrocchie"
+package_app "$ROOT/web-cognomi" "$ROOT/dist/cognomi"
+package_app "$ROOT/web-ansc" "$ROOT/dist/ansc"
+package_app "$ROOT/web-caduti" "$ROOT/dist/caduti"
+
+cat > "$ROOT/dist/index.html" <<'HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atto Open Genealogy Suite</title>
+</head>
+<body>
+  <h1>Atto Open Genealogy Suite</h1>
+  <ul>
+    <li><a href="atlas/">Historical Atlas</a></li>
+    <li><a href="parrocchie/">Parrocchie and Dioceses</a></li>
+    <li><a href="cognomi/">Cognomi Heatmap</a></li>
+    <li><a href="ansc/">ANSC and PEC Tracker</a></li>
+    <li><a href="caduti/">Caduti and Liste di Leva</a></li>
+  </ul>
+</body>
+</html>
+HTML
+
+DEST="$ROOT/dist/atlas"
 test -f "$DEST/js/engine.mjs"
+test -f "$DEST/js/suite.mjs"
 test -f "$DEST/data/built/comuni-index.json"
 test -f "$DEST/data/built/polities.json"
 test -f "$DEST/data/built/archives.json"
@@ -34,8 +83,18 @@ test -f "$DEST/data/built/routes.json"
 test -f "$DEST/data/built/contacts.json"
 test -f "$DEST/data/built/dioceses.json"
 test -f "$DEST/data/built/provinces.geojson"
+test -f "$DEST/data/built/parrocchie-db.json"
+test -f "$DEST/data/built/cognomi-db.json"
+test -f "$DEST/data/built/ansc-pec-db.json"
+test -f "$DEST/data/built/caduti-leva-db.json"
+test -f "$DEST/data/built/rail-catasti.json"
 grep -q 'src="js/app.js"' "$DEST/index.html"
 grep -q 'href="css/style.css"' "$DEST/index.html"
 grep -q 'ATLAS_BASE_PATH = window.ATLAS_BASE_PATH || "./"' "$DEST/index.html"
+test -f "$ROOT/dist/parrocchie/index.html"
+test -f "$ROOT/dist/cognomi/index.html"
+test -f "$ROOT/dist/ansc/index.html"
+test -f "$ROOT/dist/caduti/index.html"
+test -f "$ROOT/dist/index.html"
 
-echo "wrote dist/atlas"
+echo "wrote dist/atlas dist/parrocchie dist/cognomi dist/ansc dist/caduti dist/index.html"

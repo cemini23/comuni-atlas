@@ -910,6 +910,17 @@ def span_at(spans, iso):
     return None
 
 
+def build_suite() -> None:
+    for script in (
+        "08_build_parrocchie.py",
+        "09_build_cognomi.py",
+        "10_build_ansc_pec.py",
+        "11_build_caduti_leva.py",
+        "12_build_rail_catasti.py",
+    ):
+        script_module(script).build()
+
+
 def smoke(places, rules):
     def find_name(name):
         target = name.lower()
@@ -989,7 +1000,21 @@ def main() -> int:
     (BUILT / "contacts.json").write_text(json.dumps(load_contacts(), ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (BUILT / "dioceses.json").write_text(json.dumps(load_dioceses(), ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     shutil.copyfile(RAW / "provinces.geojson", BUILT / "provinces.geojson")
-    for name in ("comuni-index.json", "polities.json", "archives.json", "routes.json", "contacts.json", "dioceses.json", "provinces.geojson"):
+    build_suite()
+    for name in (
+        "comuni-index.json",
+        "polities.json",
+        "archives.json",
+        "routes.json",
+        "contacts.json",
+        "dioceses.json",
+        "provinces.geojson",
+        "parrocchie-db.json",
+        "cognomi-db.json",
+        "ansc-pec-db.json",
+        "caduti-leva-db.json",
+        "rail-catasti.json",
+    ):
         path = BUILT / name
         print(f"{name} {path.stat().st_size} bytes")
     smoke(places, rules)

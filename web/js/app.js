@@ -1,4 +1,5 @@
 import { createAtlas, fold, parseYearList } from "./engine.mjs";
+import { catastoGuide } from "./suite.mjs";
 import { installAtlasApi } from "./atlas-api.js";
 import { onPopState, readQuery, writeQuery } from "./router.js";
 
@@ -19,6 +20,7 @@ const provinceLayer = document.querySelector("#provinces");
 const arcLayer = document.querySelector("#arcs");
 const pinLayer = document.querySelector("#pins");
 const portLayer = document.querySelector("#ports");
+const railLayer = document.querySelector("#rail");
 const yearStamp = document.querySelector("#year-stamp");
 const hoverTip = document.querySelector("#hover-tip");
 const mapWrap = document.querySelector(".map-wrap");
@@ -39,6 +41,8 @@ const state = {
   placeRaw: "",
   routeId: "",
   portsOn: true,
+  railOn: false,
+  rail: null,
   stops: [],
   index: 0,
   frame: "italy",
@@ -234,6 +238,7 @@ function paintYear(year, label = year) {
     row.append(swatch, document.createTextNode(`${item.nameEn} (${item.provinces})`));
     legend.append(row);
   }
+  drawRail(model);
 }
 
 function markProvinces(result) {
@@ -297,6 +302,26 @@ function drawOverlay() {
     pinLayer.append(dot, label);
   }
   drawPorts();
+}
+
+function drawRail(year = state.year) {
+  if (!railLayer) return;
+  railLayer.replaceChildren();
+  if (!state.railOn || !state.rail) return;
+  const current = Number(year);
+  for (const line of state.rail.lines || []) {
+    if (Number(line.year) > current) continue;
+    const points = (line.coordinates || []).map(([lng, lat]) => {
+      const [x, y] = project(lng, lat);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    });
+    if (points.length < 2) continue;
+    const path = document.createElementNS(SVG_NS, "polyline");
+    path.setAttribute("class", "rail-line");
+    path.setAttribute("fill", "none");
+    path.setAttribute("points", points.join(" "));
+    railLayer.append(path);
+  }
 }
 
 function drawPorts() {
@@ -418,6 +443,31 @@ function officeSection(result) {
   </section>`;
 }
 
+function catastoSection(result) {
+  if (!result?.matched) return "";
+  const region = result.modernProvince?.region || result.historicalProvince?.region || "";
+  const sovereignId = result.sovereign?.id || "";
+  let options = {};
+  if (sovereignId === "regno-italia" && state.atlas) {
+    const earlier = state.atlas.resolvePlace(result.query?.place || result.modernName || "", 1850);
+    options = {
+      fallbackId: earlier?.sovereign?.id || "",
+      fallbackRegion: earlier?.modernProvince?.region || earlier?.historicalProvince?.region || "",
+    };
+  }
+  const guide = catastoGuide(sovereignId, region, options);
+  const link = result.archive?.antenatiUrl
+    ? `<p><a href="${esc(result.archive.antenatiUrl)}" rel="noopener noreferrer">State Archive guide on Portale Antenati</a></p>`
+    : "";
+  const years = guide.years ? ` ${esc(guide.years)}` : "";
+  return `<section class="catasto-box">
+    <h3>Cadastre guide</h3>
+    <p><strong>${esc(guide.name)}</strong>${years}</p>
+    ${guide.note ? `<p>${esc(guide.note)}</p>` : ""}
+    ${link}
+  </section>`;
+}
+
 function parishSection(result) {
   const parish = result.parish_routing;
   if (!parish?.required) return "";
@@ -495,6 +545,7 @@ function renderCard(result) {
     line("ISTAT", result.istat || ""),
     line("Catasto", result.catasto || ""),
     line("Sovereign", result.sovereign ? `${result.sovereign.name} · ${result.sovereign.nameEn}` : ""),
+    catastoSection(result),
     line("Epoch", result.epoch?.name || ""),
     line("Historical province", result.historicalProvince ? `${result.historicalProvince.name} (${result.historicalProvince.code}) · ${result.historicalProvince.region}` : ""),
     line("Modern province", result.modernProvince ? `${result.modernProvince.name} (${result.modernProvince.code}) · ${result.modernProvince.region}` : ""),
@@ -887,6 +938,12 @@ function bindEvents() {
     event.currentTarget.textContent = state.portsOn ? "Hide emigration ports" : "Show emigration ports";
     drawPorts();
   });
+  document.querySelector("#rail-toggle")?.addEventListener("click", (event) => {
+    state.railOn = !state.railOn;
+    event.currentTarget.setAttribute("aria-pressed", state.railOn ? "true" : "false");
+    event.currentTarget.textContent = state.railOn ? "Hide historical railways" : "Show historical railways";
+    drawRail();
+  });
   document.querySelector("#chronicles")?.addEventListener("click", (event) => {
     const button = event.target.closest("[data-route]");
     if (!button) return;
@@ -1013,7 +1070,7 @@ async function loadJson(name) {
 async function main() {
   bootTheme();
   banner.textContent = "Loading the atlas…";
-  const [index, polities, archives, routes, contacts, dioceses, geo] = await Promise.all([
+  const [index, polities, archives, routes, contacts, dioceses, geo, rail] = await Promise.all([
     loadJson("comuni-index.json"),
     loadJson("polities.json"),
     loadJson("archives.json"),
@@ -1021,9 +1078,11 @@ async function main() {
     loadJson("contacts.json"),
     loadJson("dioceses.json"),
     loadJson("provinces.geojson"),
+    loadJson("rail-catasti.json"),
   ]);
   state.atlas = createAtlas({ index, polities, archives, routes, contacts, dioceses });
   state.geo = geo;
+  state.rail = rail;
   slider.min = String(state.atlas.yearMin);
   slider.max = String(state.atlas.yearMax);
   bindEvents();

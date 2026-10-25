@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ANSC &amp; PEC Tracker | Atto</title>
+  <meta name="description" content="Find a comune PEC address. This atlas has no per-comune ANSC onboarding date. Historical Stato Civile books stay on paper.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="suite-bar">
+      <a class="brand" href="https://youratto.com">
+        <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect x="5" y="6" width="16" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" transform="rotate(-10 13 16)"/>
+          <rect x="11" y="8" width="16" height="20" rx="2" fill="var(--parchment)" stroke="currentColor" stroke-width="1.6"/>
+          <rect x="20.2" y="11" width="1.8" height="4" fill="#009246"/>
+          <rect x="22" y="11" width="1.8" height="4" fill="#fff"/>
+          <rect x="23.8" y="11" width="1.8" height="4" fill="#CE2B37"/>
+        </svg>
+        <span>Atto</span>
+      </a>
+      <nav class="suite-pills" aria-label="Atto genealogy suite">
+        <a class="pill" href="../web/">🗺️ Historical Atlas</a>
+        <a class="pill" href="../web-parrocchie/">⛪ Parrocchie &amp; Dioceses</a>
+        <a class="pill" href="../web-cognomi/">🧬 Cognomi Heatmap</a>
+        <a class="pill" href="../web-ansc/" aria-current="page">🏛️ ANSC &amp; PEC Tracker</a>
+        <a class="pill" href="../web-caduti/">🎖️ Caduti &amp; Liste di Leva</a>
+      </nav>
+      <a class="pill" href="https://youratto.com?utm_source=ansc&amp;utm_medium=header">Organize Your Packet in Atto for Mac →</a>
+    </div>
+    <div class="title-block">
+      <h1 class="atlas-title">ANSC &amp; PEC Tracker</h1>
+      <p class="badge">This atlas has no per-comune ANSC onboarding date. ANPR covers the living population. Historical Stato Civile books stay on paper.</p>
+    </div>
+    <div class="top-actions">
+      <button type="button" id="theme-toggle" aria-pressed="false">Dark mode</button>
+    </div>
+  </header>
+  <p id="status" class="banner" role="status">Load this page from the repository.</p>
+  <div class="shell">
+    <aside class="panel search-panel">
+      <form id="search-form">
+        <div class="field">
+          <label for="query">Comune or historical name</label>
+          <input id="query" name="comune" autocomplete="off" placeholder="Castrogiovanni">
+        </div>
+        <button type="submit">Find the comune</button>
+      </form>
+      <p class="mesh-note">The map shows the comune's region. It is not an ANSC onboarding wave.</p>
+      <ul id="hits" class="results"></ul>
+    </aside>
+    <main class="map-wrap">
+      <svg id="map" viewBox="0 0 1000 1180" role="img" aria-label="Italy. Color is the comune region, not an onboarding wave.">
+        <rect id="sea" x="-40" y="-40" width="1080" height="1260"></rect>
+        <g id="provinces"></g>
+      </svg>
+    </main>
+    <aside class="panel card">
+      <div id="result"></div>
+      <section id="checklist">
+        <h2>Request checklist, Art. 106–108 DPR 396/2000</h2>
+        <ul class="dossier-list">
+          <li>Comune</li>
+          <li>Act type</li>
+          <li>Full name</li>
+          <li>Year</li>
+          <li>Father and mother for the estratto</li>
+          <li>Request type: Estratto per riassunto dell'Atto di Nascita con indicazione della paternità e maternità, or Copia integrale</li>
+          <li>The applicant's return address</li>
+        </ul>
+      </section>
+      <p class="atto-cta"><a href="https://youratto.com?utm_source=ansc&amp;utm_medium=inspector">Do not risk a rejected Comune request. Atto for Mac generates ready-to-send bilingual Italian PEC and postal request packets, tracks the 30-day statutory response window, and stores your returned vital records offline.</a></p>
+    </aside>
+  </div>
+  <p id="boot-error" class="boot-error" hidden></p>
+  <script>window.ATLAS_BASE_PATH = window.ATLAS_BASE_PATH || "";</script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

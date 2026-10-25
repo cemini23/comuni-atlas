@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cognomi Heatmap | Atto</title>
+  <meta name="description" content="A linguistic estimate of an Italian surname. This is not a census and it does not draw a fake hotspot.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="suite-bar">
+      <a class="brand" href="https://youratto.com">
+        <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect x="5" y="6" width="16" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" transform="rotate(-10 13 16)"/>
+          <rect x="11" y="8" width="16" height="20" rx="2" fill="var(--parchment)" stroke="currentColor" stroke-width="1.6"/>
+          <rect x="20.2" y="11" width="1.8" height="4" fill="#009246"/>
+          <rect x="22" y="11" width="1.8" height="4" fill="#fff"/>
+          <rect x="23.8" y="11" width="1.8" height="4" fill="#CE2B37"/>
+        </svg>
+        <span>Atto</span>
+      </a>
+      <nav class="suite-pills" aria-label="Atto genealogy suite">
+        <a class="pill" href="../web/">🗺️ Historical Atlas</a>
+        <a class="pill" href="../web-parrocchie/">⛪ Parrocchie &amp; Dioceses</a>
+        <a class="pill" href="../web-cognomi/" aria-current="page">🧬 Cognomi Heatmap</a>
+        <a class="pill" href="../web-ansc/">🏛️ ANSC &amp; PEC Tracker</a>
+        <a class="pill" href="../web-caduti/">🎖️ Caduti &amp; Liste di Leva</a>
+      </nav>
+      <a class="pill" href="https://youratto.com?utm_source=cognomi&amp;utm_medium=header">Organize Your Packet in Atto for Mac →</a>
+    </div>
+    <div class="title-block">
+      <h1 class="atlas-title">Cognomi Heatmap</h1>
+      <p class="badge">Linguistic estimate, not a census.</p>
+    </div>
+    <div class="top-actions">
+      <button type="button" id="theme-toggle" aria-pressed="false">Dark mode</button>
+    </div>
+  </header>
+  <p id="status" class="banner" role="status">Load this page from the repository.</p>
+  <div class="shell">
+    <aside class="panel search-panel">
+      <form id="search-form">
+        <div class="field">
+          <label for="surname">Surname</label>
+          <input id="surname" name="surname" autocomplete="off" placeholder="Barone">
+        </div>
+        <button type="submit">Show the dossier</button>
+        <button type="button" id="share-map">Share My Surname Map</button>
+      </form>
+      <p class="mesh-note">Color marks a named region. A surname with no region stays uncolored. Ports are heuristic, not passenger records.</p>
+    </aside>
+    <main class="map-wrap">
+      <svg id="map" viewBox="0 0 1000 1180" role="img" aria-label="Italy colored by surname region when one is known">
+        <rect id="sea" x="-40" y="-40" width="1080" height="1260"></rect>
+        <g id="provinces"></g>
+      </svg>
+    </main>
+    <aside class="panel card">
+      <div id="result"></div>
+    </aside>
+  </div>
+  <p id="boot-error" class="boot-error" hidden></p>
+  <script>window.ATLAS_BASE_PATH = window.ATLAS_BASE_PATH || "";</script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

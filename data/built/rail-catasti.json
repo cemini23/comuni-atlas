@@ -1,0 +1,219 @@
+{
+  "lines": [
+    {
+      "id": "napoli-portici",
+      "name": "Napoli–Portici",
+      "year": 1839,
+      "opened": "1839-10-03",
+      "towns": [
+        "Napoli",
+        "Portici"
+      ],
+      "schematic": true,
+      "coordinates": [
+        [
+          14.23962,
+          40.85666
+        ],
+        [
+          14.34183,
+          40.81881
+        ]
+      ]
+    },
+    {
+      "id": "milano-monza",
+      "name": "Milano–Monza",
+      "year": 1840,
+      "opened": "1840-08-17",
+      "towns": [
+        "Milano",
+        "Monza"
+      ],
+      "schematic": true,
+      "coordinates": [
+        [
+          9.17304,
+          45.46841
+        ],
+        [
+          9.27581,
+          45.58542
+        ]
+      ]
+    },
+    {
+      "id": "torino-moncalieri",
+      "name": "Torino–Moncalieri",
+      "year": 1848,
+      "opened": "1848",
+      "towns": [
+        "Torino",
+        "Moncalieri"
+      ],
+      "schematic": true,
+      "coordinates": [
+        [
+          7.67791,
+          45.07176
+        ],
+        [
+          7.70266,
+          44.98841
+        ]
+      ]
+    },
+    {
+      "id": "torino-genova",
+      "name": "Torino–Genova",
+      "year": 1854,
+      "opened": "1854",
+      "towns": [
+        "Torino",
+        "Genova"
+      ],
+      "schematic": true,
+      "coordinates": [
+        [
+          7.67791,
+          45.07176
+        ],
+        [
+          8.89308,
+          44.4414
+        ]
+      ]
+    },
+    {
+      "id": "milano-venezia",
+      "name": "Milano–Venezia",
+      "year": 1857,
+      "opened": "1857",
+      "towns": [
+        "Milano",
+        "Brescia",
+        "Verona",
+        "Padova",
+        "Venezia"
+      ],
+      "schematic": true,
+      "coordinates": [
+        [
+          9.17304,
+          45.46841
+        ],
+        [
+          10.22562,
+          45.53256
+        ],
+        [
+          11.00207,
+          45.44863
+        ],
+        [
+          11.88312,
+          45.40341
+        ],
+        [
+          12.34601,
+          45.46695
+        ]
+      ]
+    },
+    {
+      "id": "porrettana",
+      "name": "Porrettana Bologna–Pistoia",
+      "year": 1864,
+      "opened": "1864",
+      "towns": [
+        "Bologna",
+        "Porretta Terme",
+        "Pistoia"
+      ],
+      "schematic": true,
+      "coordinates": [
+        [
+          11.3333,
+          44.49802
+        ],
+        [
+          11.31978,
+          44.39704
+        ],
+        [
+          10.91555,
+          43.97694
+        ]
+      ]
+    },
+    {
+      "id": "frejus-modane",
+      "name": "Fréjus/Modane",
+      "year": 1871,
+      "opened": "1871",
+      "towns": [
+        "Torino",
+        "Modane"
+      ],
+      "schematic": true,
+      "coordinates": [
+        [
+          7.67791,
+          45.07176
+        ],
+        [
+          6.658,
+          45.201
+        ]
+      ]
+    }
+  ],
+  "catasti": [
+    {
+      "id": "gregoriano",
+      "name": "Catasto Gregoriano",
+      "years": "1816–1835",
+      "polities": [
+        "papal"
+      ]
+    },
+    {
+      "id": "austriaco",
+      "name": "Catasto Lombardo-Veneto / Austriaco",
+      "years": "1807–1853",
+      "polities": [
+        "lombardo-veneto",
+        "austria",
+        "austria-hungary"
+      ],
+      "note": "Austria and Austria-Hungary use this id only in Lombardia, Veneto, and Friuli-Venezia Giulia. Lombardo-Veneto uses it on its own ground."
+    },
+    {
+      "id": "leopoldino",
+      "name": "Catasto Ferdinandeo-Leopoldino",
+      "years": "1817–1835",
+      "polities": [
+        "toscana"
+      ]
+    },
+    {
+      "id": "murattiano",
+      "name": "Catasto Provvisorio / Murattiano",
+      "years": "1806–1815",
+      "polities": [
+        "murat",
+        "napoli-borbone",
+        "sicilia-borbone",
+        "due-sicilie"
+      ],
+      "note": "This is the Kingdom of Naples finding aid."
+    },
+    {
+      "id": "none",
+      "name": "No cadastre in this guide",
+      "years": "",
+      "polities": []
+    }
+  ],
+  "note": "Schematic corridors, not surveyed track."
+}

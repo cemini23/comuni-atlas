@@ -20,8 +20,28 @@ node cli/resolve.mjs --year 1884 --place "Castrogiovanni"
 Read the JSON on stdout. A matched comune includes `stato_civile_office` (PEC, address, ANSC status) and `parish_routing` (diocese, archive, and whether that year needs a parish act). `pecSource` is `indicepa` or `pattern-fallback`. Confirm a pattern address before you send it.
 
 - Exit 0 means every stop matched.
-- Exit 2 means a stop did not match.
+- Exit 2 means a stop did not match, or the surname string is empty.
 - Exit 1 means the command is incomplete.
+
+Surname and leva commands:
+
+```bash
+node cli/resolve.mjs --cognome Barone
+node cli/resolve.mjs --surname Esposito
+node cli/resolve.mjs --leva --year 1878 --place Isernia
+```
+
+`--cognome` prints a surname dossier and does not print the place. `census` is false. The dossier is a linguistic estimate, not a census. Colombo is ambiguous. Do not treat every Colombo as a foundling. Cabello has no Italian epicenter.
+
+A matched place also includes `leva`, `catasto_guide`, and `parrocchie`.
+
+- PEC from IndicePA is `pecSource` `indicepa`. A missing row is `pattern-fallback`. Confirm a pattern address before you send it.
+- This atlas has no per-comune ANSC onboarding date. `rolloutWave` is null. `digitalSignatureReady` is false. `anscActive` is false.
+- Leva is a finding aid. Call-up year is the birth year plus 20. It is not a service record.
+- Rail lines are schematic corridors, not surveyed track.
+- The cadastre guide is not a tile layer. It does not draw parcels.
+
+The other tools are Parrocchie and dioceses, the Cognomi heatmap, the ANSC and PEC tracker, and Caduti and liste di leva. Their pages are `web-parrocchie/`, `web-cognomi/`, `web-ansc/`, and `web-caduti/`.
 
 A comma-separated place list returns a trajectory. This curated route uses Quarto dei Mille in Genova, not the comune of Quarto in Napoli:
 

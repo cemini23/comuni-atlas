@@ -1,0 +1,41 @@
+{
+  "source": "finding-aid",
+  "alboNote": "This tool does not hold the Albo d'Oro name list.",
+  "ageModel": "call-up year = birth year + 20",
+  "regiments": [
+    {
+      "id": "alpini",
+      "name": "Alpini",
+      "note": "Alpine basins: Piemonte, Valle d'Aosta/Vallée d'Aoste, Liguria alpine notes, Lombardia north, Veneto, Friuli-Venezia Giulia, and Trentino-Alto Adige/Südtirol.",
+      "regions": [
+        "Piemonte",
+        "Valle d'Aosta/Vallée d'Aoste",
+        "Liguria",
+        "Lombardia",
+        "Veneto",
+        "Friuli-Venezia Giulia",
+        "Trentino-Alto Adige/Südtirol"
+      ]
+    },
+    {
+      "id": "bersaglieri",
+      "name": "Bersaglieri",
+      "note": "Designated districts. No single province.",
+      "regions": []
+    },
+    {
+      "id": "brigata-sassari",
+      "name": "Brigata Sassari",
+      "note": "Sardegna.",
+      "regions": [
+        "Sardegna"
+      ]
+    },
+    {
+      "id": "fanteria",
+      "name": "Fanteria",
+      "note": "The default line of the district.",
+      "regions": []
+    }
+  ]
+}
