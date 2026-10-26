@@ -15,13 +15,14 @@ const placeInput = document.querySelector("#place");
 const yearInput = document.querySelector("#year");
 const provinceLayer = document.querySelector("#provinces");
 const pinLayer = document.querySelector("#pin");
+const frontLayer = document.querySelector("#fronts");
 const themeToggle = document.querySelector("#theme-toggle");
 const bootError = document.querySelector("#boot-error");
 const alboNote = document.querySelector("#albo-note");
 const alboResult = document.querySelector("#albo-result");
 const alboName = document.querySelector("#albo-name");
 
-const state = { atlas: null, archives: null, geo: null, cognomi: null, index: null, guide: null };
+const state = { atlas: null, archives: null, geo: null, cognomi: null, index: null, guide: null, frontsOn: false };
 
 function mercator(lat) {
   const rad = (lat * Math.PI) / 180;
@@ -78,6 +79,31 @@ function drawBase() {
     path.setAttribute("fill", "#d9d0c0");
     path.setAttribute("fill-rule", "evenodd");
     provinceLayer.append(path);
+  }
+}
+
+function drawFronts() {
+  if (!frontLayer) return;
+  frontLayer.replaceChildren();
+  if (!state.frontsOn) return;
+  for (const front of state.guide?.fronts || []) {
+    if (front.lat == null || front.lng == null) continue;
+    const [x, y] = project(front.lng, front.lat);
+    const dot = document.createElementNS(SVG_NS, "circle");
+    dot.setAttribute("cx", x.toFixed(1));
+    dot.setAttribute("cy", y.toFixed(1));
+    dot.setAttribute("r", "6");
+    dot.setAttribute("fill", "#1e4d78");
+    dot.setAttribute("class", "front-dot");
+    const title = document.createElementNS(SVG_NS, "title");
+    title.textContent = `${front.name}. ${front.note || ""}`;
+    dot.append(title);
+    const label = document.createElementNS(SVG_NS, "text");
+    label.setAttribute("x", (x + 8).toFixed(1));
+    label.setAttribute("y", (y - 8).toFixed(1));
+    label.setAttribute("class", "pin-label");
+    label.textContent = front.name;
+    frontLayer.append(dot, label);
   }
 }
 
@@ -210,7 +236,14 @@ async function main() {
   state.cognomi = cognomi;
   state.guide = guide;
   drawBase();
+  drawFronts();
   renderRegiments(guide);
+  document.querySelector("#fronts-toggle")?.addEventListener("click", (event) => {
+    state.frontsOn = !state.frontsOn;
+    event.currentTarget.setAttribute("aria-pressed", state.frontsOn ? "true" : "false");
+    event.currentTarget.textContent = state.frontsOn ? "Hide WWI fronts" : "Show WWI fronts";
+    drawFronts();
+  });
   const params = new URLSearchParams(location.search);
   if (params.get("place")) placeInput.value = params.get("place");
   if (params.get("year")) yearInput.value = params.get("year");

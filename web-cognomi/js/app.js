@@ -61,15 +61,19 @@ function featurePath(feature) {
   return polygons.map((polygon) => polygon.map((ring) => ringPath(ring)).join("")).join("");
 }
 
-function drawMap(region) {
+function drawMap(region, secondary = []) {
   provinceLayer.replaceChildren();
+  const extra = new Set(secondary || []);
   for (const feature of state.geo.features) {
     const path = document.createElementNS(SVG_NS, "path");
     path.setAttribute("d", featurePath(feature));
     path.setAttribute("class", "province");
     path.setAttribute("fill-rule", "evenodd");
-    const match = region && feature.properties.reg_name === region;
-    path.setAttribute("fill", match ? "#8d2f2b" : "#d9d0c0");
+    const name = feature.properties.reg_name;
+    let fill = "#d9d0c0";
+    if (region && name === region) fill = "#8d2f2b";
+    else if (extra.has(name)) fill = "#c88a4b";
+    path.setAttribute("fill", fill);
     provinceLayer.append(path);
   }
 }
@@ -92,7 +96,7 @@ function writeQuery(surname) {
 function render(raw) {
   const dossier = analyzeSurname(raw, state.db, state.places);
   document.title = `${dossier.surname} Surname Origin, Map & Italian Civil Records | Atto`;
-  drawMap(dossier.region);
+  drawMap(dossier.region, dossier.secondaryRegions || []);
   const comuni = (dossier.topComuni || []).map((item) => {
     const href = `../web/?year=1885&place=${encodeURIComponent(item.name)}`;
     return `<li>${esc(item.name)} <a href="${esc(href)}">Inspect ${esc(item.name)} Archives in Atlas →</a></li>`;
@@ -105,6 +109,7 @@ function render(raw) {
     <h2>${esc(dossier.surname)}</h2>
     <p><strong>Category.</strong> ${esc(dossier.category)}</p>
     <p><strong>Region.</strong> ${esc(dossier.region || "Pan-Italian (Widespread across regions)")}</p>
+    ${(dossier.secondaryRegions || []).length ? `<p><strong>Secondary historical distribution.</strong> ${esc(dossier.secondaryRegions.join(", "))}</p>` : ""}
     ${dossier.meaning ? `<p><strong>Meaning.</strong> ${esc(dossier.meaning)}</p>` : ""}
     ${dossier.epicenterNote ? `<p>${esc(dossier.epicenterNote)}</p>` : ""}
     ${dossier.ambiguous ? "<p class=\"warn\">This surname is ambiguous.</p>" : ""}
@@ -112,8 +117,9 @@ function render(raw) {
     ${foundling}
     ${ports ? `<h3>Ports</h3><ul class="dossier-list">${ports}</ul>` : ""}
   `;
+  const secondary = (dossier.secondaryRegions || []).join(", ");
   status.textContent = dossier.region
-    ? `Primary historical region: ${dossier.region}.`
+    ? `Primary Regional Epicenter: ${dossier.region}.${secondary ? ` Secondary Historical Distribution: ${secondary}.` : ""}`
     : "Pan-Italian surname distributed across multiple regions.";
   writeQuery(dossier.surname);
   return dossier;

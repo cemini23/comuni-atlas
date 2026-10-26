@@ -150,9 +150,28 @@ def beweb(place: str) -> str:
     return f"https://www.beweb.chiesacattolica.it/beniarchivistici/?l=it_IT#{query}"
 
 
+PATRONS = {
+    "Torino": ("San Giovanni Battista", "24 June"),
+    "Milano": ("Sant'Ambrogio", "7 December"),
+    "Venezia": ("San Marco Evangelista", "25 April"),
+    "Genova": ("San Giovanni Battista", "24 June"),
+    "Bologna": ("San Petronio", "4 October"),
+    "Firenze": ("San Giovanni Battista", "24 June"),
+    "Roma": ("Santi Pietro e Paolo", "29 June"),
+    "Napoli": ("San Gennaro", "19 September"),
+    "Bari": ("San Nicola", "6 December"),
+    "Palermo": ("Santa Rosalia", "15 July"),
+    "Catania": ("Sant'Agata", "5 February"),
+    "Udine": ("Santi Ermacora e Fortunato", "12 July"),
+    "Trento": ("San Vigilio", "26 June"),
+    "Chieti": ("San Giustino", "11 May"),
+}
+
+
 def province_bundle() -> dict:
     by_province = {}
     for code, name, archive, cathedral, search, note in PROVINCES:
+        patron, feast = PATRONS.get(search, ("", ""))
         by_province[code] = {
             "name": name,
             "archive": archive,
@@ -160,6 +179,8 @@ def province_bundle() -> dict:
             "searchPlace": search,
             "bewebUrl": beweb(search),
             "note": note,
+            "patronSaint": patron,
+            "feastDay": feast,
             "source": "province-seat",
         }
     return {

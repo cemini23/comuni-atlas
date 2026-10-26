@@ -37,5 +37,49 @@
       "note": "The default line of the district.",
       "regions": []
     }
+  ],
+  "fronts": [
+    {
+      "id": "isonzo-carso",
+      "name": "Isonzo & Carso / Gorizia",
+      "note": "Eleven Isonzo battles, 1915–1917, and the Carso plateau above Gorizia.",
+      "lat": 45.941,
+      "lng": 13.622
+    },
+    {
+      "id": "monte-grappa",
+      "name": "Monte Grappa",
+      "note": "The Grappa massif held the line between the Brenta and the Piave in 1917–1918.",
+      "lat": 45.87,
+      "lng": 11.8
+    },
+    {
+      "id": "asiago",
+      "name": "Altopiano dei Sette Comuni / Asiago",
+      "note": "The Asiago plateau, including the Strafexpedition of 1916 and later battles.",
+      "lat": 45.872,
+      "lng": 11.508
+    },
+    {
+      "id": "piave",
+      "name": "Piave & Vittorio Veneto",
+      "note": "The Piave line of 1917–1918 and the Vittorio Veneto offensive of October 1918.",
+      "lat": 45.98,
+      "lng": 12.3
+    },
+    {
+      "id": "pasubio",
+      "name": "Pasubio & Vallarsa",
+      "note": "The Pasubio ridge and Vallarsa valley on the Trentino front.",
+      "lat": 45.85,
+      "lng": 11.18
+    },
+    {
+      "id": "adamello",
+      "name": "Adamello & Tonale",
+      "note": "High-altitude fighting on the Adamello glacier and the Tonale pass.",
+      "lat": 46.16,
+      "lng": 10.58
+    }
   ]
 }

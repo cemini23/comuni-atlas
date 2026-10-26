@@ -119,7 +119,7 @@ cat > "$ROOT/dist/index.html" <<'HTML'
   <main class="hub">
     <article class="panel card">
       <h2>Historical Atlas</h2>
-      <p>Look up an Italian town from 1796 to 2026.</p>
+      <p>Look up an Italian town from 1563 to 2026.</p>
       <p><a class="pill" href="atlas/">Open the atlas</a></p>
       <ul>
         <li><a href="atlas/?year=1884&amp;place=Castrogiovanni">Castrogiovanni in 1884</a></li>

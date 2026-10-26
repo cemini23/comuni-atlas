@@ -37,6 +37,29 @@ html, body {
   overflow-x: hidden;
 }
 
+.map-legend {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+}
+
+.map-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0.25rem 0;
+}
+
+.swatch {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.swatch-primary { background: #8d2f2b; }
+.swatch-secondary { background: #c88a4b; }
+
 body {
   min-height: 100%;
   display: grid;

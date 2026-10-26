@@ -126,6 +126,35 @@ function matches(query, year) {
   return { churches: churches.slice(0, 40), dioceses: dioceses.slice(0, 12) };
 }
 
+function tridentineBlock(year) {
+  const numeric = Number(year);
+  const lines = [];
+  if (numeric >= 1563) {
+    lines.push("Baptisms (Liber Baptizatorum) & Marriages (Liber Matrimoniorum) — Mandated by the Council of Trent (11 Nov 1563).");
+  }
+  if (numeric >= 1614) {
+    lines.push("Burials (Liber Defunctorum) & Annual Family Census (Stato delle Anime) — Mandated by Pope Paul V's Rituale Romanum (1614).");
+  }
+  if (!lines.length) {
+    lines.push("This year is before the Council of Trent. Parish baptismal and marriage books were not yet required across Italy.");
+  }
+  return `<section><h3>Tridentine Canonical Register Availability</h3>${lines.map((line) => `<p>${esc(line)}</p>`).join("")}</section>`;
+}
+
+function patronText(saint, feast) {
+  if (!saint) return "";
+  return feast ? `${saint} (${feast})` : saint;
+}
+
+function patronFromName(name) {
+  const key = fold(name);
+  if (!key) return "";
+  const hit = (state.db?.dioceses || []).find((row) => (
+    fold(row.name) === key || fold(row.seatComune) === key || fold(row.searchPlace) === key
+  ));
+  return patronText(hit?.patronSaint, hit?.feastDay);
+}
+
 function churchCard(row, year) {
   const hot = row.chiesaMadre ? "is-madre" : (row.kind === "diocesan-seat" ? "is-seat" : "");
   const badges = [
@@ -142,6 +171,7 @@ function churchCard(row, year) {
     ${badges ? `<p class="status">${esc(badges)}</p>` : ""}
     <p><strong>Comune.</strong> ${esc(place)}</p>
     <p><strong>Diocese.</strong> ${esc(row.diocese || "")}</p>
+    ${patronText(row.patronSaint, row.feastDay) ? `<p><strong>Patron saint.</strong> ${esc(patronText(row.patronSaint, row.feastDay))}</p>` : ""}
     <p><strong>Atto di Battesimo.</strong> Ask the parish or the diocesan archive.</p>
     <p><strong>Matrimonio Canonico.</strong> Ask the parish or the diocesan archive.</p>
     <p><strong>Diocesan archive.</strong> ${esc(row.archive || "")}</p>
@@ -165,6 +195,7 @@ function routingCard(resolved, year) {
     <p><strong>Historical name.</strong> ${esc(resolved.historicalName || "")}</p>
     <p><strong>Modern name.</strong> ${esc(resolved.modernName || "")}</p>
     <p><strong>Diocese.</strong> ${esc(parish.diocese || "")}</p>
+    ${patronFromName(parish.diocese) ? `<p><strong>Patron saint.</strong> ${esc(patronFromName(parish.diocese))}</p>` : ""}
     <p><strong>Diocesan archive.</strong> ${esc(parish.archive || "")}</p>
     <p><strong>Cathedral.</strong> ${esc(parish.cathedral || "")}</p>
     ${beweb}
@@ -191,6 +222,7 @@ function render() {
   else if (found.dioceses[0]) drawPin({ lat: found.dioceses[0].lat, lng: found.dioceses[0].lng });
   else drawPin(null);
   const blocks = [
+    tridentineBlock(year),
     ...(resolved ? [routingCard(resolved, year)] : []),
     ...found.dioceses.map((row) => churchCard({
       name: row.cathedral || row.name,
@@ -201,6 +233,8 @@ function render() {
       kind: "diocesan-seat",
       chiesaMadre: false,
       inceptionYear: null,
+      patronSaint: row.patronSaint,
+      feastDay: row.feastDay,
     }, year)),
     ...found.churches.map((row) => churchCard(row, year)),
   ];

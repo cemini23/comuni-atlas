@@ -26,7 +26,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
 BUILT = ROOT / "data" / "built"
-START = "1796-01-01"
+START = "1563-01-01"
+ERA = "1796-01-01"
 END = "2026-12-31"
 
 # Codes follow matteocontrini/comuni-json (current ISTAT), not older memorized lists.
@@ -55,15 +56,15 @@ GROUPS = {
 }
 
 NAME_RULES = {
-    "084": [("1796-01-01", "1927-07-26", "Girgenti"), ("1927-07-27", END, "Agrigento")],
-    "061": [("1796-01-01", "1927-01-11", "Terra di Lavoro"), ("1927-01-12", END, "Caserta")],
+    "084": [(START, "1927-07-26", "Girgenti"), ("1927-07-27", END, "Agrigento")],
+    "061": [(START, "1927-01-11", "Terra di Lavoro"), ("1927-01-12", END, "Caserta")],
     "059": [("1934-10-26", "1945-04-08", "Littoria"), ("1945-04-09", END, "Latina")],
-    "040": [("1796-01-01", "1992-04-15", "Forlì"), ("1992-04-16", END, "Forlì-Cesena")],
+    "040": [(START, "1992-04-15", "Forlì"), ("1992-04-16", END, "Forlì-Cesena")],
     "086": [("1927-01-12", "1927-11-30", "Castrogiovanni"), ("1927-12-01", END, "Enna")],
-    "022": [("1796-01-01", "1920-10-15", "Tirolo"), ("1920-10-16", END, "Trento")],
-    "021": [("1796-01-01", "1927-01-11", "Tirolo"), ("1927-01-12", END, "Bolzano")],
-    "032": [("1796-01-01", "1920-12-31", "Litorale austriaco"), ("1921-01-01", END, "Trieste")],
-    "031": [("1796-01-01", "1920-12-31", "Gorizia e Gradisca"), ("1921-01-01", END, "Gorizia")],
+    "022": [(START, "1920-10-15", "Tirolo"), ("1920-10-16", END, "Trento")],
+    "021": [(START, "1927-01-11", "Tirolo"), ("1927-01-12", END, "Bolzano")],
+    "032": [(START, "1920-12-31", "Litorale austriaco"), ("1921-01-01", END, "Trieste")],
+    "031": [(START, "1920-12-31", "Gorizia e Gradisca"), ("1921-01-01", END, "Gorizia")],
     "104": [(START, END, "Olbia-Tempio")],
     "105": [(START, END, "Ogliastra")],
     "106": [(START, END, "Medio Campidano")],
@@ -122,6 +123,63 @@ def span(start, end, polity, record, note=""):
     return {"from": start, "to": end, "polityId": polity, "recordId": record, "note": note}
 
 
+EARLY_END = "1795-12-31"
+SPANISH_END = "1713-12-31"
+REALIGN_START = "1714-01-01"
+
+
+def early_for(group: str) -> list:
+    """Rules for 1563–1795. The span that starts on ERA stays unchanged."""
+    parish = "parish"
+    steady = {
+        "lazio": ("papal", parish, "Papal States. The Council of Trent requires parish baptismal and marriage registers."),
+        "marche": ("papal", parish, "Papal States. The Council of Trent requires parish baptismal and marriage registers."),
+        "umbria": ("papal", parish, "Papal States. The Council of Trent requires parish baptismal and marriage registers."),
+        "romagna": ("papal", parish, "Papal legations. Parish registers after the Council of Trent."),
+        "tuscany": ("toscana", parish, "Grand Duchy of Tuscany. Habsburg-Lorraine governs from 1737. Parish registers."),
+        "lucca": ("lucca", parish, "Lucca. Parish registers after the Council of Trent."),
+        "modena": ("modena", parish, "Duchy of Modena. Parish registers."),
+        "parma": ("parma", parish, "Duchy of Parma. Parish registers."),
+        "veneto": ("repubblica-venezia", parish, "The Republic of Venice. Parish registers."),
+        "friuli": ("repubblica-venezia", parish, "The Republic of Venice. Parish registers."),
+        "trento": ("trento-vescovile", parish, "Prince-bishopric of Trent. Parish registers."),
+        "bolzano": ("austria", "austriaco", "Habsburg County of Tyrol. Church registers."),
+        "giulia": ("austria", "austriaco", "Habsburg coast. Church registers."),
+        "lost": ("austria", "austriaco", "Habsburg coast. Church registers."),
+        "liguria": ("genova", parish, "Republic of Genoa. Parish registers."),
+        "mantova": ("mantova-ducato", parish, "Gonzaga Mantua, then Austrian Mantua from 1708. Parish registers. The revolutionary transition on this map starts in 1796."),
+    }
+    if group in steady:
+        polity, record, note = steady[group]
+        return [span(START, EARLY_END, polity, record, note)]
+    if group == "sicily":
+        return [
+            span(START, SPANISH_END, "spagna-sicilia", parish, "Spanish Habsburg viceroyalty of Sicily. Parish baptismal and marriage registers after the Council of Trent."),
+            span(REALIGN_START, EARLY_END, "sicilia-borbone", parish, "After Utrecht the island passes through Savoy and Austria. The Bourbon Kingdom of Sicily dates from 1734. Parish registers."),
+        ]
+    if group == "south":
+        return [
+            span(START, SPANISH_END, "spagna-napoli", parish, "Spanish Habsburg viceroyalty of Naples. Parish baptismal and marriage registers after the Council of Trent."),
+            span(REALIGN_START, EARLY_END, "napoli-borbone", parish, "The Bourbon dynasty rules an independent Kingdom of Naples from 1734 and compiles the 1741 Catasto Onciario. Parish registers."),
+        ]
+    if group == "lombardy":
+        return [
+            span(START, SPANISH_END, "spagna-milano", parish, "Spanish Habsburg Duchy of Milan. Parish registers."),
+            span(REALIGN_START, EARLY_END, "austria-milano", parish, "Austrian Habsburg Duchy of Milan. The Catasto Teresiano is compiled from 1718 to 1760. Parish registers."),
+        ]
+    if group == "piedmont":
+        return [
+            span(START, SPANISH_END, "savoia", parish, "Duchy of Savoy. Parish registers after the Council of Trent."),
+            span(REALIGN_START, EARLY_END, "regno-sardegna", parish, "Savoy becomes the Kingdom of Sardinia in 1720. Parish registers."),
+        ]
+    if group == "sardinia":
+        return [
+            span(START, SPANISH_END, "spagna-sardegna", parish, "Spanish Kingdom of Sardinia. Parish registers. Savoy receives the island in 1720."),
+            span(REALIGN_START, EARLY_END, "regno-sardegna", parish, "Kingdom of Sardinia under Savoy from 1720. The island stays outside Napoleonic rule. Parish registers."),
+        ]
+    raise SystemExit(f"no early spans for {group}")
+
+
 def kingdom_tail(before):
     """Shared close for lands already inside the Kingdom on 1 January 1866."""
     return before + [
@@ -132,20 +190,20 @@ def kingdom_tail(before):
 
 def group_spans():
     sicily = kingdom_tail([
-        span(START, "1815-12-09", "sicilia-borbone", "parish", "The Bourbon court rules Sicily. Napoleon does not introduce civil registration on the island."),
+        span(ERA, "1815-12-09", "sicilia-borbone", "parish", "The Bourbon court rules Sicily. Napoleon does not introduce civil registration on the island."),
         span("1815-12-10", "1819-12-31", "due-sicilie", "parish", "The Kingdom of the Two Sicilies is formed in 1816. Parish registers continue on the island."),
         span("1820-01-01", "1861-03-16", "due-sicilie", "borbonico", "Stato Civile begins in Sicily on 1 January 1820."),
         span("1861-03-17", "1865-12-31", "regno-italia", "borbonico", "Sicily is in the Kingdom of Italy. The Bourbon civil register continues through 1865."),
     ])
     south = kingdom_tail([
-        span(START, "1805-12-31", "napoli-borbone", "parish", "Kingdom of Naples. Parish registers."),
+        span(ERA, "1805-12-31", "napoli-borbone", "parish", "Kingdom of Naples. Parish registers."),
         span("1806-01-01", "1808-12-31", "murat", "parish", "Joseph Bonaparte rules Naples. The civil register is decreed in 1809."),
         span("1809-01-01", "1815-05-20", "murat", "napoleonico", "Stato Civile Napoleonico on the mainland South, from 1809."),
         span("1815-05-21", "1861-03-16", "due-sicilie", "borbonico", "The restored Bourbons keep civil registration."),
         span("1861-03-17", "1865-12-31", "regno-italia", "borbonico", "The Bourbon civil register continues through 1865."),
     ])
     lazio = [
-        span(START, "1808-12-31", "papal", "parish", "Papal States. Parish registers."),
+        span(ERA, "1808-12-31", "papal", "parish", "Papal States. Parish registers."),
         span("1809-01-01", "1814-05-23", "francia", "napoleonico", "Rome and its departments are annexed to France."),
         span("1814-05-24", "1870-09-19", "papal", "parish", "Papal rule returns. The Roman Republic of 1849 is a short break."),
         span("1870-09-20", "1870-12-31", "regno-italia", "parish", "Rome is taken on 20 September 1870. Civil registration starts in 1871."),
@@ -153,20 +211,20 @@ def group_spans():
         span("1946-06-18", END, "repubblica", "italiano", "The Italian Republic."),
     ]
     papal_1860 = kingdom_tail([
-        span(START, "1808-12-31", "papal", "parish", "Papal States. Parish registers."),
+        span(ERA, "1808-12-31", "papal", "parish", "Papal States. Parish registers."),
         span("1809-01-01", "1814-05-23", "francia", "napoleonico", "French annexation. Napoleonic civil registration."),
         span("1814-05-24", "1860-11-03", "papal", "parish", "Papal rule returns until the annexations of 1860."),
         span("1860-11-04", "1865-12-31", "regno-italia", "parish", "Annexed to the Kingdom. Statewide civil registration starts on 1 January 1866."),
     ])
     romagna = kingdom_tail([
-        span(START, "1805-12-31", "papal", "parish", "Papal legations, with the revolutionary occupations of the late 1790s."),
+        span(ERA, "1805-12-31", "papal", "parish", "Papal legations, with the revolutionary occupations of the late 1790s."),
         span("1806-01-01", "1814-04-30", "napoleonico-italia", "napoleonico", "Napoleonic Kingdom of Italy."),
         span("1814-05-01", "1859-06-11", "papal", "parish", "The legations return to the Pope."),
         span("1859-06-12", "1861-03-16", "regno-sardegna", "parish", "The legations join the Kingdom of Sardinia in 1859."),
         span("1861-03-17", "1865-12-31", "regno-italia", "parish", "Statewide civil registration starts on 1 January 1866."),
     ])
     tuscany = kingdom_tail([
-        span(START, "1807-12-31", "toscana", "parish", "Grand Duchy of Tuscany. Parish registers."),
+        span(ERA, "1807-12-31", "toscana", "parish", "Grand Duchy of Tuscany. Parish registers."),
         span("1808-01-01", "1814-04-30", "francia", "napoleonico", "Tuscany is annexed to France."),
         span("1814-05-01", "1816-12-31", "toscana", "parish", "The Grand Duchy is restored."),
         span("1817-01-01", "1860-03-22", "toscana", "granducale", "From 1817 the Grand Duchy keeps a civil register through parish duplicates."),
@@ -174,7 +232,7 @@ def group_spans():
         span("1861-03-17", "1865-12-31", "regno-italia", "granducale", "The Tuscan register continues through 1865."),
     ])
     lucca = [
-        span(START, "1805-06-03", "lucca", "parish", "Duchy of Lucca. Parish registers."),
+        span(ERA, "1805-06-03", "lucca", "parish", "Duchy of Lucca. Parish registers."),
         span("1805-06-04", "1814-04-30", "francia", "napoleonico", "Elisa Bonaparte's principality, then French rule."),
         span("1814-05-01", "1847-10-04", "lucca", "parish", "The Duchy of Lucca is restored."),
         span("1847-10-05", "1860-03-22", "toscana", "granducale", "Lucca passes to the Grand Duchy of Tuscany in 1847."),
@@ -184,28 +242,28 @@ def group_spans():
         span("1946-06-18", END, "repubblica", "italiano", "The Italian Republic."),
     ]
     modena = kingdom_tail([
-        span(START, "1805-12-31", "modena", "parish", "Duchy of Modena. Parish registers. Massa-Carrara follows Modena, not Tuscany, in this period."),
+        span(ERA, "1805-12-31", "modena", "parish", "Duchy of Modena. Parish registers. Massa-Carrara follows Modena, not Tuscany, in this period."),
         span("1806-01-01", "1814-04-30", "napoleonico-italia", "napoleonico", "Napoleonic civil registration."),
         span("1814-05-01", "1859-06-11", "modena", "parish", "The Duchy of Modena is restored."),
         span("1859-06-12", "1861-03-16", "regno-sardegna", "parish", "Modena joins the Kingdom of Sardinia."),
         span("1861-03-17", "1865-12-31", "regno-italia", "parish", "Statewide civil registration starts on 1 January 1866."),
     ])
     parma = kingdom_tail([
-        span(START, "1805-12-31", "parma", "parish", "Duchy of Parma. Parish registers."),
+        span(ERA, "1805-12-31", "parma", "parish", "Duchy of Parma. Parish registers."),
         span("1806-01-01", "1814-04-30", "napoleonico-italia", "napoleonico", "Napoleonic civil registration."),
         span("1814-05-01", "1859-06-11", "parma", "parish", "The Duchy of Parma is restored."),
         span("1859-06-12", "1861-03-16", "regno-sardegna", "parish", "Parma joins the Kingdom of Sardinia."),
         span("1861-03-17", "1865-12-31", "regno-italia", "parish", "Statewide civil registration starts on 1 January 1866."),
     ])
     lombardy = kingdom_tail([
-        span(START, "1805-12-31", "transizione", "parish", "Austrian Milan, then the Cisalpine Republic and the Italian Republic. Parish registers."),
+        span(ERA, "1805-12-31", "transizione", "parish", "Austrian Milan, then the Cisalpine Republic and the Italian Republic. Parish registers."),
         span("1806-01-01", "1814-04-30", "napoleonico-italia", "napoleonico", "Napoleonic Kingdom of Italy."),
         span("1814-05-01", "1859-06-11", "lombardo-veneto", "parish", "Austrian Regno Lombardo-Veneto. Civil registration is left to the parishes."),
         span("1859-06-12", "1861-03-16", "regno-sardegna", "parish", "Lombardy, except Mantua, joins the Kingdom of Sardinia."),
         span("1861-03-17", "1865-12-31", "regno-italia", "parish", "Statewide civil registration starts on 1 January 1866."),
     ])
     mantova = [
-        span(START, "1805-12-31", "transizione", "parish", "Mantua passes through the revolutionary republics. Parish registers."),
+        span(ERA, "1805-12-31", "transizione", "parish", "Mantua passes through the revolutionary republics. Parish registers."),
         span("1806-01-01", "1814-04-30", "napoleonico-italia", "napoleonico", "Napoleonic Kingdom of Italy."),
         span("1814-05-01", "1866-10-20", "lombardo-veneto", "parish", "Mantua stays Austrian through 1866, after the rest of Lombardy has left."),
         span("1866-10-21", "1871-08-31", "regno-italia", "parish", "Annexed in October 1866. Stato Civile Italiano here starts on 1 September 1871."),
@@ -213,7 +271,7 @@ def group_spans():
         span("1946-06-18", END, "repubblica", "italiano", "The Italian Republic."),
     ]
     veneto = [
-        span(START, "1797-05-11", "repubblica-venezia", "parish", "The Republic of Venice. Parish registers."),
+        span(ERA, "1797-05-11", "repubblica-venezia", "parish", "The Republic of Venice. Parish registers."),
         span("1797-05-12", "1805-12-31", "austria", "parish", "Campo Formio and the later transfers. Parish registers."),
         span("1806-01-01", "1814-04-30", "napoleonico-italia", "napoleonico", "Napoleonic Kingdom of Italy."),
         span("1814-05-01", "1866-10-20", "lombardo-veneto", "parish", "Austrian Regno Lombardo-Veneto. Civil registration is left to the parishes."),
@@ -222,7 +280,7 @@ def group_spans():
         span("1946-06-18", END, "repubblica", "italiano", "The Italian Republic."),
     ]
     trento = [
-        span(START, "1803-02-28", "trento-vescovile", "parish", "Prince-bishopric of Trent. Parish registers."),
+        span(ERA, "1803-02-28", "trento-vescovile", "parish", "Prince-bishopric of Trent. Parish registers."),
         span("1803-03-01", "1809-12-31", "austria", "austriaco", "Secularized Tyrol under Austria."),
         span("1810-01-01", "1814-04-30", "napoleonico-italia", "napoleonico", "Department of Alto Adige in the Napoleonic Kingdom of Italy."),
         span("1814-05-01", "1867-12-31", "austria", "austriaco", "Austrian Tyrol. Church registers (Matriken) are the legal record."),
@@ -232,7 +290,7 @@ def group_spans():
         span("1946-06-18", END, "repubblica", "italiano", "The Italian Republic."),
     ]
     bolzano = [
-        span(START, "1805-12-25", "austria", "austriaco", "Austrian Tyrol. Church registers."),
+        span(ERA, "1805-12-25", "austria", "austriaco", "Austrian Tyrol. Church registers."),
         span("1805-12-26", "1810-02-27", "baviera", "austriaco", "Bavarian Tyrol after Pressburg."),
         span("1810-02-28", "1813-12-31", "napoleonico-italia", "napoleonico", "Brief Napoleonic rule in the southern Tyrol."),
         span("1814-01-01", "1867-12-31", "austria", "austriaco", "Austrian Tyrol returns."),
@@ -242,7 +300,7 @@ def group_spans():
         span("1946-06-18", END, "repubblica", "italiano", "The Italian Republic."),
     ]
     giulia = [
-        span(START, "1809-10-13", "austria", "austriaco", "Austrian Küstenland. Church registers."),
+        span(ERA, "1809-10-13", "austria", "austriaco", "Austrian Küstenland. Church registers."),
         span("1809-10-14", "1813-12-31", "francia", "napoleonico", "Illyrian Provinces."),
         span("1814-01-01", "1867-12-31", "austria", "austriaco", "Austria returns. Church registers are the legal record."),
         span("1868-01-01", "1918-11-03", "austria-hungary", "austriaco", "Austro-Hungarian coast. Not part of the Kingdom of Italy."),
@@ -251,14 +309,14 @@ def group_spans():
         span("1946-06-18", END, "repubblica", "italiano", "The Italian Republic. The 1947 treaty moves the eastern border."),
     ]
     piedmont = kingdom_tail([
-        span(START, "1802-09-10", "regno-sardegna", "parish", "Kingdom of Sardinia. French occupation begins in the late 1790s. Parish registers."),
+        span(ERA, "1802-09-10", "regno-sardegna", "parish", "Kingdom of Sardinia. French occupation begins in the late 1790s. Parish registers."),
         span("1802-09-11", "1814-05-19", "francia", "napoleonico", "Piedmont and Aosta are annexed to France."),
         span("1814-05-20", "1837-12-31", "regno-sardegna", "parish", "Savoy rule returns. Parish registers."),
         span("1838-01-01", "1861-03-16", "regno-sardegna", "sabaudo", "Parish-kept Stato Civile of the Kingdom of Sardinia, from 1838."),
         span("1861-03-17", "1865-12-31", "regno-italia", "sabaudo", "The Sabaudo register continues until the 1866 national code."),
     ])
     liguria = kingdom_tail([
-        span(START, "1797-06-13", "genova", "parish", "Republic of Genoa. Parish registers."),
+        span(ERA, "1797-06-13", "genova", "parish", "Republic of Genoa. Parish registers."),
         span("1797-06-14", "1805-06-03", "liguria-repubblica", "parish", "Ligurian Republic."),
         span("1805-06-04", "1814-04-30", "francia", "napoleonico", "Liguria is annexed to France."),
         span("1814-05-01", "1837-12-31", "regno-sardegna", "parish", "Liguria joins the Kingdom of Sardinia."),
@@ -266,12 +324,12 @@ def group_spans():
         span("1861-03-17", "1865-12-31", "regno-italia", "sabaudo", "The Sabaudo register continues until the 1866 national code."),
     ])
     sardinia = kingdom_tail([
-        span(START, "1837-12-31", "regno-sardegna", "parish", "The island stays under Savoy. Napoleon does not occupy it. Parish registers."),
+        span(ERA, "1837-12-31", "regno-sardegna", "parish", "The island stays under Savoy. Napoleon does not occupy it. Parish registers."),
         span("1838-01-01", "1861-03-16", "regno-sardegna", "sabaudo", "Parish-kept Stato Civile from 1838."),
         span("1861-03-17", "1865-12-31", "regno-italia", "sabaudo", "The Sabaudo register continues until the 1866 national code."),
     ])
     lost = [
-        span(START, "1809-10-13", "austria", "austriaco", "Austrian coast."),
+        span(ERA, "1809-10-13", "austria", "austriaco", "Austrian coast."),
         span("1809-10-14", "1813-12-31", "francia", "napoleonico", "Illyrian Provinces."),
         span("1814-01-01", "1867-12-31", "austria", "austriaco", "Austrian rule returns."),
         span("1868-01-01", "1918-11-03", "austria-hungary", "austriaco", "Austro-Hungarian coast."),
@@ -279,13 +337,14 @@ def group_spans():
         span("1924-01-01", "1947-09-15", "regno-italia", "italiano", "Italian civil registration during the interwar annexation."),
         span("1947-09-16", END, "ceduto-1947", "outside", "Ceded under the Treaty of Paris, 10 February 1947. Not an Italian comune today."),
     ]
-    return {
+    base = {
         "sicily": sicily, "south": south, "lazio": lazio, "marche": papal_1860, "umbria": papal_1860,
         "romagna": romagna, "tuscany": tuscany, "lucca": lucca, "modena": modena, "parma": parma,
         "lombardy": lombardy, "mantova": mantova, "veneto": veneto, "friuli": veneto,
         "trento": trento, "bolzano": bolzano, "giulia": giulia, "piedmont": piedmont,
         "liguria": liguria, "sardinia": sardinia, "lost": lost,
     }
+    return {group: early_for(group) + spans for group, spans in base.items()}
 
 
 POLITIES = [
@@ -313,6 +372,13 @@ POLITIES = [
     {"id": "regno-italia", "name": "Regno d'Italia", "nameEn": "Kingdom of Italy", "family": "italian", "color": "#2c6b45"},
     {"id": "repubblica", "name": "Repubblica Italiana", "nameEn": "Italian Republic", "family": "italian", "color": "#1f6b4a"},
     {"id": "ceduto-1947", "name": "Territorio ceduto nel 1947", "nameEn": "Territory ceded in 1947", "family": "outside", "color": "#9a8f84"},
+    {"id": "spagna-napoli", "name": "Vicereame spagnolo di Napoli", "nameEn": "Spanish Viceroyalty of Naples", "family": "pre-unitarian", "color": "#6e3b1f"},
+    {"id": "spagna-sicilia", "name": "Vicereame spagnolo di Sicilia", "nameEn": "Spanish Viceroyalty of Sicily", "family": "pre-unitarian", "color": "#c4a15a"},
+    {"id": "spagna-milano", "name": "Ducato di Milano spagnolo", "nameEn": "Spanish Duchy of Milan", "family": "pre-unitarian", "color": "#7a6248"},
+    {"id": "austria-milano", "name": "Ducato di Milano austriaco", "nameEn": "Austrian Duchy of Milan", "family": "habsburg", "color": "#9a8456"},
+    {"id": "savoia", "name": "Ducato di Savoia", "nameEn": "Duchy of Savoy", "family": "savoy", "color": "#1a3d5c"},
+    {"id": "spagna-sardegna", "name": "Regno di Sardegna spagnolo", "nameEn": "Spanish Kingdom of Sardinia", "family": "pre-unitarian", "color": "#8d6b3a"},
+    {"id": "mantova-ducato", "name": "Ducato di Mantova", "nameEn": "Duchy of Mantua", "family": "pre-unitarian", "color": "#5c6b4a"},
 ]
 
 RECORDS = [
@@ -327,6 +393,8 @@ RECORDS = [
 ]
 
 EPOCHS = [
+    {"id": "tridentine", "from": 1563, "to": 1713, "name": "Tridentine & Spanish Habsburg Era", "note": "Council of Trent mandates parish baptismal and marriage registers across Italy; Spanish Habsburg Viceroyalties govern Naples, Sicily, Sardinia, and Milan alongside Venice, Genoa, Tuscany, Savoy, and the Papal States."},
+    {"id": "eighteenth", "from": 1714, "to": 1795, "name": "18th-Century Dynastic Realignments & Pre-Napoleonic Censuses", "note": "Savoy becomes Kingdom of Sardinia (1720); Bourbon dynasty establishes independent Kingdom of Naples & Sicily (1734) and compiles the 1741 Catasto Onciario; Austrian Habsburgs compile the Catasto Teresiano in Lombardy (1760); Habsburg-Lorraine governs Tuscany (1737)."},
     {"id": "pre-napoleonic", "from": 1796, "to": 1805, "name": "Pre-Napoleonic transition", "note": "Parish registers. The old states are still the frame, under revolutionary pressure."},
     {"id": "napoleonic", "from": 1806, "to": 1814, "name": "Napoleonic era", "note": "Stato Civile Napoleonico spreads through the Kingdom of Italy, the French departments, and Murat's Naples. Sicily and the island of Sardinia stay outside it."},
     {"id": "restoration", "from": 1815, "to": 1859, "name": "Restoration", "note": "Two Sicilies, Lombardy–Venetia, the Papal States, Tuscany, Sardinia, Parma, and Modena."},
@@ -365,7 +433,7 @@ def title_it(value: str) -> str:
 
 
 def should_backfill(earliest: str, living: bool = False) -> bool:
-    """Extend the first ANPR row back to 1796.
+    """Extend the first ANPR row back to 1563.
 
     ANPR often dates an old city from a later decree. Genova is 1873, Roma is
     1884, Torino is 1889, and Gaeta is 1897. A living comune dated on or before
@@ -726,7 +794,7 @@ def build_routes():
                 "id": "dante-exile",
                 "title": "L'esilio di Dante",
                 "titleEn": "Dante Alighieri's exile",
-                "summary": "Dante received his sentence of exile in Firenze on 27 January 1302 and died in Ravenna in 1321. The stops predate 1796, so each pin uses the 1796 jurisdiction of that place.",
+                "summary": "Dante received his sentence of exile in Firenze on 27 January 1302 and died in Ravenna in 1321. The stops predate 1563, so each pin uses the 1563 jurisdiction of that place.",
                 "match": ["Firenze", "San Godenzo", "Forlì", "Verona", "Lucca", "Ravenna"],
                 "stops": [
                     {"year": 1302, "place": "Firenze", "label": "Sentence of exile, 27 January 1302"},
@@ -954,6 +1022,23 @@ def smoke(places, rules):
         raise SystemExit("Udine 1852 check failed")
     if rule_1910["polityId"] != "austria-hungary" or rule_1910["provinceName"] != "Tirolo":
         raise SystemExit("Trento 1910 check failed")
+    udine_1796 = span_at(rules[at_1852["provinceCode"]], "1796-07-01")
+    udine_1563 = span_at(rules[at_1852["provinceCode"]], "1563-07-01")
+    milan_1796 = span_at(rules["015"], "1796-07-01")
+    milan_1700 = span_at(rules["015"], "1700-07-01")
+    milan_1750 = span_at(rules["015"], "1750-07-01")
+    naples_1796 = span_at(rules["063"], "1796-07-01")
+    naples_1600 = span_at(rules["063"], "1600-07-01")
+    turin_1796 = span_at(rules["001"], "1796-07-01")
+    turin_1600 = span_at(rules["001"], "1600-07-01")
+    if udine_1796["polityId"] != "repubblica-venezia" or udine_1563["polityId"] != "repubblica-venezia":
+        raise SystemExit("Udine early Venice check failed")
+    if milan_1796["polityId"] != "transizione" or milan_1700["polityId"] != "spagna-milano" or milan_1750["polityId"] != "austria-milano":
+        raise SystemExit("Milan early polity check failed")
+    if naples_1796["polityId"] != "napoli-borbone" or naples_1600["polityId"] != "spagna-napoli":
+        raise SystemExit("Naples early polity check failed")
+    if turin_1796["polityId"] != "regno-sardegna" or turin_1600["polityId"] != "savoia":
+        raise SystemExit("Turin early polity check failed")
 
 
 def main() -> int:
@@ -979,13 +1064,13 @@ def main() -> int:
             "diocese of each provincial capital, plus a Wikidata overlay when cached",
             "curated regime model in scripts/04_build_bundle.py",
         ],
-        "yearMin": 1796,
+        "yearMin": 1563,
         "yearMax": 2026,
         "placeCount": len(places),
         "places": places,
     }
     polities = {
-        "yearMin": 1796,
+        "yearMin": 1563,
         "yearMax": 2026,
         "epochs": EPOCHS,
         "polities": POLITIES,

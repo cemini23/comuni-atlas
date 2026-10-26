@@ -168,6 +168,254 @@
       ]
     }
   ],
+  "romanRoads": [
+    {
+      "id": "via-appia",
+      "name": "Via Appia (312 BC)",
+      "opened": "312 BC",
+      "towns": [
+        "Roma",
+        "Latina",
+        "Terracina",
+        "Capua",
+        "Benevento",
+        "Taranto",
+        "Brindisi"
+      ],
+      "note": "Roma to Brindisi through Terracina, Capua, and Benevento.",
+      "schematic": true,
+      "coordinates": [
+        [
+          12.46204,
+          41.88335
+        ],
+        [
+          12.87793,
+          41.46631
+        ],
+        [
+          13.19096,
+          41.3158
+        ],
+        [
+          14.20994,
+          41.11532
+        ],
+        [
+          14.7829,
+          41.14909
+        ],
+        [
+          17.27424,
+          40.47463
+        ],
+        [
+          17.89876,
+          40.60622
+        ]
+      ]
+    },
+    {
+      "id": "via-flaminia",
+      "name": "Via Flaminia (220 BC)",
+      "opened": "220 BC",
+      "towns": [
+        "Roma",
+        "Terni",
+        "Foligno",
+        "Pesaro",
+        "Rimini"
+      ],
+      "note": "Roma to Rimini through the Apennines.",
+      "schematic": true,
+      "coordinates": [
+        [
+          12.46204,
+          41.88335
+        ],
+        [
+          12.66045,
+          42.57959
+        ],
+        [
+          12.79097,
+          42.97673
+        ],
+        [
+          12.85592,
+          43.87297
+        ],
+        [
+          12.53052,
+          44.03879
+        ]
+      ]
+    },
+    {
+      "id": "via-aemilia",
+      "name": "Via Aemilia (187 BC)",
+      "opened": "187 BC",
+      "towns": [
+        "Rimini",
+        "Forlì",
+        "Bologna",
+        "Modena",
+        "Reggio nell'Emilia",
+        "Parma",
+        "Piacenza"
+      ],
+      "note": "Rimini to Piacenza along the Po plain.",
+      "schematic": true,
+      "coordinates": [
+        [
+          12.53052,
+          44.03879
+        ],
+        [
+          12.04983,
+          44.2274
+        ],
+        [
+          11.3333,
+          44.49802
+        ],
+        [
+          10.91524,
+          44.64381
+        ],
+        [
+          10.63445,
+          44.69741
+        ],
+        [
+          10.32759,
+          44.79369
+        ],
+        [
+          9.71813,
+          45.04154
+        ]
+      ]
+    },
+    {
+      "id": "via-aurelia",
+      "name": "Via Aurelia (241 BC)",
+      "opened": "241 BC",
+      "towns": [
+        "Roma",
+        "Grosseto",
+        "Livorno",
+        "Pisa",
+        "Genova"
+      ],
+      "note": "Roma to Genova along the Tyrrhenian coast.",
+      "schematic": true,
+      "coordinates": [
+        [
+          12.46204,
+          41.88335
+        ],
+        [
+          11.0902,
+          42.76727
+        ],
+        [
+          10.35869,
+          43.52424
+        ],
+        [
+          10.35417,
+          43.67225
+        ],
+        [
+          8.89308,
+          44.4414
+        ]
+      ]
+    },
+    {
+      "id": "via-postumia",
+      "name": "Via Postumia (148 BC)",
+      "opened": "148 BC",
+      "towns": [
+        "Genova",
+        "Alessandria",
+        "Cremona",
+        "Verona",
+        "Vicenza",
+        "Udine",
+        "Trieste"
+      ],
+      "note": "Genova to the Adriatic through the Po plain.",
+      "schematic": true,
+      "coordinates": [
+        [
+          8.89308,
+          44.4414
+        ],
+        [
+          8.64441,
+          44.90901
+        ],
+        [
+          10.02976,
+          45.14092
+        ],
+        [
+          11.00207,
+          45.44863
+        ],
+        [
+          11.55399,
+          45.54483
+        ],
+        [
+          13.24535,
+          46.0644
+        ],
+        [
+          13.79871,
+          45.66377
+        ]
+      ]
+    },
+    {
+      "id": "via-popilia",
+      "name": "Via Popilia (132 BC)",
+      "opened": "132 BC",
+      "towns": [
+        "Capua",
+        "Salerno",
+        "Cosenza",
+        "Vibo Valentia",
+        "Reggio di Calabria"
+      ],
+      "note": "Capua to the Strait of Messina.",
+      "schematic": true,
+      "coordinates": [
+        [
+          14.20994,
+          41.11532
+        ],
+        [
+          14.80995,
+          40.67793
+        ],
+        [
+          16.27127,
+          39.27837
+        ],
+        [
+          16.0933,
+          38.68239
+        ],
+        [
+          15.71818,
+          38.11279
+        ]
+      ]
+    }
+  ],
   "catasti": [
     {
       "id": "gregoriano",

@@ -74,6 +74,31 @@
           <li>The applicant's return address</li>
         </ul>
       </section>
+      <section id="request-builder">
+        <h2>Quick Italian Request Subject &amp; Line Generator</h2>
+        <div class="field">
+          <label for="ancestor-name">Ancestor Full Name</label>
+          <input id="ancestor-name" name="ancestor" autocomplete="name" placeholder="Mario Rossi">
+        </div>
+        <div class="field">
+          <label for="ancestor-year">Birth/Event Year</label>
+          <input id="ancestor-year" name="event-year" inputmode="numeric" placeholder="1884">
+        </div>
+        <div class="field">
+          <label for="act-type">Act Type</label>
+          <select id="act-type">
+            <option>Estratto di Nascita con paternità e maternità</option>
+            <option>Copia Integrale di Nascita</option>
+            <option>Atto di Matrimonio</option>
+            <option>Atto di Morte</option>
+          </select>
+        </div>
+        <p><strong>PEC subject.</strong></p>
+        <p id="request-subject"></p>
+        <p><strong>Request.</strong></p>
+        <p id="request-body"></p>
+        <p><button type="button" id="copy-request">Copy Italian Request Text</button></p>
+      </section>
       <p class="atto-cta"><a href="https://youratto.com?utm_source=ansc&amp;utm_medium=inspector">Do not risk a rejected Comune request from spelling mismatches or missing parent names. Atto for Mac &amp; Windows helps you build archive search links, spot gaps across birth and marriage acts, and keep your Italian document checklist organized offline on your computer.</a></p>
     </aside>
   </div>

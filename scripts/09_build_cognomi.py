@@ -76,6 +76,14 @@ PRIMARY_REGION = {
     "Sanna": "Sardegna",
 }
 
+SECONDARY_REGIONS = {
+    "Barone": ["Sicilia", "Puglia", "Calabria"],
+    "Rossi": ["Lombardia", "Toscana", "Veneto", "Lazio"],
+    "Russo": ["Sicilia", "Puglia", "Calabria"],
+    "Ferrari": ["Emilia-Romagna", "Piemonte", "Veneto"],
+    "Esposito": ["Lazio", "Lombardia"],
+}
+
 USER_NAMES = [
     "Rossi", "Russo", "Ferrari", "Esposito", "Bianchi", "Romano", "Colombo", "Ricci",
     "Marino", "Greco", "Bruno", "Gallo", "Conti", "De Luca", "Costa", "Giordano",
@@ -338,6 +346,8 @@ def build() -> dict:
                 item["epicenterNote"] = BARONE_NOTE
             elif item.get("epicenterNote") == PAN:
                 item["epicenterNote"] = ""
+        item = dict(item)
+        item["secondaryRegions"] = list(SECONDARY_REGIONS.get(surname, []))
         surnames[fold(surname)] = item
     missing = [name for name in USER_NAMES if fold(name) not in surnames]
     if missing:
@@ -351,6 +361,10 @@ def build() -> dict:
     barone = surnames[fold("Barone")]
     if barone["category"] != "nickname" or barone.get("ambiguous"):
         raise SystemExit("Barone must stay a nickname and must not be ambiguous")
+    if barone.get("secondaryRegions") != ["Sicilia", "Puglia", "Calabria"]:
+        raise SystemExit("Barone secondary regions missing")
+    if surnames[fold("Esposito")].get("secondaryRegions") != ["Lazio", "Lombardia"]:
+        raise SystemExit("Esposito secondary regions missing")
     esposito = surnames[fold("Esposito")]
     if esposito["category"] != "foundling" or esposito.get("region") != "Campania":
         raise SystemExit("Esposito must stay a Campania foundling")

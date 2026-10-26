@@ -15,7 +15,7 @@ const provinceLayer = document.querySelector("#provinces");
 const themeToggle = document.querySelector("#theme-toggle");
 const bootError = document.querySelector("#boot-error");
 
-const state = { rows: [], index: new Map(), geo: null };
+const state = { rows: [], index: new Map(), geo: null, selected: null };
 
 function mercator(lat) {
   const rad = (lat * Math.PI) / 180;
@@ -114,7 +114,36 @@ function anscStatusLabel(status) {
   return status || "";
 }
 
+function requestDraft() {
+  const comune = state.selected?.name || "";
+  const ancestor = document.querySelector("#ancestor-name")?.value.trim() || "";
+  const year = document.querySelector("#ancestor-year")?.value.trim() || "";
+  const act = document.querySelector("#act-type")?.value || "Estratto di Nascita con paternità e maternità";
+  if (!comune) {
+    return {
+      subject: "",
+      body: "Select a comune first. The request is addressed to that Ufficio dello Stato Civile.",
+    };
+  }
+  const person = ancestor || "[nome e cognome dell'antenato]";
+  const eventYear = year || "[anno]";
+  return {
+    subject: `Richiesta di ${act} — ${person} — ${eventYear} — Comune di ${comune}`,
+    body: `Spett.le Ufficio dello Stato Civile del Comune di ${comune}, ai sensi degli articoli 106, 107 e 108 del DPR 396/2000, chiedo il rilascio del seguente atto: ${act}, relativo a ${person}, anno ${eventYear}. Cordiali saluti.`,
+  };
+}
+
+function paintRequest() {
+  const subject = document.querySelector("#request-subject");
+  const body = document.querySelector("#request-body");
+  if (!subject || !body) return;
+  const draft = requestDraft();
+  subject.textContent = draft.subject;
+  body.textContent = draft.body;
+}
+
 function renderRow(row) {
+  state.selected = row;
   drawMap(row.region || "");
   const pecLabel = row.pecSource === "indicepa" ? "Official PEC" : "PEC pattern, confirm before you send";
   const aliases = (row.historicalAliases || []).join(", ");
@@ -135,6 +164,7 @@ function renderRow(row) {
   document.title = `${row.name} PEC | Atto`;
   status.textContent = `${row.name} (${row.province || row.sigla}, ${row.region}) — Official PEC & Municipio routing.`;
   writeQuery(row.name);
+  paintRequest();
 }
 
 function renderHits(rows) {
@@ -195,14 +225,26 @@ async function main() {
     }
   }
   drawMap("");
+  paintRequest();
+  for (const id of ["ancestor-name", "ancestor-year", "act-type"]) {
+    document.querySelector(`#${id}`)?.addEventListener("input", paintRequest);
+    document.querySelector(`#${id}`)?.addEventListener("change", paintRequest);
+  }
+  document.querySelector("#copy-request")?.addEventListener("click", async (event) => {
+    const draft = requestDraft();
+    const text = draft.subject ? `Oggetto: ${draft.subject}\n\n${draft.body}` : draft.body;
+    await copyText(event.currentTarget, text);
+  });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const rows = search(input.value);
     renderHits(rows);
     if (rows[0]) renderRow(rows[0]);
     else {
+      state.selected = null;
       result.innerHTML = "<p>No comune matches this name.</p>";
       drawMap("");
+      paintRequest();
     }
     status.textContent = `${rows.length} match${rows.length === 1 ? "" : "es"} shown. The list stops at ${MATCH_LIMIT}.`;
   });

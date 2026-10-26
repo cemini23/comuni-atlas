@@ -6,7 +6,7 @@ import { onPopState, readQuery, writeQuery } from "./router.js";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const THEME_KEY = "comuni-atlas-theme";
 const SHARE_ORIGIN = "https://youratto.com/atlas/";
-const DEFAULT_TITLE = "Atto Historical Atlas (1796–2026)";
+const DEFAULT_TITLE = "Atto Historical Atlas (1563–2026)";
 const ITALY = { minLng: 6.55, maxLng: 18.85, minLat: 35.45, maxLat: 47.12, w: 1000, h: 1180 };
 const WIDE = { w: 1600, h: 1000 };
 const WIDE_SPLIT_LAT = 34;
@@ -23,6 +23,8 @@ const arcLayer = document.querySelector("#arcs");
 const pinLayer = document.querySelector("#pins");
 const portLayer = document.querySelector("#ports");
 const railLayer = document.querySelector("#rail");
+const romanLayer = document.querySelector("#roman-roads");
+const compareYearInput = document.querySelector("#compare-year");
 const yearStamp = document.querySelector("#year-stamp");
 const hoverTip = document.querySelector("#hover-tip");
 const mapWrap = document.querySelector(".map-wrap");
@@ -44,7 +46,9 @@ const state = {
   routeId: "",
   portsOn: true,
   railOn: false,
+  romanOn: false,
   rail: null,
+  compareYear: "",
   stops: [],
   index: 0,
   frame: "italy",
@@ -260,6 +264,7 @@ function paintYear(year, label = year) {
     legend.append(row);
   }
   drawRail(model);
+  drawRoman();
   markSelectionControls();
 }
 
@@ -324,6 +329,27 @@ function drawOverlay() {
     pinLayer.append(dot, label);
   }
   drawPorts();
+}
+
+function drawRoman() {
+  if (!romanLayer) return;
+  romanLayer.replaceChildren();
+  if (!state.romanOn || !state.rail) return;
+  for (const road of state.rail.romanRoads || []) {
+    const points = (road.coordinates || []).map(([lng, lat]) => {
+      const [x, y] = project(lng, lat);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    });
+    if (points.length < 2) continue;
+    const path = document.createElementNS(SVG_NS, "polyline");
+    path.setAttribute("class", "roman-line");
+    path.setAttribute("fill", "none");
+    path.setAttribute("points", points.join(" "));
+    const title = document.createElementNS(SVG_NS, "title");
+    title.textContent = road.name || road.id || "Roman road";
+    path.append(title);
+    romanLayer.append(path);
+  }
 }
 
 function drawRail(year = state.year) {
@@ -426,6 +452,56 @@ function shareButton() {
   return `<p><button type="button" id="copy-view">Copy Shareable Link</button></p>`;
 }
 
+function citationButton() {
+  return `<p><button type="button" id="copy-citation">Copy Archival Citation</button></p>`;
+}
+
+function formatCitation(result) {
+  if (!result?.matched) return "";
+  const year = result.query?.year || "";
+  const sovereign = result.sovereign
+    ? `${result.sovereign.name} (${result.sovereign.nameEn})`
+    : "";
+  const province = result.historicalProvince
+    ? `${result.historicalProvince.name} (${result.historicalProvince.code})`
+    : "";
+  const lines = [
+    `# Archival citation`,
+    `- Historical name: ${result.historicalName || ""}`,
+    `- Modern comune: ${result.modernName || ""}`,
+    `- ISTAT: ${result.istat || ""}`,
+    `- Sovereign in ${year}: ${sovereign}`,
+    `- Historical province: ${province}`,
+    `- State Archive: ${result.archive?.name || ""}`,
+    `- PEC: ${result.stato_civile_office?.pec || ""}`,
+    `- Diocese: ${result.parish_routing?.diocese || ""}`,
+  ];
+  return lines.join("\n");
+}
+
+function compareSection(result) {
+  const other = Number(state.compareYear);
+  if (!result?.matched || !Number.isFinite(other)) return "";
+  const place = result.query?.place || result.modernName || "";
+  const alt = state.atlas?.resolvePlace(place, other);
+  if (!alt?.matched) return "";
+  const leftYear = result.query?.year || state.year;
+  const rows = [
+    ["Sovereign", result.sovereign?.nameEn, alt.sovereign?.nameEn],
+    ["Historical province", result.historicalProvince?.name, alt.historicalProvince?.name],
+    ["Register", result.records?.nameEn, alt.records?.nameEn],
+  ];
+  const lines = rows.map(([label, left, right]) => {
+    const same = (left || "") === (right || "");
+    return `<li><strong>${esc(label)}.</strong> ${esc(leftYear)}: ${esc(left || "—")}. ${esc(other)}: ${esc(right || "—")}. ${same ? "Same." : "Changed."}</li>`;
+  }).join("");
+  return `<section><h3>Compare years</h3><ul>${lines}</ul></section>`;
+}
+
+function warningSection(result) {
+  return (result.archivalWarnings || []).map((note) => `<p class="warn">${esc(note)}</p>`).join("");
+}
+
 function closeButton() {
   return `<button type="button" class="card-close" data-close aria-label="Clear the selection">×</button>`;
 }
@@ -513,6 +589,7 @@ function catastoSection(result) {
     <h3>Cadastre guide</h3>
     <p><strong>${esc(guide.name)}</strong>${years}</p>
     ${guide.note ? `<p>${esc(guide.note)}</p>` : ""}
+    ${guide.earlierCensus ? `<p><strong>Earlier census.</strong> ${esc(guide.earlierCensus)}</p>` : ""}
     ${link}
   </section>`;
 }
@@ -562,8 +639,10 @@ function renderCard(result) {
       line("Year", `1 July ${year}`),
       `<p class="warn">${esc(result.note || "This comune did not exist on this date.")}</p>`,
       result.successor ? line("Later comune", `${result.successor.name} · ISTAT ${result.successor.istat || "—"}`) : "",
+      warningSection(result),
       officeSection(result),
       shareButton(),
+      citationButton(),
       inspectorCta(result),
     ].join("");
     publish(result);
@@ -602,6 +681,8 @@ function renderCard(result) {
     line("Historical province", result.historicalProvince ? `${result.historicalProvince.name} (${result.historicalProvince.code}) · ${result.historicalProvince.region}` : ""),
     line("Modern province", result.modernProvince ? `${result.modernProvince.name} (${result.modernProvince.code}) · ${result.modernProvince.region}` : ""),
     result.provinceShift?.warning ? `<p class="warn">${esc(result.provinceShift.warning)}</p>` : "",
+    warningSection(result),
+    compareSection(result),
     result.label ? line("Stop", result.label) : "",
     result.rangeNote ? `<p class="warn">${esc(result.rangeNote)}</p>` : "",
     parishSection(result),
@@ -614,6 +695,7 @@ function renderCard(result) {
     line("Coordinates", coords),
     timeline ? `<h3>Changes</h3><ol class="timeline">${timeline}</ol>` : "",
     shareButton(),
+    citationButton(),
     inspectorCta(result),
   ].join("");
   publish(result);
@@ -898,6 +980,15 @@ function installController() {
     resolvePlace(place, year) {
       return state.atlas.resolvePlace(place, year ?? state.year);
     },
+    exportCitation(opts = {}) {
+      if (opts.place) return formatCitation(controller.resolvePlace(opts.place, opts.year ?? state.year));
+      if (state.lastResult?.matched && (opts.year === undefined || opts.year === null || opts.year === "")) {
+        return formatCitation(state.lastResult);
+      }
+      const place = controller.getState().place;
+      if (!place) return "";
+      return formatCitation(controller.resolvePlace(place, opts.year ?? state.year));
+    },
     getState() {
       const box = svg.getAttribute("viewBox").split(/\s+/).map(Number);
       const current = state.stops[state.index];
@@ -1031,6 +1122,17 @@ function bindEvents() {
     }
     if (event.target.closest("#copy-view")) {
       await copyShare(event.target.closest("#copy-view"));
+      return;
+    }
+    const citeButton = event.target.closest("#copy-citation");
+    if (citeButton) {
+      const text = formatCitation(state.lastResult);
+      try {
+        await navigator.clipboard.writeText(text);
+        citeButton.textContent = "Copied";
+      } catch {
+        citeButton.textContent = text || "Copy failed";
+      }
     }
   });
   portLayer?.addEventListener("click", (event) => {
@@ -1050,6 +1152,16 @@ function bindEvents() {
     event.currentTarget.setAttribute("aria-pressed", state.railOn ? "true" : "false");
     event.currentTarget.textContent = state.railOn ? "Hide historical railways" : "Show historical railways";
     drawRail();
+  });
+  document.querySelector("#roman-toggle")?.addEventListener("click", (event) => {
+    state.romanOn = !state.romanOn;
+    event.currentTarget.setAttribute("aria-pressed", state.romanOn ? "true" : "false");
+    event.currentTarget.textContent = state.romanOn ? "Hide Roman consular roads" : "Show Roman consular roads";
+    drawRoman();
+  });
+  compareYearInput?.addEventListener("input", () => {
+    state.compareYear = compareYearInput.value.trim();
+    if (state.lastResult && !state.portOpen) renderCard(state.lastResult);
   });
   document.querySelector("#chronicles")?.addEventListener("click", (event) => {
     const button = event.target.closest("[data-route]");

@@ -57,7 +57,7 @@ def lookup_seat(search: str, by_name: dict[str, dict]) -> dict | None:
     return by_name.get(norm_name(target))
 
 
-def church_row(name: str, comune: str, istat: str, province: str, diocese: str, archive: str, url: str, kind: str, lat, lng) -> dict:
+def church_row(name: str, comune: str, istat: str, province: str, diocese: str, archive: str, url: str, kind: str, lat, lng, patron: str = "", feast: str = "") -> dict:
     return {
         "name": name,
         "comune": comune,
@@ -66,7 +66,8 @@ def church_row(name: str, comune: str, istat: str, province: str, diocese: str, 
         "diocese": diocese or "",
         "inceptionYear": None,
         "century": None,
-        "patronSaint": "",
+        "patronSaint": patron or "",
+        "feastDay": feast or "",
         "lat": lat,
         "lng": lng,
         "archive": archive or "",
@@ -110,6 +111,8 @@ def build() -> dict:
             "searchPlace": search,
             "bewebUrl": url,
             "note": row.get("note") or "",
+            "patronSaint": row.get("patronSaint") or "",
+            "feastDay": row.get("feastDay") or "",
             "seatComune": seat.get("name") or search,
             "lat": seat.get("lat"),
             "lng": seat.get("lng"),
@@ -127,6 +130,8 @@ def build() -> dict:
             "diocesan-seat",
             seat.get("lat"),
             seat.get("lng"),
+            item["patronSaint"],
+            item["feastDay"],
         ))
 
     cache_path = RAW / "dioceses_wikidata.json"

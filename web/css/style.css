@@ -168,11 +168,11 @@ button, input {
   cursor: pointer;
 }
 
-#ports-toggle[aria-pressed="true"], #rail-toggle[aria-pressed="true"] { border-color: var(--gold); }
+#ports-toggle[aria-pressed="true"], #rail-toggle[aria-pressed="true"], #roman-toggle[aria-pressed="true"] { border-color: var(--gold); }
 
 .pill { white-space: normal; max-width: 100%; }
 
-#rail { pointer-events: none; }
+#rail, #roman-roads { pointer-events: none; }
 
 .rail-line {
   fill: none;
@@ -180,6 +180,15 @@ button, input {
   stroke-width: 2.4;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.roman-line {
+  fill: none;
+  stroke: #8d4b32;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 7 5;
 }
 
 .atto-cta {
