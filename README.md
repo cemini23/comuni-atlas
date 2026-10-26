@@ -10,7 +10,7 @@ The mesh is the modern provincial mesh. Color shows the regime on that ground fo
 
 These links open the hosted atlas:
 
-- [Castrogiovanni in 1884](https://youratto.com/atlas?year=1884&place=Castrogiovanni) is modern Enna, in the Province of Caltanissetta.
+- [Castrogiovanni in 1884](https://youratto.com/atlas?year=1884&place=Castrogiovanni) is modern Enna; in 1884 it was in the Province of Caltanissetta.
 - [Udine in 1852](https://youratto.com/atlas?year=1852&place=Udine) is in the Regno Lombardo-Veneto.
 - [Trento in 1910](https://youratto.com/atlas?year=1910&place=Trento) is in Tirolo under Austrian rule.
 - [Garibaldi's Thousand in 1860](https://youratto.com/atlas?route=garibaldi-mille) runs from Quarto dei Mille through Marsala, Palermo, and Napoli to Teano.
@@ -34,11 +34,11 @@ Run this command from the repository root:
 
 `node cli/resolve.mjs --year 1884 --place "Castrogiovanni"`
 
-The command prints JSON only. Exit code 0 means a match. Exit code 2 means no match. Exit code 1 means the command is incomplete.
+The command prints JSON on stdout. Usage and errors go to stderr. Exit code 0 means every stop matched. Exit code 2 means a stop did not match, or the surname string is empty. Exit code 1 means the command is incomplete.
 
 Use these checks:
 
-- Castrogiovanni in 1884 is modern Enna, in the Province of Caltanissetta.
+- Castrogiovanni in 1884 is modern Enna; in 1884 it was in the Province of Caltanissetta.
 - Udine in 1852 is in the Regno Lombardo-Veneto. Civil registration there starts on 1 September 1871.
 - Trento in 1910 is in Tirolo under Austrian rule.
 

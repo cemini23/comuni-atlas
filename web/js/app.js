@@ -1147,7 +1147,12 @@ function openQuery(query, fly) {
   const years = parseYearList(query.year);
   state.year = years[0] || state.year || 1861;
   if (query.route) {
-    showRoute(query.route, { fly, writeUrl: false, year: query.year, place: query.place });
+    const result = showRoute(query.route, { fly, writeUrl: false, year: query.year, place: query.place });
+    if (!result) {
+      clearSelection({ fly, writeUrl: false });
+      banner.textContent = `No chronicle named "${query.route}". Showing ${state.year}.`;
+      writeQuery({ year: state.year });
+    }
     return;
   }
   if (query.place) {

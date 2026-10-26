@@ -243,6 +243,13 @@ if (args.tool && payload && typeof payload === "object") {
     const subject = Array.isArray(payload.stops) ? payload.stops[0] : payload;
     payload.ansc_directory_row = anscRow(anscDb, subject || {});
   }
+  if (args.tool === "caduti") {
+    payload.caduti_finding_aid = {
+      alboNote: cadutiDb.alboNote || "",
+      ageModel: cadutiDb.ageModel || "",
+      regiments: (cadutiDb.regiments || []).map(({ id, name, note }) => ({ id, name, note })),
+    };
+  }
 }
 
 writeJson(payload);
