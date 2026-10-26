@@ -9,6 +9,8 @@ const SHARE_ORIGIN = "https://youratto.com/atlas/";
 const DEFAULT_TITLE = "Atto Historical Atlas (1796–2026)";
 const ITALY = { minLng: 6.55, maxLng: 18.85, minLat: 35.45, maxLat: 47.12, w: 1000, h: 1180 };
 const WIDE = { w: 1600, h: 1000 };
+const WIDE_SPLIT_LAT = 34;
+const WIDE_NORTH_SHARE = 0.62;
 
 const banner = document.querySelector("#regime-banner");
 const searchForm = document.querySelector("#search-form");
@@ -48,6 +50,8 @@ const state = {
   frame: "italy",
   wideLat: { min: ITALY.minLat, max: ITALY.maxLat },
   view: { x: 0, y: 0, w: ITALY.w, h: ITALY.h },
+  lastResult: null,
+  portOpen: false,
 };
 
 let searchTimer = 0;
@@ -78,8 +82,23 @@ function projectWide(lng, lat) {
   const x = lng >= 6.2
     ? 760 + ((lng - 6.2) / (18.85 - 6.2)) * 800
     : 30 + ((lng - -78) / (6.2 - -78)) * 730;
-  const y = yFromLat(lat, state.wideLat.min, state.wideLat.max, WIDE.h);
-  return [x, y];
+  return [x, wideY(lat)];
+}
+
+/** Give the European band most of the height; keep the Americas below it. */
+function wideY(lat) {
+  const north = state.wideLat.max;
+  const south = state.wideLat.min;
+  if (south >= WIDE_SPLIT_LAT || north <= WIDE_SPLIT_LAT) {
+    return yFromLat(lat, south, north, WIDE.h);
+  }
+  const top = mercator(north);
+  const mid = mercator(WIDE_SPLIT_LAT);
+  const bottom = mercator(south);
+  const splitY = WIDE.h * WIDE_NORTH_SHARE;
+  const y = mercator(lat);
+  if (y >= mid) return ((top - y) / (top - mid)) * splitY;
+  return splitY + ((mid - y) / (mid - bottom)) * (WIDE.h - splitY);
 }
 
 function project(lng, lat) {
@@ -193,8 +212,10 @@ function frameFor(stops) {
   for (const stop of stops) {
     const lat = stop?.coordinates?.lat;
     if (lat == null) continue;
-    min = Math.min(min, lat - 1.2);
-    max = Math.max(max, lat + 1.2);
+    // The southern band is compressed, so it needs a wider latitude margin.
+    const pad = lat < WIDE_SPLIT_LAT ? 8 : 1.5;
+    min = Math.min(min, lat - pad);
+    max = Math.max(max, lat + 1.5);
   }
   state.wideLat = { min, max };
   return `wide:${min.toFixed(2)}:${max.toFixed(2)}`;
@@ -239,6 +260,7 @@ function paintYear(year, label = year) {
     legend.append(row);
   }
   drawRail(model);
+  markSelectionControls();
 }
 
 function markProvinces(result) {
@@ -298,7 +320,7 @@ function drawOverlay() {
     label.setAttribute("class", "pin-label");
     label.setAttribute("x", (point.x + 8).toFixed(1));
     label.setAttribute("y", (point.y - 8).toFixed(1));
-    label.textContent = point.stop.label || point.stop.historicalName || point.stop.query?.place || "";
+    label.textContent = point.stop.query?.place || point.stop.historicalName || point.stop.label || "";
     pinLayer.append(dot, label);
   }
   drawPorts();
@@ -328,6 +350,7 @@ function drawPorts() {
   if (!portLayer) return;
   portLayer.replaceChildren();
   if (!state.portsOn || !state.atlas) return;
+  const stops = projectedStops();
   (state.atlas.ports || []).forEach((port, index) => {
     const [x, y] = project(port.lng, port.lat);
     const dot = document.createElementNS(SVG_NS, "circle");
@@ -336,19 +359,26 @@ function drawPorts() {
     dot.setAttribute("cy", y.toFixed(1));
     dot.setAttribute("r", "7");
     dot.dataset.port = String(index);
+    portLayer.append(dot);
+    const nearStop = stops.some((stop) => Math.hypot(stop.x - x, stop.y - y) < 18);
+    if (nearStop) return;
+    const rail = /rail crossing/i.test(port.name);
     const label = document.createElementNS(SVG_NS, "text");
     label.setAttribute("class", "pin-label port-label");
-    label.setAttribute("x", (x + 9).toFixed(1));
+    label.setAttribute("x", (x + (rail ? -10 : 9)).toFixed(1));
     label.setAttribute("y", (y + 4).toFixed(1));
-    label.textContent = port.name;
-    portLayer.append(dot, label);
+    if (rail) label.setAttribute("text-anchor", "end");
+    label.textContent = port.name.replace(/\s+alpine rail crossing$/i, "");
+    portLayer.append(label);
   });
 }
 
 function renderPort(port) {
+  state.portOpen = true;
   card.hidden = false;
   document.title = `${port.name} — Emigration port | Atto Historical Atlas`;
   card.innerHTML = [
+    closeButton(),
     `<h2>${esc(port.name)}</h2>`,
     `<p class="warn">Historic emigration hub, ${esc(port.years)}.</p>`,
     line("Peak years", port.peak),
@@ -394,6 +424,10 @@ function pageTitle(result) {
 
 function shareButton() {
   return `<p><button type="button" id="copy-view">Copy Shareable Link</button></p>`;
+}
+
+function closeButton() {
+  return `<button type="button" class="card-close" data-close aria-label="Clear the selection">×</button>`;
 }
 
 function inspectorCta(result) {
@@ -501,6 +535,8 @@ function parishSection(result) {
 }
 
 function renderCard(result) {
+  state.portOpen = false;
+  state.lastResult = result || null;
   if (!result) {
     card.hidden = true;
     card.innerHTML = "";
@@ -515,12 +551,13 @@ function renderCard(result) {
     const hints = state.atlas.search(result.query?.place || "", 5).map((item) => (
       `<li><button type="button" data-place="${esc(item.name)}">${esc(item.name)}${item.sigla ? ` (${esc(item.sigla)})` : ""}</button></li>`
     )).join("");
-    card.innerHTML = `<h2>No match</h2><p>No town matches this name for the selected year.</p>${hints ? `<h3>Close names</h3><ul>${hints}</ul>` : ""}`;
+    card.innerHTML = `${closeButton()}<h2>No match</h2><p>No town matches this name for the selected year.</p>${hints ? `<h3>Close names</h3><ul>${hints}</ul>` : ""}`;
     publish(result);
     return;
   }
   if (result.existed === false) {
     card.innerHTML = [
+      closeButton(),
       `<h2>${esc(result.historicalName || result.modernName)}</h2>`,
       line("Year", `1 July ${year}`),
       `<p class="warn">${esc(result.note || "This comune did not exist on this date.")}</p>`,
@@ -550,6 +587,7 @@ function renderCard(result) {
     ? `${Number(result.coordinates.lat).toFixed(5)}, ${Number(result.coordinates.lng).toFixed(5)}`
     : "";
   card.innerHTML = [
+    closeButton(),
     `<h2>${esc(place)}</h2>`,
     line("Modern name", result.modernName),
     result.rangeNote ? line("Chronicle year", year) : line("Date", `1 July ${year}`),
@@ -597,8 +635,10 @@ function renderRoute() {
     const button = document.createElement("button");
     button.type = "button";
     button.dataset.index = String(index);
-    const label = stop.label || stop.historicalName || stop.query?.place || "Stop";
-    button.textContent = `${stop.query?.year || ""} ${label}`;
+    const place = stop.query?.place || stop.historicalName || "Stop";
+    const year = stop.query?.year || "";
+    button.textContent = `${year} ${place}`.trim();
+    button.title = stop.label || place;
     item.append(button);
     routeStops.append(item);
   });
@@ -630,6 +670,7 @@ function payload() {
 }
 
 function syncMap(fly) {
+  if (!fly) flyToken += 1;
   const nextFrame = frameFor(state.stops);
   if (nextFrame !== state.frame || !provinceLayer.childElementCount) {
     state.frame = nextFrame;
@@ -642,6 +683,49 @@ function syncMap(fly) {
   markProvinces(currentStop);
   renderRoute();
   if (fly) flyTo(boxAround(projectedStops()));
+}
+
+function clearSelection(options = {}) {
+  stopPlayback();
+  state.placeRaw = "";
+  state.routeId = "";
+  state.stops = [];
+  state.index = 0;
+  state.yearRaw = String(state.year);
+  searchInput.value = "";
+  searchResults.replaceChildren();
+  renderCard(null);
+  syncMap(false);
+  if (options.writeUrl !== false) writeQuery({ year: state.year, place: "", route: "" });
+  if (options.fly !== false) flyTo(fullView());
+}
+
+/** A port card is a side lookup: closing it returns to the selected town. */
+function dismissCard() {
+  if (state.portOpen && state.lastResult) {
+    renderCard(state.lastResult);
+    return;
+  }
+  clearSelection();
+}
+
+function markSelectionControls() {
+  const nav = document.querySelector("#chronicles");
+  if (nav) {
+    for (const button of nav.querySelectorAll("[data-route]")) {
+      const active = Boolean(state.routeId) && fold(button.dataset.route) === fold(state.routeId);
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", active ? "true" : "false");
+    }
+  }
+  for (const button of document.querySelectorAll("[data-preset]")) {
+    const preset = button.dataset.preset;
+    const active = preset === "migration"
+      ? Boolean(state.routeId) && fold(state.routeId) === "lercara-new-york"
+      : !state.routeId && !state.placeRaw && Number(preset) === Number(state.year);
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  }
 }
 
 function writeView() {
@@ -699,7 +783,7 @@ function show(placeRaw, yearRaw, options = {}) {
   state.index = 0;
   const first = state.stops[0];
   state.year = first?.query?.modelYear || first?.query?.year || atlas.clampYear(yearRaw);
-  searchInput.value = placeRaw;
+  searchInput.value = specs.length > 1 ? (first?.query?.place || placeRaw) : placeRaw;
   searchResults.replaceChildren();
   renderCard(first);
   syncMap(Boolean(options.fly));
@@ -926,6 +1010,10 @@ function bindEvents() {
     selectStop(Number(dot.dataset.index));
   });
   card.addEventListener("click", async (event) => {
+    if (event.target.closest("[data-close]")) {
+      dismissCard();
+      return;
+    }
     const placeButton = event.target.closest("[data-place]");
     if (placeButton) {
       show(placeButton.dataset.place, String(state.year), { fly: true, writeUrl: true });
@@ -966,7 +1054,15 @@ function bindEvents() {
   document.querySelector("#chronicles")?.addEventListener("click", (event) => {
     const button = event.target.closest("[data-route]");
     if (!button) return;
+    if (state.routeId && fold(button.dataset.route) === fold(state.routeId)) {
+      clearSelection();
+      return;
+    }
     showRoute(button.dataset.route, { fly: true, writeUrl: true });
+  });
+  document.querySelector("#route-clear")?.addEventListener("click", () => clearSelection());
+  document.querySelector("#sea")?.addEventListener("click", () => {
+    if (!card.hidden || state.stops.length) dismissCard();
   });
   document.querySelector("#route-share").addEventListener("click", async (event) => {
     await copyShare(event.currentTarget);
@@ -974,6 +1070,10 @@ function bindEvents() {
   document.querySelectorAll("[data-preset]").forEach((button) => {
     button.addEventListener("click", () => {
       if (button.dataset.preset === "migration") {
+        if (state.routeId && fold(state.routeId) === "lercara-new-york") {
+          clearSelection();
+          return;
+        }
         show("Lercara Friddi,Palermo,New York", "1878,1902,1902", { fly: true, writeUrl: true });
         return;
       }
@@ -1007,17 +1107,9 @@ function bindEvents() {
     }
     if (event.key === "Escape") {
       searchResults.replaceChildren();
-      searchInput.blur();
-      if (!card.hidden) {
-        state.placeRaw = "";
-        state.routeId = "";
-        state.stops = [];
-        state.index = 0;
-        renderCard(null);
-        syncMap(false);
-        writeQuery({ year: state.year, place: "" });
-        flyTo(fullView());
-      }
+      if (document.activeElement === searchInput) searchInput.blur();
+      if (!card.hidden) dismissCard();
+      else if (state.stops.length) clearSelection();
       return;
     }
     if (typing || event.target === slider) return;
@@ -1062,12 +1154,7 @@ function openQuery(query, fly) {
     show(query.place, query.year || String(state.year), { fly, writeUrl: false });
     return;
   }
-  state.placeRaw = "";
-  state.routeId = "";
-  state.stops = [];
-  renderCard(null);
-  paintYear(state.year);
-  syncMap(false);
+  clearSelection({ fly, writeUrl: false });
 }
 
 function builtUrl(name) {

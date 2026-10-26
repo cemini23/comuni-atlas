@@ -138,6 +138,12 @@ button, input {
 
 .pill:hover, .presets button:hover { border-color: var(--gold); }
 
+.presets button[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--parchment);
+}
+
 .chronicles-bar { flex: 1 1 100%; }
 
 .chronicles-label {
@@ -313,13 +319,24 @@ label, .mesh-note, .legend, .results {
 .map-wrap {
   position: relative;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--rule);
   border-radius: 18px;
   overflow: hidden;
   background: var(--sea);
 }
 
-#map { width: 100%; height: 100%; display: block; }
+#map { flex: 1 1 0; width: 100%; height: auto; min-height: 0; display: block; }
+
+@media (min-width: 981px) {
+  .shell:has(#card[hidden]) { grid-template-columns: 18rem minmax(0, 1fr); }
+}
+
+@media (min-width: 981px) and (max-width: 1180px) {
+  .shell { grid-template-columns: 15rem minmax(0, 1fr) 18rem; }
+  .shell:has(#card[hidden]) { grid-template-columns: 15rem minmax(0, 1fr); }
+}
 
 #sea { fill: var(--sea); }
 
@@ -352,6 +369,11 @@ label, .mesh-note, .legend, .results {
   font-family: var(--sans);
   font-size: 11px;
   fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--parchment);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  pointer-events: none;
 }
 
 .year-stamp {
@@ -378,9 +400,8 @@ label, .mesh-note, .legend, .results {
 .hover-tip { pointer-events: none; }
 
 .route-bar {
-  left: 0.8rem;
-  right: 0.8rem;
-  bottom: 0.8rem;
+  position: static;
+  margin: 0 0.6rem 0.6rem;
 }
 
 .route-bar p { margin: 0 0 0.35rem; }
@@ -410,7 +431,27 @@ label, .mesh-note, .legend, .results {
   border-color: var(--wax);
 }
 
-.card h2 { margin: 0 0 0.2rem; font-size: 1.55rem; }
+.card { position: relative; }
+
+.card-close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.6rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--ink-soft);
+  font-family: var(--sans);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.card-close:hover { border-color: var(--gold); color: var(--ink); }
+
+.card h2 { margin: 0 0 0.2rem; padding-right: 2.2rem; font-size: 1.55rem; }
 .card h3 {
   margin: 1rem 0 0.3rem;
   font-family: var(--sans);
