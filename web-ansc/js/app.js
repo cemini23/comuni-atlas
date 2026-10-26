@@ -1,4 +1,5 @@
-import { fold } from "./engine.mjs";
+import { createAtlas, fold } from "./engine.mjs";
+import { catastoGuide, toAttoDossier } from "./suite.mjs";
 
 const THEME_KEY = "comuni-atlas-theme";
 const SHARE_ORIGIN = "https://youratto.com/ansc/";
@@ -15,7 +16,15 @@ const provinceLayer = document.querySelector("#provinces");
 const themeToggle = document.querySelector("#theme-toggle");
 const bootError = document.querySelector("#boot-error");
 
-const state = { rows: [], index: new Map(), geo: null, selected: null };
+const CATASTO_FALLBACK = new Set([
+  "regno-italia",
+  "repubblica",
+  "regno-sardegna",
+  "francia",
+  "napoleonico-italia",
+]);
+
+const state = { rows: [], index: new Map(), geo: null, selected: null, atlas: null };
 
 function mercator(lat) {
   const rad = (lat * Math.PI) / 180;
@@ -133,6 +142,121 @@ function requestDraft() {
   };
 }
 
+function comuneSlug(name) {
+  const slug = String(name || "comune")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return slug || "comune";
+}
+
+function attoFileName(dossier) {
+  const place = dossier.modernName || dossier.historicalName || dossier.query?.place || "comune";
+  const year = dossier.query?.year == null ? "year" : dossier.query.year;
+  return `${comuneSlug(place)}-${year}.atto-place.json`;
+}
+
+function downloadJson(filename, data) {
+  const blob = new Blob([`${JSON.stringify(data, null, 2)}\n`], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function loadAtlas() {
+  if (state.atlas) return Promise.resolve(state.atlas);
+  if (!state.atlasPromise) {
+    state.atlasPromise = Promise.all([
+      loadJson("comuni-index.json"),
+      loadJson("polities.json"),
+      loadJson("archives.json"),
+      loadJson("routes.json"),
+      loadJson("contacts.json"),
+      loadJson("dioceses.json"),
+    ]).then(([index, polities, archives, routes, contacts, dioceses]) => {
+      state.atlas = createAtlas({ index, polities, archives, routes, contacts, dioceses });
+      return state.atlas;
+    });
+  }
+  return state.atlasPromise;
+}
+
+function dossierYear(atlas) {
+  const typed = Number(document.querySelector("#ancestor-year")?.value.trim());
+  if (Number.isInteger(typed) && typed >= atlas.yearMin && typed <= atlas.yearMax) return typed;
+  return atlas.yearMax;
+}
+
+function rowResult(row, year) {
+  return {
+    matched: true,
+    query: { place: row.name, year },
+    historicalName: row.name,
+    modernName: row.name,
+    istat: row.istat || "",
+    catasto: row.catasto || "",
+    modernProvince: {
+      name: row.province || "",
+      code: "",
+      sigla: row.sigla || "",
+      region: row.region || "",
+    },
+    stato_civile_office: {
+      name: `Ufficio di Stato Civile del Comune di ${row.name}`,
+      pec: row.pec || "",
+      address: row.address || "",
+      website: row.website || "",
+    },
+  };
+}
+
+function guideFor(atlas, result) {
+  if (!result?.matched || !result.sovereign) return undefined;
+  const region = result.modernProvince?.region || result.historicalProvince?.region || "";
+  const sovereignId = result.sovereign.id || "";
+  let options = {};
+  if (CATASTO_FALLBACK.has(sovereignId)) {
+    const earlier = atlas.resolvePlace(result.query?.place || result.modernName || "", 1850);
+    options = {
+      fallbackId: earlier?.sovereign?.id || "",
+      fallbackRegion: earlier?.modernProvince?.region || earlier?.historicalProvince?.region || "",
+    };
+  }
+  return {
+    ...catastoGuide(sovereignId, region, options),
+    antenatiUrl: result.archive?.antenatiUrl || "",
+  };
+}
+
+async function activeDossier() {
+  const row = state.selected;
+  if (!row) return null;
+  const atlas = await loadAtlas();
+  const year = dossierYear(atlas);
+  const resolved = atlas.resolvePlace(row.name, year);
+  const sameTown = !row.istat || !resolved?.istat || resolved.istat === row.istat;
+  const result = resolved?.matched && sameTown ? resolved : rowResult(row, year);
+  const extras = {};
+  const guide = guideFor(atlas, result);
+  if (guide) extras.catasto_guide = guide;
+  if (result.parish_routing) {
+    extras.parrocchie = {
+      diocese: result.parish_routing.diocese || "",
+      archive: result.parish_routing.archive || "",
+      bewebUrl: result.parish_routing.bewebUrl || "",
+      required: Boolean(result.parish_routing.required),
+    };
+  }
+  return toAttoDossier(result, extras);
+}
+
 function paintRequest() {
   const subject = document.querySelector("#request-subject");
   const body = document.querySelector("#request-body");
@@ -234,6 +358,43 @@ async function main() {
     const draft = requestDraft();
     const text = draft.subject ? `Oggetto: ${draft.subject}\n\n${draft.body}` : draft.body;
     await copyText(event.currentTarget, text);
+  });
+  document.querySelector("#copy-atto-dossier")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    if (!state.selected) {
+      button.textContent = "Select a comune first.";
+      return;
+    }
+    button.textContent = "Loading dossier…";
+    let dossier;
+    try {
+      dossier = await activeDossier();
+    } catch {
+      button.textContent = "The dossier did not load.";
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(dossier.clipboardText);
+      button.textContent = "Copied — Paste into Atto → Documents";
+    } catch {
+      button.textContent = dossier.clipboardText || "Copy failed";
+    }
+  });
+  document.querySelector("#download-atto-json")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    if (!state.selected) {
+      button.textContent = "Select a comune first.";
+      return;
+    }
+    const label = button.textContent;
+    button.textContent = "Loading dossier…";
+    try {
+      const dossier = await activeDossier();
+      downloadJson(attoFileName(dossier), dossier);
+      button.textContent = label;
+    } catch {
+      button.textContent = "The dossier did not load.";
+    }
   });
   form.addEventListener("submit", (event) => {
     event.preventDefault();

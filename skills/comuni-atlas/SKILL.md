@@ -1,6 +1,6 @@
 ---
 name: comuni-atlas
-description: Resolve an Italian town and year from 1796 to 2026 to the sovereign regime, historical province, modern comune, and State Archive. Use for civil-record lookup, jure sanguinis research context, or ?year=&place= atlas URLs. Do not guess coordinates.
+description: Resolve an Italian town and year from 1563 to 2026 to the sovereign regime, historical province, modern comune, and State Archive. Use for civil-record lookup, jure sanguinis research context, or ?year=&place= atlas URLs. Do not guess coordinates.
 ---
 
 # Comuni Atlas
@@ -38,8 +38,11 @@ A matched place also includes `leva`, `catasto_guide`, and `parrocchie`.
 - PEC from IndicePA is `pecSource` `indicepa`. A missing row is `pattern-fallback`. Confirm a pattern address before you send it.
 - This atlas has no per-comune ANSC onboarding date. `rolloutWave` is null. `digitalSignatureReady` is false. `anscActive` is false.
 - Leva is a finding aid. Call-up year is the birth year plus 20. It is not a service record.
-- Rail lines are schematic corridors, not surveyed track.
-- The cadastre guide is not a tile layer. It does not draw parcels.
+- Rail lines and Roman consular roads are schematic corridors, not surveyed track.
+- The cadastre guide is not a tile layer. It does not draw parcels. `earlierCensus` names an older household survey when the modern region has one.
+- `archivalWarnings` lists a known archive loss for that province. An empty array means this model has no loss note.
+- A year before 1563 is clamped to 1563. Dante's stops use the 1563 jurisdiction.
+- Latin aliases such as Mediolanum resolve to the modern comune. Do not invent an alias that is not in the data.
 
 The other tools are Parrocchie and dioceses, the Cognomi heatmap, the ANSC and PEC tracker, and Caduti and liste di leva. Their pages are `web-parrocchie/`, `web-cognomi/`, `web-ansc/`, and `web-caduti/`.
 
@@ -69,5 +72,9 @@ Wait until the page banner shows a year. Then call `window.atlasAPI`.
 - `playRoute(slug)` plays a chronicle.
 - `setYear(year)` moves the scrubber.
 - `getState()` returns the year, the place, and the view box.
+- `exportCitation()` returns a Markdown citation for the open town.
+- `exportAttoDossier()` returns an `atto.place-dossier.v1` object for the open town. `clipboardText` is the plain block for Atto **Paste from website**. The download file is `{comune-slug}-{year}.atto-place.json`.
+
+`toAttoDossier(result, extras)` in `lib/suite.mjs` builds that object. Optional extras are `leva`, `catasto_guide`, and `parrocchie`. Do not invent archive fields that the resolver did not return.
 
 You can also read the JSON block `#atlas-inspect-json`.

@@ -1,5 +1,5 @@
 import { createAtlas, fold, parseYearList } from "./engine.mjs";
-import { catastoGuide } from "./suite.mjs";
+import { catastoGuide, toAttoDossier } from "./suite.mjs";
 import { installAtlasApi } from "./atlas-api.js";
 import { onPopState, readQuery, writeQuery } from "./router.js";
 
@@ -456,6 +456,57 @@ function citationButton() {
   return `<p><button type="button" id="copy-citation">Copy Archival Citation</button></p>`;
 }
 
+function attoActions() {
+  return `<p><button type="button" id="copy-atto-dossier">Copy Dossier for Atto App</button> <button type="button" id="download-atto-json">Download .atto.json</button></p>`;
+}
+
+function guideFor(result) {
+  if (!result?.matched) return undefined;
+  const region = result.modernProvince?.region || result.historicalProvince?.region || "";
+  const sovereignId = result.sovereign?.id || "";
+  let options = {};
+  if (CATASTO_FALLBACK.has(sovereignId) && state.atlas) {
+    const earlier = state.atlas.resolvePlace(result.query?.place || result.modernName || "", 1850);
+    options = {
+      fallbackId: earlier?.sovereign?.id || "",
+      fallbackRegion: earlier?.modernProvince?.region || earlier?.historicalProvince?.region || "",
+    };
+  }
+  return {
+    ...catastoGuide(sovereignId, region, options),
+    antenatiUrl: result.archive?.antenatiUrl || "",
+  };
+}
+
+function parishExtra(result) {
+  const parish = result?.parish_routing;
+  if (!parish) return undefined;
+  return {
+    diocese: parish.diocese || "",
+    archive: parish.archive || "",
+    bewebUrl: parish.bewebUrl || "",
+    required: Boolean(parish.required),
+  };
+}
+
+function attoFileName(dossier) {
+  const place = dossier.modernName || dossier.historicalName || dossier.query?.place || "comune";
+  const year = dossier.query?.year == null ? "year" : dossier.query.year;
+  return `${comuneSlug(place)}-${year}.atto-place.json`;
+}
+
+function downloadJson(filename, data) {
+  const blob = new Blob([`${JSON.stringify(data, null, 2)}\n`], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 function formatCitation(result) {
   if (!result?.matched) return "";
   const year = result.query?.year || "";
@@ -643,6 +694,7 @@ function renderCard(result) {
       officeSection(result),
       shareButton(),
       citationButton(),
+      attoActions(),
       inspectorCta(result),
     ].join("");
     publish(result);
@@ -696,6 +748,7 @@ function renderCard(result) {
     timeline ? `<h3>Changes</h3><ol class="timeline">${timeline}</ol>` : "",
     shareButton(),
     citationButton(),
+    attoActions(),
     inspectorCta(result),
   ].join("");
   publish(result);
@@ -989,6 +1042,25 @@ function installController() {
       if (!place) return "";
       return formatCitation(controller.resolvePlace(place, opts.year ?? state.year));
     },
+    exportAttoDossier(opts = {}) {
+      const extras = { ...(opts.extras || {}) };
+      let result = null;
+      if (opts.place) result = controller.resolvePlace(opts.place, opts.year ?? state.year);
+      else if (state.lastResult && (opts.year === undefined || opts.year === null || opts.year === "")) result = state.lastResult;
+      else {
+        const place = controller.getState().place;
+        if (place) result = controller.resolvePlace(place, opts.year ?? state.year);
+      }
+      if (extras.catasto_guide === undefined && result) {
+        const guide = guideFor(result);
+        if (guide) extras.catasto_guide = guide;
+      }
+      if (extras.parrocchie === undefined && result) {
+        const parish = parishExtra(result);
+        if (parish) extras.parrocchie = parish;
+      }
+      return toAttoDossier(result, extras);
+    },
     getState() {
       const box = svg.getAttribute("viewBox").split(/\s+/).map(Number);
       const current = state.stops[state.index];
@@ -1133,6 +1205,23 @@ function bindEvents() {
       } catch {
         citeButton.textContent = text || "Copy failed";
       }
+      return;
+    }
+    const attoCopy = event.target.closest("#copy-atto-dossier");
+    if (attoCopy) {
+      const dossier = window.atlasAPI.exportAttoDossier();
+      try {
+        await navigator.clipboard.writeText(dossier.clipboardText);
+        attoCopy.textContent = "Copied — Paste into Atto → Documents";
+      } catch {
+        attoCopy.textContent = dossier.clipboardText || "Copy failed";
+      }
+      return;
+    }
+    const attoDownload = event.target.closest("#download-atto-json");
+    if (attoDownload) {
+      const dossier = window.atlasAPI.exportAttoDossier();
+      downloadJson(attoFileName(dossier), dossier);
     }
   });
   portLayer?.addEventListener("click", (event) => {

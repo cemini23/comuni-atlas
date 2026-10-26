@@ -59,7 +59,7 @@ package_app "$ROOT/web-parrocchie" "$ROOT/dist/parrocchie" \
 package_app "$ROOT/web-cognomi" "$ROOT/dist/cognomi" \
   cognomi-db.json comuni-index.json provinces.geojson
 package_app "$ROOT/web-ansc" "$ROOT/dist/ansc" \
-  ansc-pec-db.json provinces.geojson
+  ansc-pec-db.json provinces.geojson comuni-index.json polities.json archives.json routes.json contacts.json dioceses.json
 package_app "$ROOT/web-caduti" "$ROOT/dist/caduti" \
   comuni-index.json polities.json archives.json routes.json contacts.json dioceses.json \
   provinces.geojson caduti-leva-db.json cognomi-db.json

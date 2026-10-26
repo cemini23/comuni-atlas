@@ -26,6 +26,9 @@ export function installAtlasApi(controller) {
     exportCitation(opts = {}) {
       return controller.exportCitation(opts);
     },
+    exportAttoDossier(opts = {}) {
+      return controller.exportAttoDossier(opts);
+    },
   };
   window.atlasAPI = api;
   return api;
