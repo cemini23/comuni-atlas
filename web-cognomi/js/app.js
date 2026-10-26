@@ -95,7 +95,7 @@ function writeQuery(surname) {
 
 function render(raw) {
   const dossier = analyzeSurname(raw, state.db, state.places);
-  document.title = `${dossier.surname} Surname Origin, Map & Italian Civil Records | Atto`;
+  document.title = `${dossier.surname} Surname Origin, Map & Italian Civil Records | Italia Storica Atlas`;
   drawMap(dossier.region, dossier.secondaryRegions || []);
   const comuni = (dossier.topComuni || []).map((item) => {
     const href = `../web/?year=1885&place=${encodeURIComponent(item.name)}`;

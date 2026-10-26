@@ -339,12 +339,15 @@ label, .mesh-note, .legend, .results {
 #map { flex: 1 1 0; width: 100%; height: auto; min-height: 0; display: block; }
 
 @media (min-width: 981px) {
-  .shell:has(#card[hidden]) { grid-template-columns: 18rem minmax(0, 1fr); }
+  /* Keep the card column while the card is hidden so the map does not jump. */
+  #card[hidden] {
+    display: block !important;
+    visibility: hidden;
+  }
 }
 
 @media (min-width: 981px) and (max-width: 1180px) {
   .shell { grid-template-columns: 15rem minmax(0, 1fr) 18rem; }
-  .shell:has(#card[hidden]) { grid-template-columns: 15rem minmax(0, 1fr); }
 }
 
 #sea { fill: var(--sea); }
@@ -409,8 +412,14 @@ label, .mesh-note, .legend, .results {
 .hover-tip { pointer-events: none; }
 
 .route-bar {
-  position: static;
-  margin: 0 0.6rem 0.6rem;
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  margin: 0;
+  z-index: 2;
+  max-height: 42%;
+  overflow: auto;
 }
 
 .route-bar p { margin: 0 0 0.35rem; }

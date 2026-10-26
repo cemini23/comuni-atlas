@@ -209,7 +209,7 @@ function render() {
   const query = comuneInput.value.trim();
   const found = matches(query, year);
   const placeLabel = query || "Italy";
-  document.title = `${placeLabel} parishes in ${year} | Atto`;
+  document.title = `${placeLabel} parishes in ${year} | Italia Storica Atlas`;
   let resolved = null;
   if (query && state.atlas) {
     const hit = state.atlas.resolvePlace(query, year);

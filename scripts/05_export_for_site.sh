@@ -52,7 +52,7 @@ PY
 
 package_app "$ROOT/web" "$ROOT/dist/atlas" \
   comuni-index.json polities.json archives.json routes.json contacts.json dioceses.json \
-  provinces.geojson parrocchie-db.json cognomi-db.json ansc-pec-db.json caduti-leva-db.json rail-catasti.json
+  provinces.geojson parrocchie-db.json cognomi-db.json ansc-pec-db.json caduti-leva-db.json rail-catasti.json cite-index.json
 package_app "$ROOT/web-parrocchie" "$ROOT/dist/parrocchie" \
   comuni-index.json polities.json archives.json routes.json contacts.json dioceses.json \
   parrocchie-db.json provinces.geojson
@@ -123,6 +123,7 @@ cat > "$ROOT/dist/index.html" <<'HTML'
       <p><a class="pill" href="atlas/">Open the atlas</a></p>
       <ul>
         <li><a href="atlas/?year=1884&amp;place=Castrogiovanni">Castrogiovanni in 1884</a></li>
+        <li><a href="atlas/comune/enna/">Enna (Castrogiovanni) place page</a></li>
         <li><a href="atlas/?year=1880&amp;place=Colledimacine">Colledimacine in 1880</a></li>
         <li><a href="atlas/?year=1933&amp;place=Sellia">Sellia in 1933</a></li>
       </ul>
@@ -197,6 +198,12 @@ test -f "$DEST/data/built/cognomi-db.json"
 test -f "$DEST/data/built/ansc-pec-db.json"
 test -f "$DEST/data/built/caduti-leva-db.json"
 test -f "$DEST/data/built/rail-catasti.json"
+test -f "$DEST/data/built/cite-index.json"
+mkdir -p "$DEST/data/built/cite-alias" "$DEST/data/built/cite-place"
+cp "$ROOT/data/built/cite-alias/"*.json "$DEST/data/built/cite-alias/"
+cp "$ROOT/data/built/cite-place/"*.json "$DEST/data/built/cite-place/"
+test -f "$DEST/data/built/cite-alias/e.json"
+test -f "$DEST/data/built/cite-place/e.json"
 grep -q 'src="js/app.js"' "$DEST/index.html"
 grep -q 'href="css/style.css"' "$DEST/index.html"
 grep -q 'ATLAS_BASE_PATH = window.ATLAS_BASE_PATH || "./"' "$DEST/index.html"
@@ -206,4 +213,13 @@ test -f "$ROOT/dist/ansc/index.html"
 test -f "$ROOT/dist/caduti/index.html"
 test -f "$ROOT/dist/index.html"
 
-echo "wrote dist/atlas dist/parrocchie dist/cognomi dist/ansc dist/caduti dist/index.html"
+FUNCS="$ROOT/dist/functions"
+rm -rf "$FUNCS"
+mkdir -p "$FUNCS"
+cp "$ROOT/site-functions/cite.js" "$ROOT/site-functions/_middleware.js" "$FUNCS/"
+cp "$ROOT/lib/cite-page.mjs" "$FUNCS/cite-page.mjs"
+test -f "$FUNCS/_middleware.js"
+test -f "$FUNCS/cite.js"
+test -f "$FUNCS/cite-page.mjs"
+
+echo "wrote dist/atlas dist/parrocchie dist/cognomi dist/ansc dist/caduti dist/index.html dist/functions"

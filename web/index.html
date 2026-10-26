@@ -3,28 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Atto Historical Atlas (1563–2026)</title>
-  <meta name="description" content="Look up an Italian town from 1563 to 2026. See the sovereign regime, the historical province, the modern comune, Stato Civile, and the Archivio di Stato. Built for Comuni Soppressi and Italian genealogy.">
+  <title>Italia Storica Atlas (1563–2026) | Atto</title>
+  <meta name="description" content="Italia Storica Atlas, published by Atto at youratto.com. Look up an Italian town from 1563 to 2026. See the sovereign regime, the historical province, the modern comune, Stato Civile, and the Archivio di Stato.">
+  <meta name="author" content="Atto">
   <link rel="canonical" href="https://youratto.com/atlas/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Atto">
-  <meta property="og:title" content="Atto Historical Atlas (1563–2026)">
-  <meta property="og:description" content="Historical Italian comuni, Comuni Soppressi, Stato Civile, and Archivio di Stato lookups from 1563 to 2026.">
+  <meta property="og:title" content="Italia Storica Atlas (1563–2026) | Atto">
+  <meta property="og:description" content="Italia Storica Atlas, published by Atto. Historical Italian comuni, Comuni Soppressi, Stato Civile, and Archivio di Stato lookups from 1563 to 2026.">
   <meta property="og:url" content="https://youratto.com/atlas/">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Atto Historical Atlas (1563–2026)">
-  <meta name="twitter:description" content="Historical Italian comuni, Comuni Soppressi, Stato Civile, and Archivio di Stato lookups from 1563 to 2026.">
+  <meta name="twitter:title" content="Italia Storica Atlas (1563–2026) | Atto">
+  <meta name="twitter:description" content="Italia Storica Atlas, published by Atto. Historical Italian comuni, Comuni Soppressi, Stato Civile, and Archivio di Stato lookups from 1563 to 2026.">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "WebApplication",
-        "name": "Atto Historical Atlas",
+        "name": "Italia Storica Atlas",
         "url": "https://youratto.com/atlas/",
         "applicationCategory": "ReferenceApplication",
         "operatingSystem": "Web",
-        "description": "Look up an Italian town from 1563 to 2026. The atlas names the sovereign regime, the historical province, the modern comune, Stato Civile, and the Archivio di Stato.",
+        "dateModified": "2026-10-26",
+        "description": "Italia Storica Atlas, published by Atto at youratto.com. Look up an Italian town from 1563 to 2026. The atlas names the sovereign regime, the historical province, the modern comune, Stato Civile, and the Archivio di Stato.",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
         "provider": { "@type": "Organization", "name": "Atto", "url": "https://youratto.com" },
         "keywords": "Italian genealogy, Comuni Soppressi, Stato Civile, Archivio di Stato, jure sanguinis"
@@ -37,7 +39,8 @@
         "temporalCoverage": "1563/2026",
         "spatialCoverage": "Italy",
         "keywords": ["Comuni Soppressi", "Stato Civile", "Archivio di Stato", "Italian genealogy"],
-        "creator": { "@type": "Organization", "name": "Atto", "url": "https://youratto.com" }
+        "creator": { "@type": "Organization", "name": "Atto", "url": "https://youratto.com" },
+        "dateModified": "2026-10-26"
       }
     ]
   }
@@ -68,8 +71,9 @@
       <a class="pill" href="https://youratto.com?utm_source=atlas&amp;utm_medium=header">Organize Your Packet in Atto for Mac &amp; Windows →</a>
     </div>
     <div class="title-block">
-      <h1 class="atlas-title">Atto Historical Atlas (1563–2026)</h1>
+      <h1 class="atlas-title">Italia Storica Atlas (1563–2026)</h1>
       <p class="badge">Open-Source Historical Atlas by Atto — Local-First Italian Civil Records &amp; Genealogy Vault</p>
+      <p class="badge">Published by <a href="https://youratto.com">Atto</a> on <time datetime="2026-10-26">26 October 2026</time>. Each comune has a page, for example <a href="comune/enna/">Enna (Castrogiovanni)</a>.</p>
     </div>
     <div class="top-actions">
       <a class="pill" href="https://youratto.com">Organize Your Records in Atto (Mac &amp; Windows) →</a>
@@ -85,7 +89,13 @@
     </nav>
     <div class="chronicles-bar">
       <p class="chronicles-label">Historical Chronicles &amp; Migration Routes</p>
-      <nav id="chronicles" class="presets" aria-label="Historical Chronicles and Migration Routes"></nav>
+      <nav id="chronicles" class="presets" aria-label="Historical Chronicles and Migration Routes">
+        <button type="button" data-route="garibaldi-mille">Garibaldi's Thousand, 1860</button>
+        <button type="button" data-route="dante-exile">Dante Alighieri's exile</button>
+        <button type="button" data-route="sicily-to-ny">Sicily to New York, 1880–1904</button>
+        <button type="button" data-route="veneto-to-buenos-aires">Veneto to Buenos Aires, 1858–1888</button>
+        <button type="button" data-route="lercara-new-york">Lercara Friddi to New York</button>
+      </nav>
     </div>
   </header>
   <p id="regime-banner" class="banner" role="status">Select any year (1563–2026) or search an Italian town to inspect its sovereign regime, historical province, and State Archive.</p>
@@ -144,7 +154,7 @@
     <button type="button" id="year-next" aria-label="Next year">+1</button>
   </footer>
   <p id="boot-error" class="boot-error" hidden></p>
-  <noscript>This atlas needs JavaScript. Open this folder with its data/built directory, or serve the repository root and open /web/.</noscript>
+  <noscript>The map needs JavaScript. A cited place page still shows the province, the archive, and the comune in the page text.</noscript>
   <script>window.ATLAS_BASE_PATH = window.ATLAS_BASE_PATH || "";</script>
   <script type="module" src="js/app.js"></script>
 </body>

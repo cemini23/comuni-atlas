@@ -6,7 +6,7 @@ import { onPopState, readQuery, writeQuery } from "./router.js";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const THEME_KEY = "comuni-atlas-theme";
 const SHARE_ORIGIN = "https://youratto.com/atlas/";
-const DEFAULT_TITLE = "Atto Historical Atlas (1563–2026)";
+const DEFAULT_TITLE = "Italia Storica Atlas (1563–2026) | Atto";
 const ITALY = { minLng: 6.55, maxLng: 18.85, minLat: 35.45, maxLat: 47.12, w: 1000, h: 1180 };
 const WIDE = { w: 1600, h: 1000 };
 const WIDE_SPLIT_LAT = 34;
@@ -402,7 +402,7 @@ function drawPorts() {
 function renderPort(port) {
   state.portOpen = true;
   card.hidden = false;
-  document.title = `${port.name} — Emigration port | Atto Historical Atlas`;
+  document.title = `${port.name} — Emigration port | Italia Storica Atlas`;
   card.innerHTML = [
     closeButton(),
     `<h2>${esc(port.name)}</h2>`,
@@ -444,8 +444,8 @@ function pageTitle(result) {
   const year = result.query?.year || state.year;
   const historical = result.historicalName || result.query?.place || "Place";
   const modern = result.modernName && result.modernName !== historical ? ` (${result.modernName})` : "";
-  if (!result.matched) return `${historical} in ${year} — Atto Historical Atlas`;
-  return `${historical}${modern} in ${year} — Stato Civile & Archive Lookup | Atto Historical Atlas`;
+  if (!result.matched) return `${historical} in ${year} — Italia Storica Atlas`;
+  return `${historical}${modern} in ${year} — Stato Civile & Archive Lookup | Italia Storica Atlas`;
 }
 
 function shareButton() {
@@ -1334,14 +1334,18 @@ function bindEvents() {
 function renderChronicles() {
   const nav = document.querySelector("#chronicles");
   if (!nav) return;
-  nav.replaceChildren();
+  const buttons = new Map(
+    [...nav.querySelectorAll("[data-route]")].map((button) => [button.dataset.route, button])
+  );
   for (const route of state.atlas.routes) {
-    const button = document.createElement("button");
+    const button = buttons.get(route.id) || document.createElement("button");
     button.type = "button";
     button.dataset.route = route.id;
     button.textContent = route.titleEn || route.title;
+    buttons.delete(route.id);
     nav.append(button);
   }
+  for (const orphan of buttons.values()) orphan.remove();
 }
 
 function openQuery(query, fly) {

@@ -73,6 +73,17 @@ The cognomi map paints the primary region in crimson and any secondary regions i
 
 The ANSC page can draft an Italian PEC subject and a request under DPR 396/2000. Caduti can show six World War I front sectors next to the home military district.
 
+## Cite a town
+
+Each comune has a stable page. The page text names the province, the diocese, the PEC address, and the call-up district. The map is not required.
+
+- Enna, once Castrogiovanni: `https://youratto.com/atlas/comune/enna/`
+- A shared map link such as `https://youratto.com/atlas/?year=1884&place=Castrogiovanni` includes the same answer in the HTML. Its canonical URL is the stable page.
+- Esposito: `https://youratto.com/cognomi/surname/esposito/`
+- Dante's exile: `https://youratto.com/atlas/route/dante-exile/`
+
+Send `Accept: text/markdown` to receive Markdown. The response sets `Vary: Accept`. The product name is Italia Storica Atlas. Atto publishes it at youratto.com.
+
 ## Share a view
 
 One town uses this form:
@@ -132,7 +143,7 @@ Compiled files already sit in `data/built`. Rebuild them with the Python scripts
 3. Run `python3 scripts/06_fetch_ipa_pec.py` to download municipal PEC rows.
 4. Run `python3 scripts/07_fetch_dioceses.py` to refresh the diocese cache. The province table works with no network.
 5. Run `python3 scripts/04_build_bundle.py` to compile the atlas and the suite files.
-6. Run `bash scripts/05_export_for_site.sh` to write `dist/atlas/`, `dist/parrocchie/`, `dist/cognomi/`, `dist/ansc/`, `dist/caduti/`, and `dist/index.html`.
+6. Run `bash scripts/05_export_for_site.sh` to write `dist/atlas/`, `dist/parrocchie/`, `dist/cognomi/`, `dist/ansc/`, `dist/caduti/`, `dist/index.html`, and `dist/functions/`.
 7. Optional. Put `FIRECRAWL_API_KEY` in `.env`. Then run `python3 scripts/03_firecrawl_antenati.py`.
 
 The atlas runs with no API key. `data/built/archives.json` already lists the State Archives. Store a Firecrawl key only in `.env`. That file is gitignored.
@@ -141,9 +152,12 @@ The atlas runs with no API key. `data/built/archives.json` already lists the Sta
 
 1. Run `bash scripts/05_export_for_site.sh`.
 2. Copy `dist/atlas/` into the site as `public/atlas/` or as a root `atlas/` folder.
-3. Open `/atlas/?year=1884&place=Castrogiovanni`.
+3. Copy `dist/functions/` into the site as its `functions/` folder. The functions serve the per-comune pages and the Markdown response.
+4. Open `/atlas/?year=1884&place=Castrogiovanni`.
 
 `youratto.com` serves this bundle from `apps/site/atlas/`. The public URL is [https://youratto.com/atlas](https://youratto.com/atlas).
+
+The `functions/` folder needs `cite.js`, `cite-page.mjs`, and `_middleware.js` together. `_middleware.js` sends a citable URL to `cite.js`. A URL with no place or surname passes through to the static file.
 
 ## Limits
 

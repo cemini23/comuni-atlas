@@ -285,7 +285,7 @@ function renderRow(row) {
     <p><a href="../web/?year=1885&amp;place=${encodeURIComponent(row.name)}">Inspect in Historical Atlas →</a></p>
     ${row.website ? `<p><a href="${esc(row.website)}" rel="noopener noreferrer">${esc(row.website)}</a></p>` : ""}
   `;
-  document.title = `${row.name} PEC | Atto`;
+  document.title = `${row.name} PEC | Italia Storica Atlas`;
   status.textContent = `${row.name} (${row.province || row.sigla}, ${row.region}) — Official PEC & Municipio routing.`;
   writeQuery(row.name);
   paintRequest();

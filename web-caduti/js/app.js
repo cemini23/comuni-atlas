@@ -163,7 +163,7 @@ function render() {
     <p><a href="${esc(href)}">Open ${esc(comune)} in the atlas at the call-up year</a></p>
   `;
   drawPin(atBirth.coordinates);
-  document.title = `${comune} liste di leva ${year} | Atto`;
+  document.title = `${comune} liste di leva ${year} | Italia Storica Atlas`;
   status.textContent = `${leva.district} — Classe di Leva ${leva.classe} (Call-up year ${leva.callUpYear}).`;
   writeQuery();
 }
