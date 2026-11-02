@@ -163,6 +163,14 @@ export async function maybeCite(context) {
   const hit = classify(url);
   if (!hit) return null;
   if (hit.kind === "landing" && !landingNeedsWork(url, context.request)) return null;
+  if (hit.kind === "landing" && !url.pathname.endsWith("/") && !wantsMarkdown(context.request)) {
+    // The tool shell uses relative css/ and js/ paths, so serving it at /atlas?x
+    // loads /css/style.css and /js/app.js from the site root (404). Send the
+    // browser to the slash form, as Pages already does for /atlas with no query.
+    const dest = new URL(url);
+    dest.pathname = `${url.pathname}/`;
+    return Response.redirect(dest.toString(), 308);
+  }
   let index;
   try {
     index = await loadMeta(context, url.origin);
