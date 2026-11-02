@@ -327,7 +327,7 @@ label, .mesh-note, .legend, .results {
 
 .map-wrap {
   position: relative;
-  min-height: 0;
+  min-height: 26rem;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--rule);
@@ -336,7 +336,68 @@ label, .mesh-note, .legend, .results {
   background: var(--sea);
 }
 
-#map { flex: 1 1 0; width: 100%; height: auto; min-height: 0; display: block; }
+#map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+  touch-action: none;
+}
+
+.map-controls {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.map-controls button {
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.map-controls button:hover,
+.map-controls button:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.map-hint {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.6rem;
+  z-index: 2;
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  pointer-events: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.map-wrap.is-panning #map,
+.map-wrap.is-panning .province {
+  cursor: grabbing;
+}
+
+.map-wrap:has(.route-bar:not([hidden])) .map-hint {
+  display: none;
+}
 
 @media (min-width: 981px) {
   /* Keep the card column while the card is hidden so the map does not jump. */

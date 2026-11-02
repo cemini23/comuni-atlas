@@ -118,6 +118,8 @@ function fullView() {
 function applyView(box) {
   state.view = box;
   svg.setAttribute("viewBox", `${box.x} ${box.y} ${box.w} ${box.h}`);
+  // At full extent a swipe should scroll the page, not fight the map.
+  svg.style.touchAction = box.w < fullView().w - 0.5 ? "none" : "pan-y";
 }
 
 function flyTo(box) {
@@ -143,6 +145,183 @@ function flyTo(box) {
     if (t < 1) requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
+}
+
+const MAX_ZOOM = 12;
+const PAN_CLICK_SLOP = 4;
+
+function inverseCtm() {
+  const ctm = svg.getScreenCTM();
+  return ctm ? ctm.inverse() : null;
+}
+
+function mapPointFrom(matrix, clientX, clientY) {
+  if (!matrix) return null;
+  const point = new DOMPoint(clientX, clientY).matrixTransform(matrix);
+  return { x: point.x, y: point.y };
+}
+
+function currentZoom() {
+  return fullView().w / state.view.w;
+}
+
+/** Scale the view around an anchor map point, then keep it inside the frame. */
+function viewAround(zoom, anchor, from = state.view) {
+  const full = fullView();
+  const target = Math.min(MAX_ZOOM, Math.max(1, zoom));
+  const w = full.w / target;
+  const h = full.h / target;
+  const rx = (anchor.x - from.x) / from.w;
+  const ry = (anchor.y - from.y) / from.h;
+  const x = Math.min(Math.max(anchor.x - rx * w, full.x), full.x + full.w - w);
+  const y = Math.min(Math.max(anchor.y - ry * h, full.y), full.y + full.h - h);
+  return { x, y, w, h };
+}
+
+function zoomBy(factor, clientX, clientY) {
+  const center = clientX == null
+    ? { x: state.view.x + state.view.w / 2, y: state.view.y + state.view.h / 2 }
+    : mapPointFrom(inverseCtm(), clientX, clientY);
+  if (!center) return;
+  flyToken += 1;
+  applyView(viewAround(currentZoom() * factor, center));
+}
+
+function zoomToFit() {
+  flyTo(fullView());
+}
+
+function setupMapCamera() {
+  const pointers = new Map();
+  let gesture = null;
+  let suppressClick = false;
+
+  function startGesture() {
+    flyToken += 1;
+    const matrix = inverseCtm();
+    if (!matrix) return;
+    if (pointers.size === 1) {
+      const [only] = pointers.values();
+      gesture = {
+        type: "pan",
+        matrix,
+        startView: { ...state.view },
+        anchor: mapPointFrom(matrix, only.x, only.y),
+        originX: only.x,
+        originY: only.y,
+        moved: 0,
+      };
+      return;
+    }
+    if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      const midX = (a.x + b.x) / 2;
+      const midY = (a.y + b.y) / 2;
+      gesture = {
+        type: "pinch",
+        matrix,
+        startView: { ...state.view },
+        anchor: mapPointFrom(matrix, midX, midY),
+        distance: Math.hypot(a.x - b.x, a.y - b.y) || 1,
+        moved: PAN_CLICK_SLOP + 1,
+      };
+    }
+  }
+
+  svg.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    try {
+      svg.setPointerCapture(event.pointerId);
+    } catch {
+      /* some browsers reject capture on synthetic pointers */
+    }
+    startGesture();
+    mapWrap.classList.add("is-panning");
+  });
+
+  svg.addEventListener("pointermove", (event) => {
+    if (!pointers.has(event.pointerId) || !gesture) return;
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    const full = fullView();
+    const view = gesture.startView;
+    if (gesture.type === "pan" && pointers.size === 1) {
+      const point = mapPointFrom(gesture.matrix, event.clientX, event.clientY);
+      if (!point || !gesture.anchor) return;
+      gesture.moved = Math.max(
+        gesture.moved,
+        Math.hypot(event.clientX - gesture.originX, event.clientY - gesture.originY)
+      );
+      const dx = point.x - gesture.anchor.x;
+      const dy = point.y - gesture.anchor.y;
+      const x = Math.min(Math.max(view.x - dx, full.x), full.x + full.w - view.w);
+      const y = Math.min(Math.max(view.y - dy, full.y), full.y + full.h - view.h);
+      applyView({ x, y, w: view.w, h: view.h });
+      return;
+    }
+    if (gesture.type === "pinch" && pointers.size >= 2) {
+      const [a, b] = [...pointers.values()];
+      const midX = (a.x + b.x) / 2;
+      const midY = (a.y + b.y) / 2;
+      const distance = Math.hypot(a.x - b.x, a.y - b.y) || 1;
+      const point = mapPointFrom(gesture.matrix, midX, midY);
+      if (!point || !gesture.anchor) return;
+      const zoom = (full.w / view.w) * (distance / gesture.distance);
+      const target = Math.min(MAX_ZOOM, Math.max(1, zoom));
+      const w = full.w / target;
+      const h = full.h / target;
+      const rx = (gesture.anchor.x - view.x) / view.w;
+      const ry = (gesture.anchor.y - view.y) / view.h;
+      const x = Math.min(Math.max(point.x - rx * w, full.x), full.x + full.w - w);
+      const y = Math.min(Math.max(point.y - ry * h, full.y), full.y + full.h - h);
+      applyView({ x, y, w, h });
+    }
+  });
+
+  function endPointer(event) {
+    if (!pointers.has(event.pointerId)) return;
+    pointers.delete(event.pointerId);
+    if (gesture && gesture.moved > PAN_CLICK_SLOP) {
+      suppressClick = true;
+      window.setTimeout(() => {
+        suppressClick = false;
+      }, 350);
+    }
+    if (pointers.size === 0) {
+      gesture = null;
+      mapWrap.classList.remove("is-panning");
+      hoverTip.hidden = true;
+    } else {
+      startGesture();
+    }
+  }
+
+  svg.addEventListener("pointerup", endPointer);
+  svg.addEventListener("pointercancel", endPointer);
+
+  mapWrap.addEventListener("click", (event) => {
+    if (!suppressClick || !event.target.closest?.("#map")) return;
+    suppressClick = false;
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
+
+  svg.addEventListener("wheel", (event) => {
+    const zoomingOut = event.deltaY > 0;
+    if (zoomingOut && currentZoom() <= 1.001) return;
+    event.preventDefault();
+    const unit = event.deltaMode === 1 ? 0.05 : event.deltaMode === 2 ? 1 : 0.0015;
+    zoomBy(Math.exp(-event.deltaY * unit), event.clientX, event.clientY);
+  }, { passive: false });
+
+  svg.addEventListener("dblclick", (event) => {
+    event.preventDefault();
+    zoomBy(event.shiftKey ? 0.5 : 2, event.clientX, event.clientY);
+  });
+
+  document.querySelector("#zoom-in")?.addEventListener("click", () => zoomBy(1.6));
+  document.querySelector("#zoom-out")?.addEventListener("click", () => zoomBy(1 / 1.6));
+  document.querySelector("#zoom-fit")?.addEventListener("click", zoomToFit);
 }
 
 function boxAround(points) {
@@ -1322,6 +1501,21 @@ function bindEvents() {
       return;
     }
     if (typing || event.target === slider) return;
+    if (event.key === "+" || event.key === "=") {
+      event.preventDefault();
+      zoomBy(1.6);
+      return;
+    }
+    if (event.key === "-" || event.key === "_") {
+      event.preventDefault();
+      zoomBy(1 / 1.6);
+      return;
+    }
+    if (event.key === "0") {
+      event.preventDefault();
+      zoomToFit();
+      return;
+    }
     if (event.key === " " && event.target?.tagName !== "BUTTON") {
       event.preventDefault();
       document.querySelector("#play-years").click();
@@ -1336,6 +1530,7 @@ function bindEvents() {
       setYear(state.year - step);
     }
   });
+  setupMapCamera();
   onPopState((query) => openQuery(query, false));
 }
 
