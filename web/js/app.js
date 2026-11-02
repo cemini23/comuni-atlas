@@ -662,6 +662,12 @@ function parishSection(result) {
   </section>`;
 }
 
+function evidenceSection(result) {
+  if (!result?.state) return "";
+  const notes = (result.notes || []).map((note) => `<li>${esc(note)}</li>`).join("");
+  return [line("Evidence", result.state), notes ? `<ul>${notes}</ul>` : ""].join("");
+}
+
 function renderCard(result) {
   state.portOpen = false;
   state.lastResult = result || null;
@@ -679,7 +685,7 @@ function renderCard(result) {
     const hints = state.atlas.search(result.query?.place || "", 5).map((item) => (
       `<li><button type="button" data-place="${esc(item.name)}">${esc(item.name)}${item.sigla ? ` (${esc(item.sigla)})` : ""}</button></li>`
     )).join("");
-    card.innerHTML = `${closeButton()}<h2>No match</h2><p>No town matches this name for the selected year.</p>${hints ? `<h3>Close names</h3><ul>${hints}</ul>` : ""}`;
+    card.innerHTML = `${closeButton()}<h2>No match</h2><p>No town matches this name for the selected year.</p>${evidenceSection(result)}${hints ? `<h3>Close names</h3><ul>${hints}</ul>` : ""}`;
     publish(result);
     return;
   }
@@ -688,6 +694,7 @@ function renderCard(result) {
       closeButton(),
       `<h2>${esc(result.historicalName || result.modernName)}</h2>`,
       line("Year", `1 July ${year}`),
+      evidenceSection(result),
       `<p class="warn">${esc(result.note || "This comune did not exist on this date.")}</p>`,
       result.successor ? line("Later comune", `${result.successor.name} · ISTAT ${result.successor.istat || "—"}`) : "",
       warningSection(result),
@@ -722,6 +729,7 @@ function renderCard(result) {
     `<h2>${esc(place)}</h2>`,
     line("Modern name", result.modernName),
     result.rangeNote ? line("Chronicle year", year) : line("Date", `1 July ${year}`),
+    evidenceSection(result),
     result.note ? `<p>${esc(result.note)}</p>` : "",
     result.ambiguous ? `<p class="warn">Multiple Italian municipalities share a similar name. Select a municipality below:</p>` : "",
     alternates ? `<ul>${alternates}</ul>` : "",

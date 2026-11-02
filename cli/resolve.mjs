@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 /**
- * Resolve an Italian place at a historical year, or a surname dossier.
+ * Which archive holds the records for this town in this year?
  *
  *   node cli/resolve.mjs --year 1884 --place "Castrogiovanni"
  *   node cli/resolve.mjs --year 1852 --place Udine
  *   node cli/resolve.mjs --year 1842 --place Udine
  *   node cli/resolve.mjs --cognome Barone
  *   node cli/resolve.mjs --leva --year 1878 --place Isernia
+ *
+ * Prints JSON. Exit 0 is a match. Exit 2 is no match. Exit 1 is incomplete.
+ * Every place answer includes state, verification, basis, and notes.
  */
 
 import { readFileSync } from "node:fs";
@@ -67,12 +70,16 @@ function parseArgs(argv) {
 
 function usage() {
   return [
+    "Which archive holds the records for this town in this year?",
     "Usage: node cli/resolve.mjs --year 1884 --place \"Castrogiovanni\"",
     "       node cli/resolve.mjs --cognome Barone",
     "       node cli/resolve.mjs --surname Esposito",
     "       node cli/resolve.mjs --leva --year 1878 --place Isernia",
     "       node cli/resolve.mjs --tool parrocchie --year 1842 --place Udine",
+    "Born in a village that no longer exists. Which province. Which archive. Did the border change.",
     "The date inside a year is 1 July.",
+    "The JSON fields state, verification, basis, and notes say what the answer rests on.",
+    "state is in-force, replayed, or current-only. Exit codes do not change.",
     "--cognome and --surname print a surname dossier. They do not print the place.",
     "--leva adds the conscription finding aid. A matched place prints it too.",
     "--tool is parrocchie, cognomi, ansc, or caduti. It does not remove place fields.",

@@ -567,6 +567,12 @@ def load_anpr():
 
 
 def place_spans(rows, living=False):
+    """Name spans for one comune.
+
+    `anprFrom` is the earliest ANPR institution date inside the span.
+    `backfill` is true when the span was extended before that date.
+    A date before `anprFrom` is a province hint, not a fact.
+    """
     ordered = sorted(rows, key=lambda row: (row["DATAISTITUZIONE"], row["DATACESSAZIONE"]))
     raw = []
     for row in ordered:
@@ -578,7 +584,15 @@ def place_spans(rows, living=False):
             end = END
         name = title_it(row["DENOMINAZIONE_IT"])
         code = str(row["IDPROVINCIAISTAT"]).zfill(3)
-        raw.append({"from": start, "to": end, "name": name, "provinceCode": code})
+        raw.append({
+            "from": start,
+            "to": end,
+            "name": name,
+            "provinceCode": code,
+            "anprFrom": start,
+            "backfill": False,
+            "gazetteer": "anpr-archivio",
+        })
     if not raw:
         return []
     if should_backfill(raw[0]["from"], living=living) and raw[0]["from"] > START:
@@ -587,6 +601,9 @@ def place_spans(rows, living=False):
             "to": day_before(raw[0]["from"]),
             "name": raw[0]["name"],
             "provinceCode": raw[0]["provinceCode"],
+            "anprFrom": raw[0]["anprFrom"],
+            "backfill": True,
+            "gazetteer": "anpr-backfill",
         })
     merged = []
     for item in raw:
@@ -596,6 +613,10 @@ def place_spans(rows, living=False):
             continue
         if merged and merged[-1]["name"] == item["name"] and merged[-1]["provinceCode"] == item["provinceCode"] and day_before(item["from"]) <= merged[-1]["to"]:
             merged[-1]["to"] = max(merged[-1]["to"], item["to"])
+            merged[-1]["anprFrom"] = min(merged[-1]["anprFrom"], item["anprFrom"])
+            merged[-1]["backfill"] = bool(merged[-1]["backfill"] or item["backfill"])
+            if merged[-1]["backfill"]:
+                merged[-1]["gazetteer"] = "anpr-backfill"
             continue
         merged.append(item)
     return merged
@@ -709,7 +730,15 @@ def build_places(comuni_rows, by_catasto, anpr, centroids, province_centers, ove
             "lat": point["lat"] if point else None,
             "lng": point["lng"] if point else None,
             "suppressed": False,
-            "spans": [{"from": START, "to": END, "name": row["nome"], "provinceCode": code}],
+            "spans": [{
+                "from": START,
+                "to": END,
+                "name": row["nome"],
+                "provinceCode": code,
+                "anprFrom": None,
+                "backfill": False,
+                "gazetteer": "istat-current-only",
+            }],
         }
         aliases = overlays.get("englishNames", {}).get(row["nome"], [])
         if aliases:
@@ -1018,6 +1047,8 @@ def smoke(places, rules):
         print(" | ".join(line))
     if rule_1884["polityId"] != "regno-italia" or at_1884["provinceCode"] != "085" or at_1884["name"] != "Castrogiovanni":
         raise SystemExit("Castrogiovanni 1884 check failed")
+    if at_1884.get("anprFrom") != "1861-03-17" or not at_1884.get("backfill"):
+        raise SystemExit("Castrogiovanni evidence check failed")
     if rule_1852["polityId"] != "lombardo-veneto" or rule_1852["recordId"] != "parish":
         raise SystemExit("Udine 1852 check failed")
     if rule_1910["polityId"] != "austria-hungary" or rule_1910["provinceName"] != "Tirolo":

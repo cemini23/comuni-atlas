@@ -1,4 +1,4 @@
-/** Browser agent surface. resolvePlace is read-only. The other methods move the map. */
+/** Browser agent surface. resolvePlace is read-only and returns state, verification, basis, and notes. The other methods move the map. */
 
 export function installAtlasApi(controller) {
   const api = {

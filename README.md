@@ -36,6 +36,10 @@ Run this command from the repository root:
 
 The command prints JSON on stdout. Usage and errors go to stderr. Exit code 0 means every stop matched. Exit code 2 means a stop did not match, or the surname string is empty. Exit code 1 means the command is incomplete.
 
+Every place answer also names what it rests on. `state` is `in-force`, `replayed`, or `current-only`. `verification` lists the dates that were checked. `basis` names the source class. `notes` carries the era caveat, when one applies. Exit codes do not change. A match with `state` `current-only` is still exit 0.
+
+`in-force` is today's ISTAT province for the atlas current year. An earlier year is `replayed` or `current-only`. This atlas does not cite a pre-1948 statute. Place matching stays deterministic. The resolver does not ask a model to choose a comune. Read `skills/comuni-atlas/SKILL.md`.
+
 Use these checks:
 
 - Castrogiovanni in 1884 is modern Enna; in 1884 it was in the Province of Caltanissetta.
@@ -110,7 +114,7 @@ Run the CLI. Do not guess a coordinate, a province, or an archive.
 
 The page sets `window.atlasAPI` after the data loads:
 
-- `resolvePlace(place, year)` returns a result and does not move the map.
+- `resolvePlace(place, year)` returns a result and does not move the map. The result includes `state`, `verification`, `basis`, and `notes`.
 - `locate({ place, year })` and `inspect({ place, year })` move the map and open the card.
 - `setYear(year)` moves the year control.
 - `plotTrajectory({ place, year })` draws a route. `place` and `year` can be comma-separated lists. `route` or `person` plays a chronicle.

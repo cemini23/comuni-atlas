@@ -27,6 +27,17 @@ jobs:
           node cli/resolve.mjs --cognome Barone > /tmp/barone.json
           node cli/resolve.mjs --cognome Esposito > /tmp/esposito.json
           node cli/resolve.mjs --leva --year 1878 --place Isernia > /tmp/isernia.json
+          node cli/resolve.mjs --year 2026 --place Enna > /tmp/enna2026.json
+          node cli/resolve.mjs --year 1890 --place Elena > /tmp/elena.json
+          node cli/resolve.mjs --year 1810 --place Cagliari > /tmp/cagliari1810.json
+          node cli/resolve.mjs --year 1600 --place Genova > /tmp/genova1600.json
+          node cli/resolve.mjs --year 1904 --place "New York" > /tmp/newyork.json
+          node cli/resolve.mjs --year 1884 --place "No Such Village Zzz" > /tmp/miss.json || miss_code=$?
+          test "${miss_code:-0}" -eq 2
+          node cli/resolve.mjs > /tmp/bad.json || bad_code=$?
+          test "${bad_code:-0}" -eq 1
+          node cli/resolve.mjs --cognome "" > /tmp/empty-surname.json || empty_code=$?
+          test "${empty_code:-0}" -eq 2
           python3 - <<'PY'
           import json
           castro = json.load(open("/tmp/castro.json"))
@@ -39,7 +50,40 @@ jobs:
           barone = json.load(open("/tmp/barone.json"))
           esposito = json.load(open("/tmp/esposito.json"))
           isernia = json.load(open("/tmp/isernia.json"))
+          enna2026 = json.load(open("/tmp/enna2026.json"))
+          elena = json.load(open("/tmp/elena.json"))
+          cagliari1810 = json.load(open("/tmp/cagliari1810.json"))
+          genova1600 = json.load(open("/tmp/genova1600.json"))
+          newyork = json.load(open("/tmp/newyork.json"))
+          miss = json.load(open("/tmp/miss.json"))
           assert castro["modernName"] == "Enna", castro["modernName"]
+          for row in (castro, udine, udine1845, trento, enna2026, elena, cagliari1810, genova1600, newyork, miss):
+              assert row["state"] in ("in-force", "replayed", "current-only"), row.get("place")
+              assert isinstance(row["verification"], list) and row["verification"], row.get("place")
+              assert isinstance(row["basis"], str) and row["basis"], row.get("place")
+              assert isinstance(row["notes"], list), row.get("place")
+          assert castro["year"] == 1884 and castro["place"] == "Castrogiovanni"
+          assert castro["state"] == "replayed"
+          assert castro["state"] != "in-force" and udine["state"] != "in-force" and trento["state"] != "in-force"
+          assert "1884-07-01" in castro["verification"]
+          assert "early span is a province hint, not a fact" not in castro["notes"]
+          assert udine["state"] == "replayed"
+          assert "early span is a province hint, not a fact" in udine["notes"]
+          assert "Veneto, Friuli, and Mantua stay on parish registers through 31 August 1871." in udine["notes"]
+          assert "1871-08-31" in udine["verification"]
+          assert enna2026["state"] == "in-force"
+          assert enna2026["basis"] == "istat-provincial-mesh"
+          assert elena["existed"] is False and elena["state"] == "replayed"
+          assert elena["basis"] == "istat-provincial-mesh+suppressed-comuni"
+          assert any("Napoleonic" in note for note in cagliari1810["notes"])
+          assert "early span is a province hint, not a fact" in genova1600["notes"]
+          assert "Earlier spans name the pre-1796 sovereign and stop on 31 December 1795." in genova1600["notes"]
+          assert newyork["matched"] is True and newyork["state"] == "current-only"
+          assert newyork["basis"] == "migration-endpoint"
+          assert miss["matched"] is False and miss["state"] == "current-only"
+          assert miss["basis"] == "no-gazetteer-entry"
+          assert "Frazioni are not a national gazetteer." in miss["notes"]
+          assert "state" not in barone
           assert castro["istat"] == "086009"
           assert castro["historicalProvince"]["name"] == "Caltanissetta"
           office = castro["stato_civile_office"]
@@ -63,6 +107,7 @@ jobs:
           assert garibaldi["routeId"] == "garibaldi-mille"
           assert len(garibaldi["stops"]) == 9
           assert all(stop["matched"] for stop in garibaldi["stops"])
+          assert all(stop["state"] in ("in-force", "replayed", "current-only") for stop in garibaldi["stops"])
           assert udine1842["sovereign"]["id"] == "lombardo-veneto"
           assert udine1842["records"]["id"] == "parish"
           assert udine1842["parish_routing"]["required"] is True
