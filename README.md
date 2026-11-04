@@ -42,6 +42,8 @@ Every place answer also names what it rests on. `state` is `in-force`, `replayed
 
 The `statute` field cites three instruments from Normattiva: R.D. 1865/2602 for the Stato Civile, R.D. 1865/2358 for the Codice civile, and L. 1912/555 for citizenship. `localFrom` gives the date each one became the legal register in that territory. Civil registration did not start on one day across Italy: it runs from 1866-01-01 in the Kingdom as it stood, from 1870 in Lazio and Rome, from 1871-09-01 in Veneto, Friuli and Mantua, and from 1919 in Trentino, Alto Adige, Gorizia, Trieste and Istria. The atlas does not cite a corpus other than Normattiva for a pre-1948 year. The lexifina Italy corpus starts at 1947-02-22 and holds neither the 1865 Code nor Law 555/1912.
 
+Before 1866 the field names an archive-held regime instead, with `source` `archive-holdings` and no URN. Most restored states abolished civil registration after 1815. Four did not: the Two Sicilies kept it, from 1809 on the mainland and from 1820 in Sicily, and Tuscany ran it from 1817 and the Kingdom of Sardinia from 1838. The Duchy of Modena is not one of them. Its civil series stops in 1814, restarts in 1852, and the parish register governs 1815 to 1851.
+
 Use these checks:
 
 - Castrogiovanni in 1884 is modern Enna; in 1884 it was in the Province of Caltanissetta.

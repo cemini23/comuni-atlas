@@ -56,6 +56,10 @@ Notes you can receive:
 - `Mantua municipal civil books begin in June 1871. The State Archive holds Italian registers from 1866-1871, with gaps.`
 - `Lazio and Rome enter the Kingdom in 1870. Civil registration starts there from late 1870; some comuni hold books only from 1871.`
 - `Trentino, Alto Adige, Gorizia, Trieste, and Istria enter the Kingdom after 1918. Civil registration there starts from 1919, not 1866.`
+- `The Two Sicilies kept civil registration after 1815. The mainland series runs from 1809 to 1865.`
+- `The Two Sicilies kept civil registration after 1815. The Sicilian series runs from 1820 to 1865.`
+- `Tuscany kept civil registration from 1817, usually kept as a duplicate of the parish register.`
+- `The Kingdom of Sardinia kept civil registration from 1838. Priests often kept the register.`
 - `Sicily and the island of Sardinia were not under the Napoleonic civil system in this model.`
 - `Frazioni are not a national gazetteer.`
 
@@ -70,6 +74,10 @@ Cite the statute from the `statute` field. It holds three instruments from Norma
 Do not cite a corpus other than Normattiva for a pre-1948 year. The lexifina/global-law Italy corpus starts at 1947-02-22. It holds no 1865 Civil Code and no Law 555/1912. It is not a source for this atlas.
 
 Check the entry-into-force day before you quote a date. The Normattiva page for the 1865 Code dates it from 16 July 1865, and Article 1 of the decree says application begins 1 January 1866. State the source you read, not the stronger claim.
+
+Before 1866 the `statute` field names an archive-held regime instead. `source` is `archive-holdings` and `urn` is `null`, because Normattiva starts at 1861. The regimes are the Two Sicilies (mainland 1809, Sicily 1820), Tuscany (1817), and the Kingdom of Sardinia (1838). `verifiedBy` names the archive series. Do not give these a Normattiva URN, and do not call Normattiva a source for them.
+
+The Duchy of Modena is not in that list. Its civil series stops in 1814 and restarts in 1852. For 1815 to 1851 the parish register is the record, and the resolver says so.
 
 ## Resolve
 

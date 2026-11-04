@@ -24,6 +24,10 @@ jobs:
           node cli/resolve.mjs --year 1860 --place "Quarto,Marsala,Palermo,Napoli" > /tmp/garibaldi.json
           node cli/resolve.mjs --year 1842 --place Udine > /tmp/udine1842.json
           node cli/resolve.mjs --year 1850 --place Bologna > /tmp/bologna.json
+          node cli/resolve.mjs --year 1845 --place Napoli > /tmp/napoli1845.json
+          node cli/resolve.mjs --year 1845 --place Palermo > /tmp/palermo1845.json
+          node cli/resolve.mjs --year 1845 --place Firenze > /tmp/firenze1845.json
+          node cli/resolve.mjs --year 1845 --place Modena > /tmp/modena1845.json
           node cli/resolve.mjs --cognome Barone > /tmp/barone.json
           node cli/resolve.mjs --cognome Esposito > /tmp/esposito.json
           node cli/resolve.mjs --leva --year 1878 --place Isernia > /tmp/isernia.json
@@ -56,8 +60,13 @@ jobs:
           genova1600 = json.load(open("/tmp/genova1600.json"))
           newyork = json.load(open("/tmp/newyork.json"))
           miss = json.load(open("/tmp/miss.json"))
+          napoli1845 = json.load(open("/tmp/napoli1845.json"))
+          palermo1845 = json.load(open("/tmp/palermo1845.json"))
+          firenze1845 = json.load(open("/tmp/firenze1845.json"))
+          modena1845 = json.load(open("/tmp/modena1845.json"))
           assert castro["modernName"] == "Enna", castro["modernName"]
-          for row in (castro, udine, udine1845, trento, enna2026, elena, cagliari1810, genova1600, newyork, miss):
+          for row in (castro, udine, udine1845, trento, enna2026, elena, cagliari1810, genova1600, newyork, miss,
+                      napoli1845, palermo1845, firenze1845, modena1845):
               assert row["state"] in ("in-force", "replayed", "current-only"), row.get("place")
               assert isinstance(row["verification"], list) and row["verification"], row.get("place")
               assert isinstance(row["basis"], str) and row["basis"], row.get("place")
@@ -79,6 +88,15 @@ jobs:
           assert udine["statute"]["civilRegistration"] is None
           assert any("1919, not 1866" in note for note in trento["notes"])
           assert trento["statute"]["civilRegistration"] is None
+          assert napoli1845["statute"]["civilRegistration"]["localFrom"] == "1809-01-01"
+          assert napoli1845["statute"]["civilRegistration"]["source"] == "archive-holdings"
+          assert napoli1845["statute"]["civilRegistration"]["urn"] is None
+          assert napoli1845["parish_routing"]["required"] is False
+          assert palermo1845["statute"]["civilRegistration"]["localFrom"] == "1820-01-01"
+          assert palermo1845["parish_routing"]["required"] is False
+          assert firenze1845["statute"]["civilRegistration"]["localFrom"] == "1817-01-01"
+          assert modena1845["statute"]["civilRegistration"] is None
+          assert modena1845["parish_routing"]["required"] is True
           assert enna2026["state"] == "in-force"
           assert enna2026["basis"] == "istat-provincial-mesh"
           assert elena["existed"] is False and elena["state"] == "replayed"
