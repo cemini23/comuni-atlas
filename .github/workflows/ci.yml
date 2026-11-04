@@ -62,6 +62,7 @@ jobs:
               assert isinstance(row["verification"], list) and row["verification"], row.get("place")
               assert isinstance(row["basis"], str) and row["basis"], row.get("place")
               assert isinstance(row["notes"], list), row.get("place")
+              assert isinstance(row["statute"], dict), row.get("place")
           assert castro["year"] == 1884 and castro["place"] == "Castrogiovanni"
           assert castro["state"] == "replayed"
           assert castro["state"] != "in-force" and udine["state"] != "in-force" and trento["state"] != "in-force"
@@ -71,6 +72,13 @@ jobs:
           assert "early span is a province hint, not a fact" in udine["notes"]
           assert "Veneto, Friuli, and Mantua stay on parish registers through 31 August 1871." in udine["notes"]
           assert "1871-08-31" in udine["verification"]
+          assert castro["statute"]["civilRegistration"]["id"] == "065U2602"
+          assert castro["statute"]["civilRegistration"]["localFrom"] == "1866-01-01"
+          assert castro["statute"]["civilCode"]["id"] == "065U2358"
+          assert castro["statute"]["citizenship"] is None
+          assert udine["statute"]["civilRegistration"] is None
+          assert any("1919, not 1866" in note for note in trento["notes"])
+          assert trento["statute"]["civilRegistration"] is None
           assert enna2026["state"] == "in-force"
           assert enna2026["basis"] == "istat-provincial-mesh"
           assert elena["existed"] is False and elena["state"] == "replayed"
