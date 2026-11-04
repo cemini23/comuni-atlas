@@ -30,7 +30,7 @@ If those four rules cannot all be met, leave the match deterministic. A fuzzy ma
 
 ## Evidence state
 
-Every place answer includes `state`, `verification`, `basis`, and `notes`. Keep every other field. Do not change an exit code.
+Every place answer includes `state`, `verification`, `basis`, `notes`, and `statute`. Keep every other field. Do not change an exit code.
 
 | Field | Meaning |
 | --- | --- |
@@ -38,8 +38,9 @@ Every place answer includes `state`, `verification`, `basis`, and `notes`. Keep 
 | `verification` | The ISO dates the resolver checked for this answer. |
 | `basis` | The source class, such as `istat-provincial-mesh+anpr-archivio`. |
 | `notes` | The era caveat, when one applies. |
+| `statute` | The dated instrument, or `null` where none applies. |
 
-`in-force` means today's ISTAT province for the atlas current year. The answer is held from that dated mesh. This atlas does not claim a pre-1948 statute. An earlier year is not `in-force`.
+`in-force` means today's ISTAT province for the atlas current year. The answer is held from that dated mesh. An earlier year is not `in-force`.
 
 `replayed` means the answer was rebuilt by applying each dated change. `verification` names the dates that were checked.
 
@@ -52,10 +53,23 @@ Notes you can receive:
 - `early span is a province hint, not a fact`
 - `Earlier spans name the pre-1796 sovereign and stop on 31 December 1795.`
 - `Veneto, Friuli, and Mantua stay on parish registers through 31 August 1871.`
+- `Mantua municipal civil books begin in June 1871. The State Archive holds Italian registers from 1866-1871, with gaps.`
+- `Lazio and Rome enter the Kingdom in 1870. Civil registration starts there from late 1870; some comuni hold books only from 1871.`
+- `Trentino, Alto Adige, Gorizia, Trieste, and Istria enter the Kingdom after 1918. Civil registration there starts from 1919, not 1866.`
 - `Sicily and the island of Sardinia were not under the Napoleonic civil system in this model.`
 - `Frazioni are not a national gazetteer.`
 
-Do not cite an external statute corpus for this answer. A corpus that starts in 1947 is not a source for a pre-1948 year. The atlas owns its own sourcing for 1796–1947.
+## Statute basis
+
+Cite the statute from the `statute` field. It holds three instruments from Normattiva:
+
+- `R.D. 15 novembre 1865, n. 2602` orders the Stato Civile. `localFrom` gives the date it became the legal register in that territory.
+- `R.D. 25 giugno 1865, n. 2358` publishes the Codice civile.
+- `L. 13 giugno 1912, n. 555` governs citizenship until `L. 5 febbraio 1992, n. 91`.
+
+Do not cite a corpus other than Normattiva for a pre-1948 year. The lexifina/global-law Italy corpus starts at 1947-02-22. It holds no 1865 Civil Code and no Law 555/1912. It is not a source for this atlas.
+
+Check the entry-into-force day before you quote a date. The Normattiva page for the 1865 Code dates it from 16 July 1865, and Article 1 of the decree says application begins 1 January 1866. State the source you read, not the stronger claim.
 
 ## Resolve
 

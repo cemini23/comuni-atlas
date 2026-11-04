@@ -36,9 +36,11 @@ Run this command from the repository root:
 
 The command prints JSON on stdout. Usage and errors go to stderr. Exit code 0 means every stop matched. Exit code 2 means a stop did not match, or the surname string is empty. Exit code 1 means the command is incomplete.
 
-Every place answer also names what it rests on. `state` is `in-force`, `replayed`, or `current-only`. `verification` lists the dates that were checked. `basis` names the source class. `notes` carries the era caveat, when one applies. Exit codes do not change. A match with `state` `current-only` is still exit 0.
+Every place answer also names what it rests on. `state` is `in-force`, `replayed`, or `current-only`. `verification` lists the dates that were checked. `basis` names the source class. `notes` carries the era caveat, when one applies. `statute` names the dated instrument, or `null` where none applies. Exit codes do not change. A match with `state` `current-only` is still exit 0.
 
-`in-force` is today's ISTAT province for the atlas current year. An earlier year is `replayed` or `current-only`. This atlas does not cite a pre-1948 statute. Place matching stays deterministic. The resolver does not ask a model to choose a comune. Read `skills/comuni-atlas/SKILL.md`.
+`in-force` is today's ISTAT province for the atlas current year. An earlier year is `replayed` or `current-only`. Place matching stays deterministic. The resolver does not ask a model to choose a comune. Read `skills/comuni-atlas/SKILL.md`.
+
+The `statute` field cites three instruments from Normattiva: R.D. 1865/2602 for the Stato Civile, R.D. 1865/2358 for the Codice civile, and L. 1912/555 for citizenship. `localFrom` gives the date each one became the legal register in that territory. Civil registration did not start on one day across Italy: it runs from 1866-01-01 in the Kingdom as it stood, from 1870 in Lazio and Rome, from 1871-09-01 in Veneto, Friuli and Mantua, and from 1919 in Trentino, Alto Adige, Gorizia, Trieste and Istria. The atlas does not cite a corpus other than Normattiva for a pre-1948 year. The lexifina Italy corpus starts at 1947-02-22 and holds neither the 1865 Code nor Law 555/1912.
 
 Use these checks:
 
