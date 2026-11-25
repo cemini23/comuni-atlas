@@ -710,8 +710,13 @@ function formatCitation(result) {
 }
 
 function compareSection(result) {
-  const other = Number(state.compareYear);
-  if (!result?.matched || !Number.isFinite(other)) return "";
+  if (!result?.matched) return "";
+  const raw = String(state.compareYear ?? "").trim();
+  if (!/^\d{4}$/.test(raw)) return "";
+  const other = Number(raw);
+  const min = state.atlas?.yearMin ?? 1563;
+  const max = state.atlas?.yearMax ?? 2026;
+  if (other < min || other > max) return "";
   const place = result.query?.place || result.modernName || "";
   const alt = state.atlas?.resolvePlace(place, other);
   if (!alt?.matched) return "";
